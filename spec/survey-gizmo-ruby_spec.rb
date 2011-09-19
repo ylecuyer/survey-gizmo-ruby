@@ -11,12 +11,12 @@ describe "SurveyGizmo" do
   
   it "should allow basic authentication configuration" do
     SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
-    SurveyGizmo.options.should == {:user => 'test@test.com', :password => 'password'}
+    SurveyGizmo.default_options[:default_params].should == {'user:pass' => 'test@test.com:password'}
   end
   
   it "should raise an error if auth isn't configured"
   
-  describe SurveyGizmo::API::Survey do    
+  describe SurveyGizmo::API::Survey do
     let(:create_attributes){ {:title => 'Spec', :type => 'survey', :status => 'In Design'} }
     let(:get_attributes)   { create_attributes.merge(:id => 1234) }
     let(:update_attributes){ {:title => 'Updated'} }
@@ -30,7 +30,16 @@ describe "SurveyGizmo" do
   end
   
   # describe SurveyGizmo::API::Question do
+  #   let(:create_attributes){ {:title => 'Spec', :type => 'survey', :status => 'In Design'} }
+  #   let(:get_attributes)   { create_attributes.merge(:id => 1234) }
+  #   let(:update_attributes){ {:title => 'Updated'} }
+  #   let(:uri_paths){ 
+  #     h = { :create => '' }
+  #     h.default = '/1234'
+  #     h
+  #   }
   #   
+  #   it_should_behave_like 'an API object'
   # end
   
   def stub_api_call(method, result = true)

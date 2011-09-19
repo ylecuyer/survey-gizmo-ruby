@@ -8,7 +8,7 @@ module SurveyGizmo
     
     module ClassMethods
       def get(id)
-        response = SurveyGizmo.get("/#{id}", :query => SurveyGizmo.auth_params)
+        response = SurveyGizmo.get("/#{id}")
         if response.parsed_response['result_ok']
           resource = new(response.parsed_response['data'])
           resource.__send__(:clean!)
@@ -41,7 +41,7 @@ module SurveyGizmo
     end
     
     def save
-      response = SurveyGizmo.post("/#{self.id}", :query => self.attributes_with_auth)
+      response = SurveyGizmo.post("/#{self.id}", :query => self.attributes_without_blanks)
       _result = response.parsed_response['result_ok']
       saved! if _result
       _result
@@ -49,7 +49,7 @@ module SurveyGizmo
     
     # fetch resource from SurveyGizmo and reload the attributes
     def reload
-      response = SurveyGizmo.get("/#{self.id}", :query => SurveyGizmo.auth_params)
+      response = SurveyGizmo.get("/#{self.id}")
       if response.parsed_response['result_ok']
         self.attributes = response.parsed_response['data']
         clean!
@@ -62,7 +62,7 @@ module SurveyGizmo
     
     def destroy
       return false if new?
-      response = SurveyGizmo.delete("/#{self.id}", :query => SurveyGizmo.auth_params)
+      response = SurveyGizmo.delete("/#{self.id}")
       _result = response.parsed_response['result_ok']
       destroyed! if _result
       _result
@@ -92,7 +92,7 @@ module SurveyGizmo
     
     # @private
     def _create(attributes = {})
-      response = SurveyGizmo.put('', :query => self.attributes_with_auth)
+      response = SurveyGizmo.put('', :query => self.attributes_without_blanks)
       if response.parsed_response['result_ok']
         self.attributes = response.parsed_response['data']
         saved!
@@ -104,8 +104,8 @@ module SurveyGizmo
     end
     
     # @private
-    def attributes_with_auth
-      self.attributes.reject{|k,v| v.blank? }.merge(SurveyGizmo.auth_params)
+    def attributes_without_blanks
+      self.attributes.reject{|k,v| v.blank? }
     end
     
   end
