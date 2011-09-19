@@ -4,6 +4,7 @@ module SurveyGizmo; module API
     
     attribute :id, Integer
     attribute :title, String
+    
     attribute :type,  String, :default => 'survey'
     
     
