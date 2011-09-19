@@ -16,14 +16,15 @@ describe "SurveyGizmo" do
   
   it "should raise an error if auth isn't configured"
   
-  describe SurveyGizmo::API::Survey do
-    before(:each) do
-      SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
-    end
-    
+  describe SurveyGizmo::API::Survey do    
     let(:create_attributes){ {:title => 'Spec', :type => 'survey', :status => 'In Design'} }
     let(:get_attributes)   { create_attributes.merge(:id => 1234) }
     let(:update_attributes){ {:title => 'Updated'} }
+    let(:uri_paths){ 
+      h = { :create => '' }
+      h.default = '/1234'
+      h
+    }
     
     it_should_behave_like 'an API object'
   end

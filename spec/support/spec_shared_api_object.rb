@@ -1,4 +1,8 @@
 shared_examples_for 'an API object' do
+  before(:each) do
+    SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
+  end
+  
   it "#new?" do
     described_class.new.should be_new
   end
@@ -19,7 +23,7 @@ shared_examples_for 'an API object' do
     it "should make a request" do
       stub_api_call(:put)
       described_class.create(create_attributes)
-      a_request(:put, @base).with(:query => request_params(create_attributes)).should have_been_made
+      a_request(:put, @base + uri_paths[:create]).with(:query => request_params(create_attributes)).should have_been_made
     end
     
     it "should return a new instance" do
@@ -39,7 +43,7 @@ shared_examples_for 'an API object' do
     it "should make a request" do
       stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
       described_class.get(1234)
-      a_request(:get, /#{@base}\/1234/).should have_been_made
+      a_request(:get, /#{@base}#{uri_paths[:get]}/).should have_been_made
     end
   
     it "should set the attributes" do
@@ -64,7 +68,7 @@ shared_examples_for 'an API object' do
     it "should make a request" do
       stub_api_call(:post)
       @obj.update
-      a_request(:post, /#{@base}\/1234/).should have_been_made
+      a_request(:post, /#{@base}#{uri_paths[:update]}/).should have_been_made
     end
     
     it 'should change object state to saved' do
@@ -95,7 +99,7 @@ shared_examples_for 'an API object' do
     it "should make a request" do
       stub_api_call(:delete)
       @obj.destroy
-      a_request(:delete, /#{@base}\/1234/).should have_been_made
+      a_request(:delete, /#{@base}#{uri_paths[:delete]}/).should have_been_made
     end
     
     it 'should change object state to destroyed' do
