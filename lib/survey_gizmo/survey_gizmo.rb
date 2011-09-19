@@ -17,10 +17,6 @@ module SurveyGizmo
     default_params({"user:pass" => opts.values_at(:user, :password).join(':')})
   end
   
-  def self.auth_params
-    {"user:pass" => self.options.values_at(:user, :password).join(':')}
-  end
-  
   module API
     ROOT = File.expand_path(File.dirname(__FILE__))
     autoload :Survey,   "#{ROOT}/api/survey"
