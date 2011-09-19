@@ -16,7 +16,7 @@ describe "SurveyGizmo" do
   
   it "should raise an error if auth isn't configured"
   
-  describe SurveyGizmo::API::Survey, :focused => true do
+  describe SurveyGizmo::API::Survey do
     before(:each) do
       SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
     end
@@ -28,8 +28,12 @@ describe "SurveyGizmo" do
     it_should_behave_like 'an API object'
   end
   
+  # describe SurveyGizmo::API::Question do
+  #   
+  # end
+  
   def stub_api_call(method, result = true)
-    stub_request(method, /#{@base}/).to_return(json_response(result, {}))  
+    stub_request(method, /#{@base}/).to_return(json_response(result, {}))
   end
   
   def request_params(opts = {})
