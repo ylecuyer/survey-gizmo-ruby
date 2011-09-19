@@ -2,6 +2,7 @@ require "active_support/core_ext"
 require "active_support/concern"
 require "virtus"
 require "httparty"
+require "survey_gizmo/resource"
 
 module SurveyGizmo
   include HTTParty
