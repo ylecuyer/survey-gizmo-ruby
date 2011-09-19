@@ -57,6 +57,7 @@ module SurveyGizmo; module API
     end
     
     def destroy
+      return false if new?
       response = SurveyGizmo.delete("/#{self.id}", :query => SurveyGizmo.auth_params)
       _result = response.parsed_response['result_ok']
       destroyed! if _result

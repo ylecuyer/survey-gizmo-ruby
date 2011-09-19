@@ -92,6 +92,12 @@ describe "SurveyGizmo" do
         @obj.update
         @obj.should_not be_saved
       end
+      
+      xit "cannot be updated if new" do
+        @obj.instance_variable_set('@_state', nil)
+        @obj.update(:title => 'Updated').should be_false
+      end
+      
     end
     
     context "destroy" do
@@ -118,6 +124,10 @@ describe "SurveyGizmo" do
         @obj.should_not be_destroyed
       end
       
+      it "cannot be destroyed if new" do
+        @obj.instance_variable_set('@_state', nil)
+        @obj.destroy.should be_false
+      end
     end
   end
   
