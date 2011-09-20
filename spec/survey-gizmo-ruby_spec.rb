@@ -16,7 +16,7 @@ describe "SurveyGizmo" do
   
   it "should raise an error if auth isn't configured"
   
-  describe SurveyGizmo::Resource, :focused => true do
+  describe SurveyGizmo::Resource do
     before(:each) do
       SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
     end
@@ -55,32 +55,32 @@ describe "SurveyGizmo" do
     it_should_behave_like 'an API object'
   end
   
-  describe SurveyGizmo::API::Survey do
+  describe SurveyGizmo::API::Survey, :focused => true do
     let(:create_attributes){ {:title => 'Spec', :type => 'survey', :status => 'In Design'} }
     let(:get_attributes)   { create_attributes.merge(:id => 1234) }
     let(:update_attributes){ {:title => 'Updated'} }
+    let(:first_params){ {:id => 1234} }
     let(:uri_paths){ 
-      h = { :create => '' }
-      h.default = '/1234'
+      h = { :create => '/survey' }
+      h.default = '/survey/1234'
       h
     }
     
     it_should_behave_like 'an API object'
   end
   
-  describe SurveyGizmo::API::Question, :focused => false do
-    let(:create_attributes){ {:survey_id => 1234, :page_id => 1, :title => 'Spec Question', :type => 'radio', :properties => {:required => true, :option_sort => false} } }
+  describe SurveyGizmo::API::Question do
+    let(:create_attributes){ {:survey_id => 1234, :page_id => 1, :title => 'Spec Question', :type => 'radio', :properties => {"required" => true, "option_sort" => false} } }
     let(:get_attributes)   { 
-      h = create_attributes.merge(:id => 1, :_subtype => 'radio')
-      h.delete(:type)
-      h
+      create_attributes.merge(:id => 1)
     }
     let(:update_attributes){ {:survey_id => 1234, :page_id => 1, :title => 'Updated'} }
+    let(:first_params){ {:id => 1, :survey_id => 1234} }
     let(:uri_paths){ 
-      { :get => '/1234/surveyquestion/1',
-        :create => '/1234/surveypage/1/surveyquestion',
-        :update => '/1234/surveypage/1/surveyquestion/1',
-        :delete => '/1234/surveypage/1/surveyquestion/1' 
+      { :get =>    '/survey/1234/surveyquestion/1',
+        :create => '/survey/1234/surveypage/1/surveyquestion',
+        :update => '/survey/1234/surveypage/1/surveyquestion/1',
+        :delete => '/survey/1234/surveypage/1/surveyquestion/1' 
       }
     }
     
