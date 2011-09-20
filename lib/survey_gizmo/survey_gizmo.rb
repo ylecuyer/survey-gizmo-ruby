@@ -24,6 +24,7 @@ module SurveyGizmo
     ROOT = File.expand_path(File.dirname(__FILE__))
     autoload :Survey,   "#{ROOT}/api/survey"
     autoload :Question, "#{ROOT}/api/question"
+    autoload :Option,   "#{ROOT}/api/option"
   end
   
   

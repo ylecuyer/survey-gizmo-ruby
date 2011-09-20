@@ -7,7 +7,7 @@ shared_examples_for 'an API object' do
     it "should make a request" do
       stub_api_call(:put)
       described_class.create(create_attributes)
-      a_request(:put, /#{@base}#{uri_paths[:create]}/o).should have_been_made
+      a_request(:put, /#{@base}#{uri_paths[:create]}/).should have_been_made
     end
     
     it "should return a new instance" do

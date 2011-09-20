@@ -97,6 +97,23 @@ describe "SurveyGizmo" do
     end
   end
   
+  describe SurveyGizmo::API::Option do
+    let(:create_attributes){ {:survey_id => 1234, :page_id => 1, :question_id => 1, :title => 'Spec Question', :value => 'Spec Answer'} }
+    let(:get_attributes)   {
+      create_attributes.merge(:id => 1)
+    }
+    let(:update_attributes){ {:survey_id => 1234, :page_id => 1, :question_id => 1, :title => 'Updated'} }
+    let(:first_params){ {:id => 1, :survey_id => 1234, :page_id => 1, :question_id => 1} }
+    let(:uri_paths){ 
+      h = { :create => '/survey/1234/surveypage/1/surveyquestion/1/surveyoption' }
+      h.default = '/survey/1234/surveypage/1/surveyquestion/1/surveyoption/1'
+      h
+    }
+    
+    it_should_behave_like 'an API object'
+  
+  end
+  
   def stub_api_call(method, result = true)
     stub_request(method, /#{@base}/).to_return(json_response(result, {}))
   end
