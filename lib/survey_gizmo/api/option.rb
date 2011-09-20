@@ -8,9 +8,7 @@ module SurveyGizmo; module API
     attribute :survey_id,     Integer
     attribute :page_id,       Integer
     attribute :question_id,   Integer
-    
-    alias_attribute :_subtype, :type
-    
+        
     # routing
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption', :via => :create
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption/:id', :via => [:get, :update, :delete]

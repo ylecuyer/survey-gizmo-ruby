@@ -25,6 +25,7 @@ module SurveyGizmo
     autoload :Survey,   "#{ROOT}/api/survey"
     autoload :Question, "#{ROOT}/api/question"
     autoload :Option,   "#{ROOT}/api/option"
+    autoload :Page,   "#{ROOT}/api/page"
   end
   
   
