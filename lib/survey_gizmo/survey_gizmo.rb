@@ -1,4 +1,7 @@
-require "active_support/core_ext"
+require "active_support/core_ext/string"
+require "active_support/core_ext/module"
+require "active_support/core_ext/hash"
+require "active_support/core_ext/object/blank"
 require "active_support/concern"
 require "virtus"
 require "httparty"
@@ -8,7 +11,7 @@ module SurveyGizmo
   include HTTParty
   
   format :json
-  base_uri 'https://restapi.surveygizmo.com/v1/survey'
+  base_uri 'https://restapi.surveygizmo.com/v1'
   @@options = {}
   mattr_accessor :options
   
@@ -22,4 +25,6 @@ module SurveyGizmo
     autoload :Survey,   "#{ROOT}/api/survey"
     autoload :Question, "#{ROOT}/api/question"
   end
+  
+  
 end

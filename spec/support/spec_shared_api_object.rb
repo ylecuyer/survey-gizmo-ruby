@@ -3,27 +3,12 @@ shared_examples_for 'an API object' do
     SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
   end
   
-  it "#new?" do
-    described_class.new.should be_new
-  end
-  
-  
-  it '#reload' do
-    stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
-    obj = described_class.new(create_attributes)
-    obj.attributes.reject{|k,v| v.blank? }.should == create_attributes
-    obj.reload
-    obj.attributes.reject{|k,v| v.blank? }.should == get_attributes
-  end
-  
-  it '#valid?'
-  it "should be in zombie state if requests fail"
-  
   context "create" do
     it "should make a request" do
       stub_api_call(:put)
       described_class.create(create_attributes)
-      a_request(:put, @base + uri_paths[:create]).with(:query => request_params(create_attributes)).should have_been_made
+      
+      a_request(:put, /#{@base}#{uri_paths[:create]}/x).should have_been_made
     end
     
     it "should return a new instance" do
@@ -42,20 +27,19 @@ shared_examples_for 'an API object' do
   context "get" do
     it "should make a request" do
       stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
-      described_class.get(1234)
+      described_class.first(first_params)
       a_request(:get, /#{@base}#{uri_paths[:get]}/).should have_been_made
     end
   
     it "should set the attributes" do
       stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
-      obj = described_class.get(1234)
-      obj.title.should == 'Spec'
-      obj.id.should == 1234
+      obj = described_class.first(first_params)
+      obj.attributes.reject{|k,v| v.blank? }.should == get_attributes
     end
   
     it "should return false if the request fails" do
       stub_request(:get, /#{@base}/).to_return(json_response(false, "something is wrong"))
-      described_class.get(1234).should == false
+      described_class.first(first_params).should == false
     end
   end
   

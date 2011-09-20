@@ -3,6 +3,8 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 require "bundler/setup"
 Bundler.require(:test)
 require 'survey-gizmo-ruby'
+require "active_support/json"
+require "active_support/ordered_hash"
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
