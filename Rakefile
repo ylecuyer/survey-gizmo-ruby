@@ -17,10 +17,10 @@ Jeweler::Tasks.new do |gem|
   gem.name = "survey-gizmo-ruby"
   gem.homepage = "http://github.com/RipTheJacker/survey-gizmo-ruby"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{gem to consume the Survey Gizmo API}
+  gem.description = %Q{}
   gem.email = "self@ripthejacker.com"
-  gem.authors = ["RipTheJacker"]
+  gem.authors = ["Kabari Hendrick"]
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
