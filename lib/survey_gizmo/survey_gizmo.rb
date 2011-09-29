@@ -5,7 +5,14 @@ require "active_support/core_ext/object/blank"
 require "active_support/concern"
 require "virtus"
 require "httparty"
+
 require "survey_gizmo/resource"
+require "survey_gizmo/collection"
+
+require "survey_gizmo/api/survey"
+require "survey_gizmo/api/question"
+require "survey_gizmo/api/option"
+require "survey_gizmo/api/page"
 
 module SurveyGizmo
   include HTTParty
@@ -19,14 +26,5 @@ module SurveyGizmo
     self.options = opts
     default_params({"user:pass" => opts.values_at(:user, :password).join(':')})
   end
-  
-  module API
-    ROOT = File.expand_path(File.dirname(__FILE__))
-    autoload :Survey,   "#{ROOT}/api/survey"
-    autoload :Question, "#{ROOT}/api/question"
-    autoload :Option,   "#{ROOT}/api/option"
-    autoload :Page,   "#{ROOT}/api/page"
-  end
-  
   
 end

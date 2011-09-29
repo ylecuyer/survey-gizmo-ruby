@@ -52,10 +52,14 @@ describe "SurveyGizmo" do
     it '#valid?'
     it "should be in zombie state if requests fail"
     
+    focused "should track descendants" do
+      SurveyGizmo::Resource.descendants.should include(SurveyGizmoSpec::ResourceTest)
+    end
+    
     it_should_behave_like 'an API object'
   end
   
-  describe SurveyGizmo::API::Survey, :focused => true do
+  describe SurveyGizmo::API::Survey do
     let(:create_attributes){ {:title => 'Spec', :type => 'survey', :status => 'In Design'} }
     let(:get_attributes)   { create_attributes.merge(:id => 1234) }
     let(:update_attributes){ {:title => 'Updated'} }
@@ -129,6 +133,77 @@ describe "SurveyGizmo" do
     
     it_should_behave_like 'an API object'
   
+  end
+  
+  
+  describe "Collection", :focused => true do
+    before(:each) do
+      @array = [
+        {:id => 1, :title => 'Test 1'},
+        {:id => 2, :title => 'Test 2'},
+        {:id => 3, :title => 'Test 3'},
+        {:id => 4, :title => 'Test 4'}
+      ]      
+      
+      SurveyGizmo::Collection.send :public, *SurveyGizmo::Collection.private_instance_methods
+    end
+    
+    let(:described_class) { SurveyGizmoSpec::CollectionTest }
+  
+    context "class" do
+      before(:each) do
+        described_class.collection :generic_resources
+      end
+      
+      subject { SurveyGizmo::Collection.new(described_class.new, :generic_resources, @array) }
+    
+      it { should_not be_loaded }
+      
+      it "should set the options in the collections property" do
+        described_class.collections.should == {:generic_resources => {:parent => described_class, :target => :generic_resources}}
+      end
+      
+      it "should load objects using the given class" do
+        subject.first.should be_instance_of(SurveyGizmoSpec::GenericResource)      
+      end
+    
+      it "should be loaded before iteration" do
+        subject.should_not be_loaded
+        subject.each
+        subject.should be_loaded
+      end      
+    end
+    
+    context '#collection' do
+      it { lambda{ described_class.collection :resources, 'ResourceTest'}.should_not raise_error }
+      
+      it "should have an accessor for the collection" do
+        described_class.collection(:resources, 'ResourceTest')
+        described_class.public_instance_methods.should include(:resources)
+        described_class.public_instance_methods.should include(:resources=)
+      end
+      
+      it "should set an empty collection" do
+        described_class.collection(:resources, 'ResourceTest')
+        obj = described_class.new()
+        obj.resources.should be_empty
+      end
+      
+      it "should set a collection" do
+        described_class.collection(:resources, 'ResourceTest')
+        obj = described_class.new()
+        obj.resources = @array
+        obj.resources.should be_instance_of(SurveyGizmo::Collection)
+        obj.resources.length.should == @array.length
+      end
+      
+      it "should set a collection from a hash" do
+        described_class.collection(:resources, 'ResourceTest')
+        obj = described_class.new(:id => 1, :resources => @array)
+        obj.resources.should be_instance_of(SurveyGizmo::Collection)
+        obj.resources.length.should == @array.length
+      end
+    end
   end
   
   def stub_api_call(method, result = true)

@@ -1,3 +1,5 @@
+require "set"
+
 module SurveyGizmo
   module Resource
     extend ActiveSupport::Concern
@@ -5,16 +7,34 @@ module SurveyGizmo
     included do
       include Virtus
       instance_variable_set('@paths', {})
+      instance_variable_set('@collections', {})
+      SurveyGizmo::Resource.descendants << self
+    end
+    
+    def self.descendants
+      @descendants ||= Set.new
     end
     
     module ClassMethods
+      
+      def all(conditions = {})
+        response = SurveyGizmo.get(handle_route(:get, conditions))
+        if response.parsed_response['result_ok']
+          true
+        else
+          # do something
+          # e = response.parsed_response['message']
+          false
+        end
+      end
+      
       # Get the first resource
       # @param [Hash] conditions
       # @return [Object, nil]
       def first(conditions)
         response = SurveyGizmo.get(handle_route(:get, conditions))
         if response.parsed_response['result_ok']
-          resource = new(response.parsed_response['data'])
+          resource = new(conditions.merge(response.parsed_response['data']))
           resource.__send__(:clean!)
           resource
         else
@@ -49,14 +69,31 @@ module SurveyGizmo
         options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}){|hash, k| hash.merge(k.to_sym => interp.shift) }
         path.gsub(/:(\w+)/){|m| options[$1.to_sym] }
       end
+      
+      def load(attributes = {})
+        resource = new(attributes)
+        resource.__send__(:clean!)
+        resource
+      end
+      
+      def collection(resource_name, model = nil)
+        @collections[resource_name] = {:parent => self, :target => (model ? model : resource_name)} # workaround for weird bug with passing a class to Collection
+        class_eval(<<-EOS)
+          def #{resource_name}
+            @#{resource_name} ||= []
+          end
+          
+          def #{resource_name}=(array)
+            @#{resource_name} = SurveyGizmo::Collection.new(self, :#{resource_name}, array)
+          end
+        EOS
+      end
+      
+      def collections
+        @collections
+      end
     end
-    
-    
-    # @private
-    def initialize(attributes = {})
-      super(attributes)
-    end
-    
+        
     def update(attributes = {})
       self.attributes = attributes
       self.save
@@ -95,6 +132,8 @@ module SurveyGizmo
       @_state.nil?
     end
     
+    # @todo This seemed like a good way to prevent accidently trying to perform an action
+    # on a record at a point when it would fail. Not sure if it's really necessary though.
     [:clean, # stored and not dirty
       :saved, # stored and not modified
       :destroyed, # duh!
@@ -117,6 +156,16 @@ module SurveyGizmo
       raise "Define #to_param_options in #{self.class.name}"
     end
     
+    def inspect
+      attrs = self.class.attributes.map do |attrib|
+        value = attrib.get!(self).inspect
+
+        "#{attrib.instance_variable_name}=#{value}"
+      end
+
+      "#<#{self.class.name}:#{self.object_id} #{attrs.join(' ')}>"
+    end
+
     protected
     
     def handle_route(key)
