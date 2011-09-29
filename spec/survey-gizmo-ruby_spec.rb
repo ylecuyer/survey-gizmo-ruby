@@ -203,6 +203,13 @@ describe "SurveyGizmo" do
         obj.resources.should be_instance_of(SurveyGizmo::Collection)
         obj.resources.length.should == @array.length
       end
+      
+      it "can handle multiple collections" do
+        described_class.collection(:resources, 'ResourceTest')
+        described_class.collection(:generic_resources)
+        described_class.public_instance_methods.should include(:resources)
+        described_class.public_instance_methods.should include(:generic_resources)
+      end
     end
   end
   
