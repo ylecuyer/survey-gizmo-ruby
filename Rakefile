@@ -14,13 +14,14 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "survey-gizmo-ruby"
-  gem.homepage = "http://github.com/RipTheJacker/survey-gizmo-ruby"
-  gem.license = "MIT"
-  gem.summary = %Q{gem to consume the Survey Gizmo API}
+  gem.name        = "survey-gizmo-ruby"
+  gem.homepage    = "http://github.com/RipTheJacker/survey-gizmo-ruby"
+  gem.license     = "MIT"
+  gem.summary     = %Q{gem to consume the Survey Gizmo API}
   gem.description = %Q{}
-  gem.email = "self@ripthejacker.com"
-  gem.authors = ["Kabari Hendrick"]
+  gem.email       = "self@ripthejacker.com"
+  gem.authors     = ["Kabari Hendrick"]
+  gem.files       = FileList['lib/**/*.rb', 'Gemfile*', '[A-Z]*', 'Rakefile', 'spec/**/*'].to_a
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
