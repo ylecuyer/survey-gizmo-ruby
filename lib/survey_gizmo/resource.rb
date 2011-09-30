@@ -17,6 +17,9 @@ module SurveyGizmo
     
     module ClassMethods
       
+      # Get a list of resources
+      # @param [Hash] conditions
+      # @return [SurveGizmo::Collection, false]
       def all(conditions = {})
         response = SurveyGizmo.get(handle_route(:create, conditions))
         if response.parsed_response['result_ok']
@@ -32,7 +35,7 @@ module SurveyGizmo
       
       # Get the first resource
       # @param [Hash] conditions
-      # @return [Object, nil]
+      # @return [Object, false]
       def first(conditions)
         response = SurveyGizmo.get(handle_route(:get, conditions))
         if response.parsed_response['result_ok']
