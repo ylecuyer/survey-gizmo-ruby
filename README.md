@@ -4,7 +4,7 @@ Integrate with the [Survey Gizmo API](http://developer.surveygizmo.com/resources
 
 ## Installation
 
-The gem hasn't been pushed to rubygems.org yet, so for now just install from the repo with rake.
+    gem install survey-gizmo-ruby
 
 ## Basic Usage
 
