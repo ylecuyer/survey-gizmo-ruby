@@ -102,4 +102,26 @@ shared_examples_for 'an API object' do
       @obj.destroy.should be_false
     end
   end
+  
+  context '#all' do
+    it "should make a get request" do
+      stub_request(:get, /#{@base}/).to_return(json_response(true, []))
+      described_class.all(get_attributes)
+      a_request(:get, /#{@base}#{uri_paths[:create]}/).should have_been_made
+    end
+    
+    it "should create a collection using the class" do
+      @array = [
+        {:id => 1, :title => 'resource 1'},
+        {:id => 2, :title => 'resource 2'},
+        {:id => 3, :title => 'resource 3'}
+      ]      
+      
+      stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
+      collection = described_class.all(get_attributes)
+      collection.should be_instance_of(SurveyGizmo::Collection)
+      collection.first.should be_instance_of(described_class)
+    end  
+  end
+  
 end

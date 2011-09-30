@@ -52,10 +52,10 @@ describe "SurveyGizmo" do
     it '#valid?'
     it "should be in zombie state if requests fail"
     
-    focused "should track descendants" do
+    it "should track descendants" do
       SurveyGizmo::Resource.descendants.should include(SurveyGizmoSpec::ResourceTest)
     end
-    
+        
     it_should_behave_like 'an API object'
   end
   
@@ -136,7 +136,7 @@ describe "SurveyGizmo" do
   end
   
   
-  describe "Collection", :focused => true do
+  describe "Collection" do
     before(:each) do
       @array = [
         {:id => 1, :title => 'Test 1'},
@@ -155,7 +155,7 @@ describe "SurveyGizmo" do
         described_class.collection :generic_resources
       end
       
-      subject { SurveyGizmo::Collection.new(described_class.new, :generic_resources, @array) }
+      subject { SurveyGizmo::Collection.new(described_class, :generic_resources, @array) }
     
       it { should_not be_loaded }
       
@@ -175,10 +175,13 @@ describe "SurveyGizmo" do
     end
     
     context '#collection' do
+      before(:each) do
+        described_class.collection(:resources, 'ResourceTest')
+      end
+      
       it { lambda{ described_class.collection :resources, 'ResourceTest'}.should_not raise_error }
       
       it "should have an accessor for the collection" do
-        described_class.collection(:resources, 'ResourceTest')
         described_class.public_instance_methods.should include(:resources)
         described_class.public_instance_methods.should include(:resources=)
       end
@@ -198,17 +201,29 @@ describe "SurveyGizmo" do
       end
       
       it "should set a collection from a hash" do
-        described_class.collection(:resources, 'ResourceTest')
         obj = described_class.new(:id => 1, :resources => @array)
         obj.resources.should be_instance_of(SurveyGizmo::Collection)
         obj.resources.length.should == @array.length
       end
       
       it "can handle multiple collections" do
-        described_class.collection(:resources, 'ResourceTest')
         described_class.collection(:generic_resources)
         described_class.public_instance_methods.should include(:resources)
         described_class.public_instance_methods.should include(:generic_resources)
+      end
+      
+      it "can handle nested collections" do
+        SurveyGizmoSpec::ResourceTest.collection :generic_resources
+        @array2 = [
+          {:id => 1, :title => 'Generic Test 5'},
+          {:id => 2, :title => 'Generic Test 6'},
+          {:id => 3, :title => 'Generic Test 7'}
+        ]      
+        
+        @array << {:id => 99, :generic_resources => @array2}
+        obj = described_class.new(:id => 1, :resources => @array)
+        obj.resources.first.should be_instance_of(SurveyGizmoSpec::ResourceTest)
+        obj.resources.last.generic_resources.first.should be_instance_of(SurveyGizmoSpec::GenericResource)
       end
     end
   end

@@ -11,7 +11,7 @@ require "active_support/ordered_hash"
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
-  config.before(:each) do
-    
+  config.after(:all) do
+    SurveyGizmoSpec.cleanup_models
   end
 end

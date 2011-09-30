@@ -2,12 +2,18 @@ module SurveyGizmo
   class Collection
     include Enumerable
     
+    private
+    # @param [Class] resource 
+    # @param [Symbol] name
+    # @param [Array] values
     def initialize(resource, name, values)
       @array          = Array(values)
       @collection     = []
       @loaded         = false
-      @options        = resource.class.collections[name]
+      @options        = resource.collections[name]
     end
+    
+    public
     
     def length
       @array.length
@@ -28,13 +34,17 @@ module SurveyGizmo
     
     def model
       return @model if defined?(@model)
-      name_string = @options[:target].is_a?(Symbol) ? ActiveSupport::Inflector.classify(@options[:target]) : @options[:target]
+      return (@model = options[:target]) if options[:target].is_a?(Class)
+      name_string = options[:target].is_a?(Symbol) ? ActiveSupport::Inflector.classify(options[:target]) : options[:target]
       @model = name_string[/::/] ? Object.const_get?(name_string) : Resource.descendants.detect{ |d| ActiveSupport::Inflector.demodulize(d.name) == name_string }
       raise NameError, "#{name_string} is not a descendant of SurveyGizmo::Resource" unless @model
       @model    
     end
-
+    
+    
     protected
+    attr_accessor :options
+    
     def lazy_load
       return if loaded?
       @collection = @array.map{|hash| load_object(hash) }

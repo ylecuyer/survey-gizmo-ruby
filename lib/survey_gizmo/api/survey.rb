@@ -11,6 +11,8 @@ module SurveyGizmo; module API
     route '/survey/:id', :via => [:get, :update, :delete]
     route '/survey',     :via => :create
     
+    collection :pages
+    
     def to_param_options
       {:id => self.id}
     end

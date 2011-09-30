@@ -18,6 +18,8 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion', :via => :create
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', :via => [:update, :delete]
     
+    collection :options
+    
     # survey gizmo sends a hash back for :title
     # @private
     def title_with_multilingual=(val)

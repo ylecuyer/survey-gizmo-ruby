@@ -18,9 +18,11 @@ module SurveyGizmo
     module ClassMethods
       
       def all(conditions = {})
-        response = SurveyGizmo.get(handle_route(:get, conditions))
+        response = SurveyGizmo.get(handle_route(:create, conditions))
         if response.parsed_response['result_ok']
-          true
+          collection = SurveyGizmo::Collection.new(self, nil, response.parsed_response['data'])
+          collection.send(:options=, {:target => self, :parent => self})
+          collection
         else
           # do something
           # e = response.parsed_response['message']
@@ -63,12 +65,6 @@ module SurveyGizmo
         nil
       end
       
-      def handle_route(key, *interp)
-        path = @paths[key]
-        raise "No routes defined for `#{key}` in #{self.name}" unless path
-        options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}){|hash, k| hash.merge(k.to_sym => interp.shift) }
-        path.gsub(/:(\w+)/){|m| options[$1.to_sym] }
-      end
       
       def load(attributes = {})
         resource = new(attributes)
@@ -84,13 +80,20 @@ module SurveyGizmo
           end
           
           def #{resource_name}=(array)
-            @#{resource_name} = SurveyGizmo::Collection.new(self, :#{resource_name}, array)
+            @#{resource_name} = SurveyGizmo::Collection.new(#{self}, :#{resource_name}, array)
           end
         EOS
       end
       
       def collections
         @collections
+      end
+      
+      def handle_route(key, *interp)
+        path = @paths[key]
+        raise "No routes defined for `#{key}` in #{self.name}" unless path
+        options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}){|hash, k| hash.merge(k.to_sym => interp.shift) }
+        path.gsub(/:(\w+)/){|m| options[$1.to_sym] }
       end
     end
         
