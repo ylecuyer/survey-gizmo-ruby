@@ -19,7 +19,7 @@ module SurveyGizmo
       
       # Get a list of resources
       # @param [Hash] conditions
-      # @return [SurveGizmo::Collection, false]
+      # @return [SurveyGizmo::Collection, false]
       def all(conditions = {})
         response = SurveyGizmo.get(handle_route(:create, conditions))
         if response.parsed_response['result_ok']

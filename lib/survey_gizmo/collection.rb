@@ -22,7 +22,7 @@ module SurveyGizmo
     def each
       lazy_load
       if block_given?
-        @collection.each{ |o| yield(o)}
+        @collection.each{ |o| yield(o) }
       else
         @collection.each
       end

@@ -6,6 +6,7 @@ module SurveyGizmo; module API
     attribute :title,       String
     attribute :status,      String
     attribute :type,        String,   :default => 'survey'
+    attribute :links,       Hash
     attribute :created_on,  DateTime
     
     route '/survey/:id', :via => [:get, :update, :delete]

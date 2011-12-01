@@ -15,4 +15,5 @@ group :test do
   gem "webmock", :require => 'webmock/rspec'
   gem "rspec", "~> 2.3.0"
   gem 'net-http-spy', :require => nil
+  gem 'awesome_print', :require => nil
 end
