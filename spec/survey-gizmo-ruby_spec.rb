@@ -16,7 +16,7 @@ describe "SurveyGizmo" do
   
   it "should raise an error if auth isn't configured"
   
-  describe SurveyGizmo::Resource, :focused => true do
+  describe SurveyGizmo::Resource do
     before(:each) do
       SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
     end
@@ -79,6 +79,14 @@ describe "SurveyGizmo" do
         it "should add errors on failed requests" do
           @obj.save.should == false
           @obj.errors.should include('There was an error!')
+        end
+        
+        focused "should empty the errors array if object gets saved" do
+          stub_request(:any, /#{@base}/).to_return(json_response(false, 'There was an error!'), json_response(true, get_attributes))
+          @obj.save.should == false
+          @obj.errors.should_not be_empty
+          @obj.save.should == true
+          @obj.errors.should be_empty
         end
       end
     end
