@@ -16,7 +16,7 @@ describe "SurveyGizmo" do
   
   it "should raise an error if auth isn't configured"
   
-  describe SurveyGizmo::Resource do
+  describe SurveyGizmo::Resource, :focused => true do
     before(:each) do
       SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
     end
@@ -50,12 +50,39 @@ describe "SurveyGizmo" do
     end
 
     it '#valid?'
-    it "should be in zombie state if requests fail"
     
     it "should track descendants" do
       SurveyGizmo::Resource.descendants.should include(SurveyGizmoSpec::ResourceTest)
     end
+    
+    context "Errors" do
+      before(:each) do
+        stub_request(:any, /#{@base}/).to_return(json_response(false, 'There was an error!'))
+      end
+
+      it "should be in zombie state if requests fail"
+      
+      context "class" do
+        it { described_class.first(get_attributes).should be_nil }
+        it { described_class.all(get_attributes).should be_empty }
+      end
+      
+      context "instance" do
+        before(:each) do
+          @obj = described_class.new(create_attributes)
+        end
         
+        it "should have an errors array" do
+          @obj.errors.should == []
+        end
+        
+        it "should add errors on failed requests" do
+          @obj.save.should == false
+          @obj.errors.should include('There was an error!')
+        end
+      end
+    end
+    
     it_should_behave_like 'an API object'
   end
   

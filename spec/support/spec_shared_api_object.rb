@@ -38,7 +38,7 @@ shared_examples_for 'an API object' do
   
     it "should return false if the request fails" do
       stub_request(:get, /#{@base}/).to_return(json_response(false, "something is wrong"))
-      described_class.first(first_params).should == false
+      described_class.first(first_params).should == nil
     end
   end
   
@@ -103,7 +103,32 @@ shared_examples_for 'an API object' do
     end
   end
   
+  context '#save' do
+    it "should call create on a new resource" do
+      stub_api_call(:put)
+      obj = described_class.new(create_attributes)
+      obj.save
+      a_request(:put, /#{@base}#{uri_paths[:create]}/).should have_been_made
+    end
+    
+    it "should call update on a created resource" do
+      obj = described_class.new(get_attributes)
+      obj.__send__(:clean!)
+      stub_api_call(:post)
+      obj.save
+      a_request(:post, /#{@base}#{uri_paths[:update]}/).should have_been_made
+    end
+  end
+  
   context '#all' do
+    before(:all) do
+      @array = [
+        {:id => 1, :title => 'resource 1'},
+        {:id => 2, :title => 'resource 2'},
+        {:id => 3, :title => 'resource 3'}
+      ]
+    end
+    
     it "should make a get request" do
       stub_request(:get, /#{@base}/).to_return(json_response(true, []))
       described_class.all(get_attributes)
@@ -111,17 +136,22 @@ shared_examples_for 'an API object' do
     end
     
     it "should create a collection using the class" do
-      @array = [
-        {:id => 1, :title => 'resource 1'},
-        {:id => 2, :title => 'resource 2'},
-        {:id => 3, :title => 'resource 3'}
-      ]      
-      
       stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
       collection = described_class.all(get_attributes)
       collection.should be_instance_of(SurveyGizmo::Collection)
-      collection.first.should be_instance_of(described_class)
     end  
+    
+    it "should return instances of the class" do
+      stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
+      collection = described_class.all(get_attributes)
+      collection.first.should be_instance_of(described_class)
+    end
+    
+    it "should include all elements" do
+      stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
+      collection = described_class.all(get_attributes)
+      collection.length.should == 3
+    end
   end
   
 end

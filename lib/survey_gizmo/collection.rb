@@ -15,10 +15,12 @@ module SurveyGizmo
     
     public
     
+    # @private
     def length
       @array.length
     end
     
+    # @private
     def each
       lazy_load
       if block_given?
@@ -28,6 +30,7 @@ module SurveyGizmo
       end
     end
     
+    # @private
     def method_missing(meth, *args, &blk)
       @collection.send(meth, *args, &blk)
     end

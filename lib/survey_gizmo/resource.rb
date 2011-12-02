@@ -19,34 +19,24 @@ module SurveyGizmo
       
       # Get a list of resources
       # @param [Hash] conditions
-      # @return [SurveyGizmo::Collection, false]
+      # @return [SurveyGizmo::Collection, Array]
       def all(conditions = {})
-        response = SurveyGizmo.get(handle_route(:create, conditions))
-        if response.parsed_response['result_ok']
-          collection = SurveyGizmo::Collection.new(self, nil, response.parsed_response['data'])
-          collection.send(:options=, {:target => self, :parent => self})
-          collection
+        response = Response.new SurveyGizmo.get(handle_route(:create, conditions))
+        if response.ok?
+          _collection = SurveyGizmo::Collection.new(self, nil, response.data)
+          _collection.send(:options=, {:target => self, :parent => self})
+          _collection
         else
-          # do something
-          # e = response.parsed_response['message']
-          false
+          []
         end
       end
       
       # Get the first resource
       # @param [Hash] conditions
-      # @return [Object, false]
+      # @return [Object, nil]
       def first(conditions)
-        response = SurveyGizmo.get(handle_route(:get, conditions))
-        if response.parsed_response['result_ok']
-          resource = new(conditions.merge(response.parsed_response['data']))
-          resource.__send__(:clean!)
-          resource
-        else
-          # do something
-          # e = response.parsed_response['message']
-          false
-        end
+        response = Response.new SurveyGizmo.get(handle_route(:get, conditions))
+        response.ok? ? load(conditions.merge(response.data)) : nil
       end
       
       # Create a new resource
@@ -68,7 +58,7 @@ module SurveyGizmo
         nil
       end
       
-      
+      # @private
       def load(attributes = {})
         resource = new(attributes)
         resource.__send__(:clean!)
@@ -106,32 +96,32 @@ module SurveyGizmo
     end
     
     def save
-      response = SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks)
-      _result = response.parsed_response['result_ok']
-      saved! if _result
-      _result
+      if new?
+        _create
+      else
+        handle_response SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks), do 
+          _response.ok? ? saved! : false
+        end
+      end
     end
     
     # fetch resource from SurveyGizmo and reload the attributes
     def reload
-      response = SurveyGizmo.get(handle_route(:get))
-      if response.parsed_response['result_ok']
-        self.attributes = response.parsed_response['data']
-        clean!
-        self
-      else
-        # do something
-        # e = response.parsed_response['message']
-        false
+      handle_response SurveyGizmo.get(handle_route(:get)), do
+        if _response.ok? 
+          self.attributes = _response.data
+          clean!
+        else
+          false
+        end
       end  
     end
     
     def destroy
-      return false if new?
-      response = SurveyGizmo.delete(handle_route(:delete))
-      _result = response.parsed_response['result_ok']
-      destroyed! if _result
-      _result
+      return false if new? || destroyed?
+      handle_response SurveyGizmo.delete(handle_route(:delete)), do
+        _response.ok? ? destroyed! : false
+      end
     end
     
     def new?
@@ -147,6 +137,7 @@ module SurveyGizmo
     ].each do |state|
       define_method("#{state}!") do
         @_state = state
+        true
       end
       
       define_method("#{state}?") do
@@ -157,11 +148,18 @@ module SurveyGizmo
     end
     
     # Sets the hash that will be used to interpolate values in routes. It needs to be defined per model.
-    # @return [Hash] a hash of the values needed in routing. ie. {:id => self.id}
+    # @return [Hash] a hash of the values needed in routing
     def to_param_options
       raise "Define #to_param_options in #{self.class.name}"
     end
     
+    # Any errors returned by Survey Gizmo
+    # @return [Array]
+    def errors
+      @errors ||= []
+    end
+    
+    # @private
     def inspect
       attrs = self.class.attributes.map do |attrib|
         value = attrib.get!(self).inspect
@@ -171,30 +169,58 @@ module SurveyGizmo
 
       "#<#{self.class.name}:#{self.object_id} #{attrs.join(' ')}>"
     end
-
+    
+    class Response
+      def ok?
+        @response['result_ok']
+      end
+      
+      def data
+        @_data ||= (@response['data'] || {})
+      end
+      
+      def message
+        @_message ||= @response['message']
+      end
+      
+      private
+      def initialize(response)
+        @response = response.parsed_response
+      end
+    end
+    
     protected
+    attr_reader :_response
+    
+    def set_response(http)
+      @_response = Response.new(http)
+    end
     
     def handle_route(key)
       self.class.handle_route(key, to_param_options)
     end
     
-    # @private
+    def handle_response(resp, &block)
+      set_response(resp)
+      (self.errors << _response.message) unless _response.ok?
+      self.errors.clear if !self.errors.empty? && _response.ok?
+      instance_eval(&block)
+    end
+    
     def _create(attributes = {})
-      response = SurveyGizmo.put(handle_route(:create), :query => self.attributes_without_blanks)
-      if response.parsed_response['result_ok']
-        self.attributes = response.parsed_response['data']
-        saved!
-      else
-        # do something
-        # e = response.parsed_response['message']
-        false
+      http = SurveyGizmo.put(handle_route(:create), :query => self.attributes_without_blanks)
+      handle_response http, do
+        if _response.ok?
+          self.attributes = _response.data
+          saved!
+        else
+          false
+        end      
       end
     end
     
-    # @private
     def attributes_without_blanks
       self.attributes.reject{|k,v| v.blank? }
     end
-    
   end
 end
