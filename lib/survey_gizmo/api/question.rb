@@ -9,7 +9,7 @@ module SurveyGizmo; module API
     attribute :properties,    Hash
     attribute :after,         Integer
     attribute :survey_id,     Integer
-    attribute :page_id,       Integer
+    attribute :page_id,       Integer, :default => 1
     
     alias_attribute :_subtype, :type
     
