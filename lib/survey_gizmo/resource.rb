@@ -11,10 +11,13 @@ module SurveyGizmo
       SurveyGizmo::Resource.descendants << self
     end
     
+    # @return [Set] Every class that includes SurveyGizmo::Resource
     def self.descendants
       @descendants ||= Set.new
     end
     
+    # These are methods that every API resource has to access resources
+    # in Survey Gizmo
     module ClassMethods
       
       # Get a list of resources
@@ -41,7 +44,8 @@ module SurveyGizmo
       
       # Create a new resource
       # @param [Hash] attributes
-      # @return [Object]
+      # @return [Resource]
+      #   The newly created Resource instance
       def create(attributes = {})
         resource = new(attributes)
         resource.__send__(:_create)
@@ -49,8 +53,12 @@ module SurveyGizmo
       end
       
       # Define the path where a resource is located
-      # @param [String] path the path in Survey Gizmo for the resource
-      # @param [Hash]   options must include `:via` which is `:get`, `:create`, `:update`, `:delete`, or `:any`
+      # @param [String] path 
+      #   the path in Survey Gizmo for the resource
+      # @param [Hash] options 
+      # @option options [Array] :via
+      #     which is `:get`, `:create`, `:update`, `:delete`, or `:any`
+      # @scope class
       def route(path, options)
         methods = options[:via]
         methods = [:get, :create, :update, :delete] if methods == :any
@@ -58,13 +66,20 @@ module SurveyGizmo
         nil
       end
       
-      # @private
+      # @api private
       def load(attributes = {})
         resource = new(attributes)
         resource.__send__(:clean!)
         resource
       end
       
+      # Defines a new collection. These are child objects of the resource.
+      # @macro [new] collection
+      #   @param [Symbol] resource_name the name of the collection, pluralized
+      #   @param [Class] model and optional class name if the class name does not match the resource_name
+      #   @return [Collection] 
+      #     the $1 collection
+      #   @scope instance
       def collection(resource_name, model = nil)
         @collections[resource_name] = {:parent => self, :target => (model ? model : resource_name)} # workaround for weird bug with passing a class to Collection
         class_eval(<<-EOS)
@@ -78,10 +93,12 @@ module SurveyGizmo
         EOS
       end
       
+      # @api private
       def collections
-        @collections
+        @collections.dup.freeze
       end
       
+      # @api private
       def handle_route(key, *interp)
         path = @paths[key]
         raise "No routes defined for `#{key}` in #{self.name}" unless path
@@ -89,12 +106,23 @@ module SurveyGizmo
         path.gsub(/:(\w+)/){|m| options[$1.to_sym] }
       end
     end
-        
+    
+    # Updates attributes and saves this Resource instance
+    #
+    # @param [Hash] attributes
+    #   attributes to be updated
+    #
+    # @return [Boolean]
+    #   true if resource is saved
     def update(attributes = {})
       self.attributes = attributes
       self.save
     end
     
+    # Save the instance to Survey Gizmo
+    #
+    # @return [Boolean]
+    #   true if Resource instance is saved
     def save
       if new?
         _create
@@ -106,6 +134,8 @@ module SurveyGizmo
     end
     
     # fetch resource from SurveyGizmo and reload the attributes
+    # @return [self, false]
+    #   Returns the object, if saved. Otherwise returns false.
     def reload
       handle_response SurveyGizmo.get(handle_route(:get)), do
         if _response.ok? 
@@ -117,6 +147,8 @@ module SurveyGizmo
       end  
     end
     
+    # Deleted the Resource from Survey Gizmo
+    # @return [Boolean]
     def destroy
       return false if new? || destroyed?
       handle_response SurveyGizmo.delete(handle_route(:delete)), do
@@ -124,22 +156,26 @@ module SurveyGizmo
       end
     end
     
+    # The state of the current Resource
+    # @api private
     def new?
       @_state.nil?
     end
     
     # @todo This seemed like a good way to prevent accidently trying to perform an action
-    # on a record at a point when it would fail. Not sure if it's really necessary though.
+    #   on a record at a point when it would fail. Not sure if it's really necessary though.
     [:clean, # stored and not dirty
       :saved, # stored and not modified
       :destroyed, # duh!
       :zombie  # needs to be stored
     ].each do |state|
+      # Change the method state to $1
       define_method("#{state}!") do
         @_state = state
         true
       end
       
+      # Inquire about the method state if $1
       define_method("#{state}?") do
         @_state == state
       end
@@ -159,7 +195,7 @@ module SurveyGizmo
       @errors ||= []
     end
     
-    # @private
+    # @visibility private
     def inspect
       attrs = self.class.attributes.map do |attrib|
         value = attrib.get!(self).inspect
@@ -170,15 +206,18 @@ module SurveyGizmo
       "#<#{self.class.name}:#{self.object_id} #{attrs.join(' ')}>"
     end
     
+    # This class normalizes the response returned by Survey Gizmo
     class Response
       def ok?
         @response['result_ok']
       end
       
+      # The parsed JSON data of the response
       def data
         @_data ||= (@response['data'] || {})
       end
       
+      # The error message if there is one
       def message
         @_message ||= @response['message']
       end
@@ -189,7 +228,7 @@ module SurveyGizmo
       end
     end
     
-    protected
+    private
     attr_reader :_response
     
     def set_response(http)

@@ -5,7 +5,7 @@ module SurveyGizmo
     private
     # @param [Class] resource 
     # @param [Symbol] name
-    # @param [Array] values
+    # @param [Array] values in hashes
     def initialize(resource, name, values)
       @array          = Array(values)
       @collection     = []
@@ -32,9 +32,11 @@ module SurveyGizmo
     
     # @private
     def method_missing(meth, *args, &blk)
+      lazy_load
       @collection.send(meth, *args, &blk)
     end
     
+    # @private
     def model
       return @model if defined?(@model)
       return (@model = options[:target]) if options[:target].is_a?(Class)

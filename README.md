@@ -13,10 +13,19 @@ Integrate with the [Survey Gizmo API](http://developer.surveygizmo.com/resources
 	# somewhere in your app define your survey gizmo login credentials.
 	SurveyGizmo.setup(:user => 'you@somewhere.com', :password => 'mypassword')
 	
-	SurveyGizmo::API::Survey.first(:id => 12345)
+	survey = SurveyGizmo::API::Survey.first(:id => 12345)
+	survey.title # => My Title
+	survey.pages # => [page1, page2,...]
 	
-	SurveyGizmo::API::Question.create(:survey_id => 1234, :page_id => 1, :title => 'Do you like ruby?', :type => 'checkbox')
-
+	question = SurveyGizmo::API::Question.create(:survey_id => survey.id, :title => 'Do you like ruby?', :type => 'checkbox')
+	question.title = "Do you LOVE Ruby?"
+	question.save # => true
+	question.saved? # => true
+	
+	# Error handling
+	question.save # => false
+	question.errors # => ['There was an error']
+	
 ## Adding API Objects
 
 Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the `SurveyGizmo::API::Survey` class:

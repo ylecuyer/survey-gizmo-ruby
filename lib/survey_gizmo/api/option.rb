@@ -1,7 +1,10 @@
 module SurveyGizmo; module API
+  # @see SurveyGizmo::Resource::ClassMethods
   class Option
     include SurveyGizmo::Resource
     
+    # @macro [attach] virtus_attribute
+    #   @return [$2]
     attribute :id,            Integer
     attribute :title,         String
     attribute :value,         String
@@ -21,6 +24,7 @@ module SurveyGizmo; module API
 
     alias_method_chain :title=, :multilingual
     
+    # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
       {:id => self.id, :survey_id => self.survey_id, :page_id => self.page_id, :question_id => self.question_id}
     end
