@@ -228,6 +228,12 @@ module SurveyGizmo
       end
     end
     
+    protected
+    
+    def attributes_without_blanks
+      self.attributes.reject{|k,v| v.blank? }
+    end
+    
     private
     attr_reader :_response
     
@@ -258,8 +264,5 @@ module SurveyGizmo
       end
     end
     
-    def attributes_without_blanks
-      self.attributes.reject{|k,v| v.blank? }
-    end
   end
 end
