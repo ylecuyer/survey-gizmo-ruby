@@ -52,6 +52,14 @@ module SurveyGizmo
         resource
       end
       
+      # Deleted the Resource from Survey Gizmo
+      # @param [Hash] conditions
+      # @return [Boolean]
+      def destroy(conditions)
+        response = Response.new SurveyGizmo.delete(handle_route(:delete, conditions))
+        response.ok?
+      end
+      
       # Define the path where a resource is located
       # @param [String] path 
       #   the path in Survey Gizmo for the resource

@@ -11,7 +11,7 @@ describe "Survey Gizmo Resource" do
     let(:create_attributes){ {:title => 'Spec', :test_id => 5} }
     let(:get_attributes)   { create_attributes.merge(:id => 1) }
     let(:update_attributes){ {:title => 'Updated'} }
-    let(:first_params){ {:id => 1} }
+    let(:first_params){ {:id => 1, :test_id => 5} }
     let(:uri_paths){ 
       { 
         :get => '/test/1',
@@ -65,7 +65,7 @@ describe "Survey Gizmo Resource" do
       create_attributes.merge(:id => 1)
     }
     let(:update_attributes){ {:survey_id => 1234, :page_id => 1, :title => 'Updated'} }
-    let(:first_params){ {:id => 1, :survey_id => 1234} }
+    let(:first_params){ {:id => 1, :survey_id => 1234, :page_id => 1} }
     let(:uri_paths){ 
       { :get =>    '/survey/1234/surveyquestion/1',
         :create => '/survey/1234/surveypage/1/surveyquestion',

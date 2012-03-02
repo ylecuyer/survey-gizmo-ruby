@@ -3,7 +3,7 @@ shared_examples_for 'an API object' do
     SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
   end
   
-  context "create" do
+  context "#create" do
     it "should make a request" do
       stub_api_call(:put)
       described_class.create(create_attributes)
@@ -23,7 +23,7 @@ shared_examples_for 'an API object' do
     end
   end
   
-  context "get" do
+  context "#get" do
     it "should make a request" do
       stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
       described_class.first(first_params)
@@ -42,7 +42,7 @@ shared_examples_for 'an API object' do
     end
   end
   
-  context "update" do
+  context "instance#update" do
     before(:each) do
       @obj = described_class.new(get_attributes)
       @obj.__send__(:clean!)
@@ -73,7 +73,7 @@ shared_examples_for 'an API object' do
     
   end
   
-  context "destroy" do
+  context "instance#destroy" do
     before(:each) do
       @obj = described_class.new(get_attributes)
       @obj.__send__(:clean!)
@@ -103,7 +103,20 @@ shared_examples_for 'an API object' do
     end
   end
   
-  context '#save' do
+  context '#destroy', :focused => true do
+    it "should make a request" do
+      stub_api_call(:delete)
+      described_class.destroy(first_params)
+      a_request(:delete, /#{@base}#{uri_paths[:delete]}/).should have_been_made
+    end
+    
+    it "should return result" do
+      stub_api_call(:delete)
+      described_class.destroy(first_params).should be_true
+    end
+  end
+  
+  context 'instance#save' do
     it "should call create on a new resource" do
       stub_api_call(:put)
       obj = described_class.new(create_attributes)
