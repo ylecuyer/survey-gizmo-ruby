@@ -3,6 +3,11 @@ shared_examples_for 'an API object' do
     SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
   end
   
+  it "should be descendant of SurveyGizmo::Resource" do
+    SurveyGizmo::Resource.descendants.should include(described_class)
+  end
+  
+  
   context "#create" do
     it "should make a request" do
       stub_api_call(:put)

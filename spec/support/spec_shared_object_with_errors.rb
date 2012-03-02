@@ -8,7 +8,7 @@ shared_examples_for 'an object with errors' do
 
   context "class methods" do
     it { described_class.first(get_attributes).should be_nil }
-    it { described_class.all(get_attributes).should be_empty }
+    it { described_class.all(get_attributes).should be_empty }    
   end
 
   context "instance methods" do

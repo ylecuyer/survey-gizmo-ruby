@@ -111,7 +111,9 @@ module SurveyGizmo
         path = @paths[key]
         raise "No routes defined for `#{key}` in #{self.name}" unless path
         options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}){|hash, k| hash.merge(k.to_sym => interp.shift) }
-        path.gsub(/:(\w+)/){|m| options[$1.to_sym] }
+        path.gsub(/:(\w+)/) do |m| 
+          options[$1.to_sym].tap{ |result| raise(SurveyGizmo::URLError, "Missing parameters in request: `#{m}`") unless result }
+        end
       end
     end
     

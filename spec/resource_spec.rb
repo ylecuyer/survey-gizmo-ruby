@@ -28,18 +28,20 @@ describe "Survey Gizmo Resource" do
 
     it '#reload' do
       stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
-      obj = described_class.new(create_attributes)
-      obj.attributes.reject{|k,v| v.blank? }.should == create_attributes
+      obj = described_class.new(get_attributes.merge(update_attributes))
+      obj.attributes.reject{|k,v| v.blank? }.should == get_attributes.merge(update_attributes)
       obj.reload
       obj.attributes.reject{|k,v| v.blank? }.should == get_attributes
     end
 
     it '#valid?'
-  
-    it "should track descendants" do
-      SurveyGizmo::Resource.descendants.should include(SurveyGizmoSpec::ResourceTest)
-    end
       
+    it "should raise an error if params are missing" do
+      lambda {
+        SurveyGizmoSpec::ResourceTest.destroy(:test_id => 5)
+      }.should raise_error(SurveyGizmo::URLError, 'Missing parameters in request: `:id`')
+    end
+    
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
   end
