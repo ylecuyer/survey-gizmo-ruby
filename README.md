@@ -28,7 +28,7 @@ Integrate with the [Survey Gizmo API](http://developer.surveygizmo.com/resources
 	
 ## Adding API Objects
 
-Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the `SurveyGizmo::API::Survey` class:
+Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`, `Response`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the `SurveyGizmo::API::Survey` class:
 
 	class Survey
 	  # the base where most of the methods for handling the API are stored
