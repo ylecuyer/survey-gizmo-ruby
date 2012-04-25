@@ -1,7 +1,8 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    activesupport (3.1.3)
+    activesupport (3.2.3)
+      i18n (~> 0.6)
       multi_json (~> 1.0)
     addressable (2.2.6)
     awesome_print (1.0.1)
@@ -31,7 +32,7 @@ GEM
     rspec-mocks (2.3.0)
     virtus (0.0.10)
     webmock (1.7.8)
-      addressable (> 2.2.5, ~> 2.2)
+      addressable (~> 2.2, > 2.2.5)
       crack (>= 0.1.7)
     yard (0.7.4)
 
@@ -39,15 +40,15 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport (>= 3.0.1)
+  activesupport (~> 3.2.0)
   awesome_print
   bluecloth
-  bundler (~> 1.0.0)
+  bundler
   httparty
   i18n
-  jeweler (~> 1.6.4)
+  jeweler
   net-http-spy
-  rspec (~> 2.3.0)
-  virtus (~> 0.0.5)
+  rspec
+  virtus
   webmock
   yard (~> 0.7.0)

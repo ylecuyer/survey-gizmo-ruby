@@ -17,17 +17,17 @@ require "survey_gizmo/api/response"
 
 module SurveyGizmo
   include HTTParty
-  
+
   format :json
-  
+
   URLError = Class.new(RuntimeError)
-  
-  # The base uri for this version of the API is $1
-  base_uri 'https://restapi.surveygizmo.com/v1'
-  
+
+  # The base uri for this version of the API is v3
+  base_uri 'https://restapi.surveygizmo.com/v3'
+
   @@options = {}
   mattr_accessor :options
-  
+
   # Setup the account credentials to access the API
   # @param [Hash] opts
   # @option opts [#to_s] :user
@@ -38,5 +38,5 @@ module SurveyGizmo
     self.options = opts
     default_params({"user:pass" => opts.values_at(:user, :password).join(':')})
   end
-  
+
 end
