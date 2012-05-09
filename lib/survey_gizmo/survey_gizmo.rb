@@ -17,13 +17,14 @@ require "survey_gizmo/api/response"
 
 module SurveyGizmo
   include HTTParty
+  debug_output $stderr if ENV['GIZMO_DEBUG']
 
   format :json
 
   URLError = Class.new(RuntimeError)
 
   # The base uri for this version of the API is v3
-  base_uri 'https://restapi.surveygizmo.com/v3'
+  base_uri ENV['GIZMO_URI'] ? ENV['GIZMO_URI'] : 'https://restapi.surveygizmo.com/v3'
 
   @@options = {}
   mattr_accessor :options
