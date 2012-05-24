@@ -1,4 +1,5 @@
 require "set"
+require "addressable/uri"
 
 module SurveyGizmo
   module Resource
@@ -34,11 +35,41 @@ module SurveyGizmo
         end
       end
 
+      # Get a list of resources, filtered by SurveyGizmo
+      # @param [Hash] conditions
+      # @param [Hash] filters
+      # @return [SurveyGizmo::Collection, Array]
+      def filtered_all(conditions = {}, filters = {})
+        uri = Addressable::URI.new
+        uri.query_values = filters
+
+        response = Response.new SurveyGizmo.get(handle_route(:create, conditions) + "?#{uri.query}")
+        if response.ok?
+          _collection = SurveyGizmo::Collection.new(self, nil, response.data)
+          _collection.send(:options=, {:target => self, :parent => self})
+          _collection
+        else
+          []
+        end
+      end
+
       # Get the first resource
       # @param [Hash] conditions
       # @return [Object, nil]
-      def first(conditions)
+      def first(conditions = {})
         response = Response.new SurveyGizmo.get(handle_route(:get, conditions))
+        response.ok? ? load(conditions.merge(response.data)) : nil
+      end
+
+      # Get the first resource, after a filter is applied by SurveyGizmo
+      # @param [Hash] conditions
+      # @param [Hash] filters
+      # @return [Object, nil]
+      def filtered_first(conditions = {}, filters = {})
+        uri = Addressable::URI.new
+        uri.query_values = filter
+
+        response = Response.new SurveyGizmo.get(handle_route(:get, conditions) + "?#{uri.query}")
         response.ok? ? load(conditions.merge(response.data)) : nil
       end
 

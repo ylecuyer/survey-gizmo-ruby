@@ -22,9 +22,8 @@ module SurveyGizmo; module API
     attribute :datecreated,     DateTime
     attribute :datemodified,    DateTime
 
-    route '/survey/:survey_id/surveycampaign', :via => :get
+    route '/survey/:survey_id/surveycampaign/:id', :via => [:get, :update, :delete]
     route '/survey/:survey_id/surveycampaign', :via => :create
-    route '/survey/:survey_id/surveycampaign/:id', :via => [:update, :delete]
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
