@@ -17,7 +17,7 @@ module SurveyGizmo; module API
     attribute :language,        String
     attribute :close_message,   String
     attribute :limit_responses, String
-    attribute :tokenvariables,  Hash
+    attribute :tokenvariables,  Array
     attribute :survey_id,       Integer
     attribute :datecreated,     DateTime
     attribute :datemodified,    DateTime
