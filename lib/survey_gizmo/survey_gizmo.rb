@@ -10,6 +10,7 @@ require "survey_gizmo/resource"
 require "survey_gizmo/collection"
 
 require "survey_gizmo/api/survey"
+require "survey_gizmo/api/survey_campaign"
 require "survey_gizmo/api/question"
 require "survey_gizmo/api/option"
 require "survey_gizmo/api/page"
