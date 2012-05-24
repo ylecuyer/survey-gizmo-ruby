@@ -17,7 +17,7 @@ module SurveyGizmo; module API
     attribute :language,        String
     attribute :close_message,   String
     attribute :limit_responses, String
-    # attribute :tokenvariables,  String
+    attribute :tokenvariables,  Hash
     attribute :survey_id,       Integer
     attribute :datecreated,     DateTime
     attribute :datemodified,    DateTime
@@ -25,9 +25,6 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveycampaign', :via => :get
     route '/survey/:survey_id/surveycampaign', :via => :create
     route '/survey/:survey_id/surveycampaign/:id', :via => [:update, :delete]
-
-    # @macro collection
-    collection :tokenvariables
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options

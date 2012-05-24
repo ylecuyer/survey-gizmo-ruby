@@ -9,7 +9,9 @@ module SurveyGizmo; module API
     attribute :title,       String
     attribute :status,      String
     attribute :type,        String,   :default => 'survey'
+    attribute :_subtype,    String
     attribute :links,       Hash
+    attribute :statistics,  Array
     attribute :created_on,  DateTime
     attribute :modified_on, DateTime
     attribute :team,        String
