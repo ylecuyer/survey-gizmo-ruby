@@ -15,8 +15,8 @@ module SurveyGizmo; module API
 
     alias_attribute :_subtype, :type
 
-    route '/survey/:survey_id/surveycampaign/:id', :via => :get
-    route '/survey/:survey_id/surveycampaign/:id', :via => :create
+    route '/survey/:survey_id/surveycampaign', :via => :get
+    route '/survey/:survey_id/surveycampaign', :via => :create
     route '/survey/:survey_id/surveycampaign/:id', :via => [:update, :delete]
 
     # @macro collection
