@@ -21,29 +21,22 @@ module SurveyGizmo
     # in Survey Gizmo
     module ClassMethods
 
-      # Get a list of resources
-      # @param [Hash] conditions
-      # @return [SurveyGizmo::Collection, Array]
-      def all(conditions = {})
-        response = Response.new SurveyGizmo.get(handle_route(:create, conditions))
-        if response.ok?
-          _collection = SurveyGizmo::Collection.new(self, nil, response.data)
-          _collection.send(:options=, {:target => self, :parent => self})
-          _collection
-        else
-          []
-        end
+      # Convert a [Hash] of filters into a query string
+      # @param [Hash] filters
+      # @return [String]
+      def convert_filters_into_query_string(filters = nil)
+        "" unless filters && filters.size > 0
+        uri = Addressable::URI.new
+        uri.query_values = filters
+        "?#{uri.query}"
       end
 
-      # Get a list of resources, filtered by SurveyGizmo
+      # Get a list of resources
       # @param [Hash] conditions
       # @param [Hash] filters
       # @return [SurveyGizmo::Collection, Array]
-      def filtered_all(conditions = {}, filters = {})
-        uri = Addressable::URI.new
-        uri.query_values = filters
-
-        response = Response.new SurveyGizmo.get(handle_route(:create, conditions) + "?#{uri.query}")
+      def all(conditions = {}, filters = nil)
+        response = Response.new SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters))
         if response.ok?
           _collection = SurveyGizmo::Collection.new(self, nil, response.data)
           _collection.send(:options=, {:target => self, :parent => self})
@@ -55,21 +48,10 @@ module SurveyGizmo
 
       # Get the first resource
       # @param [Hash] conditions
-      # @return [Object, nil]
-      def first(conditions = {})
-        response = Response.new SurveyGizmo.get(handle_route(:get, conditions))
-        response.ok? ? load(conditions.merge(response.data)) : nil
-      end
-
-      # Get the first resource, after a filter is applied by SurveyGizmo
-      # @param [Hash] conditions
       # @param [Hash] filters
       # @return [Object, nil]
-      def filtered_first(conditions = {}, filters = {})
-        uri = Addressable::URI.new
-        uri.query_values = filter
-
-        response = Response.new SurveyGizmo.get(handle_route(:get, conditions) + "?#{uri.query}")
+      def first(conditions = {}, filters = nil)
+        response = Response.new SurveyGizmo.get(handle_route(:get, conditions) +  convert_filters_into_query_string(filters))
         response.ok? ? load(conditions.merge(response.data)) : nil
       end
 
