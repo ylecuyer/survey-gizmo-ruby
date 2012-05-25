@@ -14,6 +14,7 @@ require "survey_gizmo/api/survey_campaign"
 require "survey_gizmo/api/question"
 require "survey_gizmo/api/option"
 require "survey_gizmo/api/page"
+require "survey_gizmo/api/contact"
 require "survey_gizmo/api/response"
 
 module SurveyGizmo
