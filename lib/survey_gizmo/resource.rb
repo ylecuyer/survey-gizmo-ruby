@@ -223,7 +223,7 @@ module SurveyGizmo
       attrs = self.class.attributes.map do |attrib|
         value = attrib.get!(self).inspect
 
-        "#{attrib.instance_variable_name}=#{value}"
+        "#{attrib.instance_variable_name}=#{value}" if attrib.respond_to?(:instance_variable_name)
       end
 
       "#<#{self.class.name}:#{self.object_id} #{attrs.join(' ')}>"
