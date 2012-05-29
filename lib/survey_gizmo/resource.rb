@@ -9,6 +9,7 @@ module SurveyGizmo
       include Virtus
       instance_variable_set('@paths', {})
       instance_variable_set('@collections', {})
+      instance_variable_set('@_raw', {})
       SurveyGizmo::Resource.descendants << self
     end
 
@@ -40,6 +41,7 @@ module SurveyGizmo
         if response.ok?
           _collection = SurveyGizmo::Collection.new(self, nil, response.data)
           _collection.send(:options=, {:target => self, :parent => self})
+          # _collection.instance_variable_set("@_raw", response.data)
           _collection
         else
           []
@@ -52,7 +54,9 @@ module SurveyGizmo
       # @return [Object, nil]
       def first(conditions = {}, filters = nil)
         response = Response.new SurveyGizmo.get(handle_route(:get, conditions) +  convert_filters_into_query_string(filters))
-        response.ok? ? load(conditions.merge(response.data)) : nil
+        resource = response.ok? ? load(conditions.merge(response.data)) : nil
+        resource.instance_variable_set("@_raw", response.data)
+        resource
       end
 
       # Create a new resource
@@ -185,6 +189,12 @@ module SurveyGizmo
       @_state.nil?
     end
 
+    # The raw data of the last Response
+    # @api private
+    def _raw
+      @_raw
+    end
+
     # @todo This seemed like a good way to prevent accidently trying to perform an action
     #   on a record at a point when it would fail. Not sure if it's really necessary though.
     [:clean, # stored and not dirty
@@ -238,6 +248,7 @@ module SurveyGizmo
       # The parsed JSON data of the response
       def data
         @_data ||= (@response['data'] || {})
+        ap @_data if ENV['GIZMO_DEBUG']
       end
 
       # The error message if there is one

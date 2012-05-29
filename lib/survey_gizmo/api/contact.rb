@@ -6,6 +6,8 @@ module SurveyGizmo; module API
     # @macro [attach] virtus_attribute
     #   @return [$2]
     attribute :id,                      Integer
+    attribute :estatus,                 String
+    attribute :esubscriberstatus,       String
     attribute :survey_id,               Integer
     attribute :campaign_id,             Integer
     attribute :semailaddress,           String
@@ -29,9 +31,14 @@ module SurveyGizmo; module API
     attribute :scustom3,                String
     attribute :scustom4,                String
     attribute :scustom5,                String
+    attribute :scustom6,                String
+    attribute :scustom7,                String
+    attribute :scustom8,                String
+    attribute :scustom9,                String
+    attribute :scustom10,               String
 
-    # attribute :datecreated,     DateTime
-    # attribute :datemodified,    DateTime
+    # attribute :date_created,     DateTime
+    # attribute :date_modified,    DateTime
 
     route '/survey/:survey_id/surveycampaign/:campaign_id/contact/:id', :via => [:get, :update, :delete]
     route '/survey/:survey_id/surveycampaign/:campaign_id/contact', :via => :create
