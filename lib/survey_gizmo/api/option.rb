@@ -6,11 +6,11 @@ module SurveyGizmo; module API
     # @macro [attach] virtus_attribute
     #   @return [$2]
     attribute :id,            Integer
-    attribute :title,         String
-    attribute :value,         String
     attribute :survey_id,     Integer
     attribute :page_id,       Integer
     attribute :question_id,   Integer
+    attribute :title,         String
+    attribute :value,         String
     attribute :properties,    Hash
 
     # routing

@@ -37,11 +37,11 @@ module SurveyGizmo
       # @param [Hash] filters
       # @return [SurveyGizmo::Collection, Array]
       def all(conditions = {}, filters = nil)
-        response = Response.new SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters))
+        #response = Response.new SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters))
+        response = Response.new SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters))
         if response.ok?
           _collection = SurveyGizmo::Collection.new(self, nil, response.data)
           _collection.send(:options=, {:target => self, :parent => self})
-          # _collection.instance_variable_set("@_raw", response.data)
           _collection
         else
           []
@@ -248,7 +248,7 @@ module SurveyGizmo
       # The parsed JSON data of the response
       def data
         @_data ||= (@response['data'] || {})
-        ap @_data if ENV['GIZMO_DEBUG']
+        # ap @_data if ENV['GIZMO_DEBUG']
       end
 
       # The error message if there is one
@@ -259,6 +259,68 @@ module SurveyGizmo
       private
       def initialize(response)
         @response = response.parsed_response
+
+        # Handle really crappy [] notation in SG API, so far just in SurveyResponse
+        @_data = @response['data']
+
+        @_data.keys.grep(/^\[(variable|url)/).each do |key|
+          newkey = key.downcase.gsub(/[^[:alnum:]]+/,'_').gsub(/^_+/,'').gsub(/_+$/,'')
+          @_data['url'] = {} unless @_data['url']
+          @_data['variable'] = {} unless @_data['variable']
+          @_data['meta'] = {} unless @_data['meta']
+          @_data['shown'] = {} unless @_data['shown']
+          case newkey
+          when /url/
+            parent = 'url'
+            newkey.gsub!(/_*url_*/,'')
+            @_data[parent][newkey.to_sym] = @_data[key]
+          when /variable_standard/
+            parent = 'meta'
+            newkey.gsub!(/_*variable_standard_*/,'')
+            @_data[parent][newkey.to_sym] = @_data[key]
+          when /variable.*shown/
+            parent = 'shown'
+            newkey.gsub!(/_*variable_*/,'').gsub!(/_*shown_*/,'')
+            @_data[parent][newkey.to_i] = @_data[key].include?("1")
+          when /variable/
+            parent = 'variable'
+            newkey.gsub!(/_*variable_*/,'')
+            @_data[parent][newkey.to_i] = (@_data[key].length > 0 ? @_data[key].to_i : nil)
+          end
+          @_data.delete(key)
+        end
+
+        @_data.keys.grep(/^\[question/).each do |key|
+          @_data[:answer_options] = {} unless @_data[:answer_options]
+          @_data[:answer_options_other] = {} unless @_data[:answer_options_other]
+          @_data[:answers] = {} unless @_data[:answers]
+
+          if key =~ /question\((\d+)\)/
+            question = $1.to_i
+          else
+            question = nil
+          end
+
+          if key =~ /option\("?(\d+)/
+            option = $1.to_i
+          else
+            option = nil
+          end
+
+          case key
+          when /option.*other/
+            @_data[:answer_options_other][question] = {} unless @_data[:answer_options_other][question]
+            @_data[:answer_options_other][question][option] = (@_data[key].length > 0 ? @_data[key] : nil)
+          when /option/
+            @_data[:answer_options][question] = {} unless @_data[:answer_options][question]
+            @_data[:answer_options][question][option] = (@_data[key].length > 0 ? @_data[key] : nil)
+          else
+            @_data[:answers][question] = (@_data[key].length > 0 ? @_data[key] : nil)
+          end
+
+          # @_data.delete(key) if question
+        end
+
       end
     end
 

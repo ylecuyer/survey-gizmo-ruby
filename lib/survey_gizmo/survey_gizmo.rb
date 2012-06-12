@@ -16,6 +16,7 @@ require "survey_gizmo/api/option"
 require "survey_gizmo/api/page"
 require "survey_gizmo/api/contact"
 require "survey_gizmo/api/response"
+require "survey_gizmo/api/email_message"
 
 module SurveyGizmo
   include HTTParty
