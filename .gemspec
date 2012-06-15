@@ -8,9 +8,9 @@ Gem::Specification.new do |s|
   s.version = "0.9.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Kabari Hendrick"]
+  s.authors = ["Kabari Hendrick", "Chris Horn"]
   s.date = "2012-06-15"
-  s.description = ""
+  s.description = "gem to use the SurveyGizmo.com REST API, v3+"
   s.email = "self@ripthejacker.com"
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -51,7 +51,7 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.23"
-  s.summary = "gem to consume the Survey Gizmo API"
+  s.summary = "gem to use the Survey Gizmo REST API"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
