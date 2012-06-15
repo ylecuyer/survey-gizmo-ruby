@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "survey-gizmo-ruby"
-  s.version = "0.8.13"
+  s.version = "0.9.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kabari Hendrick"]
-  s.date = "2012-05-29"
+  s.date = "2012-06-15"
   s.description = ""
   s.email = "self@ripthejacker.com"
   s.extra_rdoc_files = [
@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
     "VERSION",
     "lib/survey-gizmo-ruby.rb",
     "lib/survey_gizmo/api/contact.rb",
+    "lib/survey_gizmo/api/email_message.rb",
     "lib/survey_gizmo/api/option.rb",
     "lib/survey_gizmo/api/page.rb",
     "lib/survey_gizmo/api/question.rb",
