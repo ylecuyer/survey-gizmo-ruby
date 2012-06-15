@@ -7,4 +7,3 @@ pkg
 .DS_Store
 console.rb
 .document
-Gemfile.lock
