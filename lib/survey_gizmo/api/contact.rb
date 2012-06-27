@@ -26,16 +26,16 @@ module SurveyGizmo; module API
     attribute :smailingaddresspostal,   String
     attribute :stitle,                  String
     attribute :surl,                    String
-    attribute :scustom1,                String
-    attribute :scustom2,                String
-    attribute :scustom3,                String
-    attribute :scustom4,                String
-    attribute :scustom5,                String
-    attribute :scustom6,                String
-    attribute :scustom7,                String
-    attribute :scustom8,                String
-    attribute :scustom9,                String
-    attribute :scustom10,               String
+    attribute :scustomfield1,           String
+    attribute :scustomfield2,           String
+    attribute :scustomfield3,           String
+    attribute :scustomfield4,           String
+    attribute :scustomfield5,           String
+    attribute :scustomfield6,           String
+    attribute :scustomfield7,           String
+    attribute :scustomfield8,           String
+    attribute :scustomfield9,           String
+    attribute :scustomfield10,          String
 
     route '/survey/:survey_id/surveycampaign/:campaign_id/contact/:id', :via => [:get, :update, :delete]
     route '/survey/:survey_id/surveycampaign/:campaign_id/contact', :via => :create
