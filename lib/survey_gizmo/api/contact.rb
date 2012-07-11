@@ -15,6 +15,7 @@ module SurveyGizmo; module API
     attribute :slastname,               String
     attribute :sorganization,           String
     attribute :sdepartment,             String
+    attribute :sbusinessphone,          String
     attribute :shomephone,              String
     attribute :sfaxphone,               String
     attribute :sworkphone,              String
