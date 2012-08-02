@@ -17,10 +17,10 @@ Jeweler::Tasks.new do |gem|
   gem.name        = "survey-gizmo-ruby"
   gem.homepage    = "http://github.com/RipTheJacker/survey-gizmo-ruby"
   gem.license     = "MIT"
-  gem.summary     = %Q{gem to consume the Survey Gizmo API}
-  gem.description = %Q{}
+  gem.summary     = %Q{gem to use the Survey Gizmo REST API}
+  gem.description = %Q{gem to use the SurveyGizmo.com REST API, v3+}
   gem.email       = "self@ripthejacker.com"
-  gem.authors     = ["Kabari Hendrick"]
+  gem.authors     = ["Kabari Hendrick", "Chris Horn"]
   gem.files       = FileList['lib/**/*.rb', 'Gemfile*', '[A-Z]*', 'Rakefile', 'spec/**/*'].to_a
   # dependencies defined in Gemfile
 end
