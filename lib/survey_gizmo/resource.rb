@@ -137,7 +137,7 @@ module SurveyGizmo
       if new?
         _create
       else
-        handle_response SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks), do 
+        handle_response SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks) do 
           _response.ok? ? saved! : false
         end
       end
@@ -147,7 +147,7 @@ module SurveyGizmo
     # @return [self, false]
     #   Returns the object, if saved. Otherwise returns false.
     def reload
-      handle_response SurveyGizmo.get(handle_route(:get)), do
+      handle_response SurveyGizmo.get(handle_route(:get)) do
         if _response.ok? 
           self.attributes = _response.data
           clean!
@@ -161,7 +161,7 @@ module SurveyGizmo
     # @return [Boolean]
     def destroy
       return false if new? || destroyed?
-      handle_response SurveyGizmo.delete(handle_route(:delete)), do
+      handle_response SurveyGizmo.delete(handle_route(:delete)) do
         _response.ok? ? destroyed! : false
       end
     end
@@ -264,7 +264,7 @@ module SurveyGizmo
     
     def _create(attributes = {})
       http = SurveyGizmo.put(handle_route(:create), :query => self.attributes_without_blanks)
-      handle_response http, do
+      handle_response http do
         if _response.ok?
           self.attributes = _response.data
           saved!
