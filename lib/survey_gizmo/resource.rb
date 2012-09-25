@@ -68,6 +68,18 @@ module SurveyGizmo
         resource
       end
 
+      # Copy a resource
+      # @param [Integer] id
+      # @param [Hash] attributes
+      # @return [Resource]
+      #   The newly created resource instance
+      def copy(attributes = {})
+        attributes[:copy] = true
+        resource = new(attributes)
+        resource.__send__(:_copy)
+        resource
+      end
+
       # Deleted the Resource from Survey Gizmo
       # @param [Hash] conditions
       # @return [Boolean]
@@ -229,7 +241,7 @@ module SurveyGizmo
 
     # @visibility private
     def inspect
-      attrs = self.class.attributes.map do |attrib|
+      attrs = self.class.attribute_set.map do |attrib|
         value = attrib.get!(self).inspect
 
         "#{attrib.instance_variable_name}=#{value}" if attrib.respond_to?(:instance_variable_name)
@@ -329,6 +341,18 @@ module SurveyGizmo
 
     def _create(attributes = {})
       http = SurveyGizmo.put(handle_route(:create), :query => self.attributes_without_blanks)
+      handle_response http do
+        if _response.ok?
+          self.attributes = _response.data
+          saved!
+        else
+          false
+        end
+      end
+    end
+
+    def _copy(attributes = {})   
+      http = SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks)
       handle_response http do
         if _response.ok?
           self.attributes = _response.data
