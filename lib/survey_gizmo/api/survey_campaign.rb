@@ -22,6 +22,7 @@ module SurveyGizmo; module API
     attribute :survey_id,       Integer
     attribute :datecreated,     DateTime
     attribute :datemodified,    DateTime
+    attribute :surveycampaign,  Integer
     attribute :copy,            Boolean
 
     route '/survey/:survey_id/surveycampaign/:id', :via => [:get, :update, :delete]
