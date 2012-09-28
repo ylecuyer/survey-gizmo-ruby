@@ -6,7 +6,7 @@ module SurveyGizmo; module API
     # @macro [attach] virtus_attribute
     #   @return [$2]
     attribute :id,            Integer
-    attribute :title,         String
+    attribute :title,         Hash
     attribute :description,   String
     attribute :properties,    Hash
     attribute :after,         Integer
@@ -23,7 +23,7 @@ module SurveyGizmo; module API
     # survey gizmo sends a hash back for :title
     # @private
     def title_with_multilingual=(val)
-      self.title_without_multilingual = val.is_a?(Hash) ? val['English'] : val
+      self.title_without_multilingual = val.is_a?(Hash) ? val : val['English']
     end
 
     alias_method_chain :title=, :multilingual
