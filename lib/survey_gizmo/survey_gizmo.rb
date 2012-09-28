@@ -40,7 +40,7 @@ module SurveyGizmo
   #   The account password
   def self.setup(opts = {})
     self.options = opts
-    default_params({"user:pass" => opts[:user] + ":" + Digest::MD5.hexdigest(opts[:password])})
+    default_params({"user:md5" => opts[:user] + ":" + Digest::MD5.hexdigest(opts[:password])})
   end
 
 end
