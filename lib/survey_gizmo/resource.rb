@@ -292,7 +292,8 @@ module SurveyGizmo
         @_data = @response['data']
 
         # Handle really crappy [] notation in SG API, so far just in SurveyResponse
-        [*@_data].each do |data_item|
+        
+        (@_data.is_a?(Array) ? @_data : [@_data]).each do |data_item|
 		      data_item.keys.grep(/^\[/).each do |key|
 		        next unless data_item[key].length > 0
 
