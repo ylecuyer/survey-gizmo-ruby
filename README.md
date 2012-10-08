@@ -1,6 +1,6 @@
 # Survey Gizmo (ruby)
 
-Integrate with the [Survey Gizmo API](http://developer.surveygizmo.com/resources/rest-api-documentation-version-1-01/) using an ActiveModel style interface. We currently support rest API **v1**.
+Integrate with the [Survey Gizmo API](http://developer.surveygizmo.com/resources/rest-api-documentation-version-1-01/) using an ActiveModel style interface. We currently support rest API **v3**. If you want to use version 1 of the API, please use gem version ~0.7.0
 
 ## Installation
 
@@ -28,9 +28,9 @@ Integrate with the [Survey Gizmo API](http://developer.surveygizmo.com/resources
 	
 ## Adding API Objects
 
-Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`, `Response`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the `SurveyGizmo::API::Survey` class:
+Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`, `Response`, `EmailMessage`, `SurveyCampaign`, `Contact`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the how to do so:
 
-	class Survey
+	class SomeObject
 	  # the base where most of the methods for handling the API are stored
 	  include SurveyGizmo::Resource
       
@@ -38,12 +38,12 @@ Currently, the following API objects are included in the gem: `Survey`, `Questio
 	  attribute :id,          Integer
 	  attribute :title,       String
 	  attribute :status,      String
-	  attribute :type,        String,   :default => 'survey'
+	  attribute :type,        String
 	  attribute :created_on,  DateTime
   
       # defing the paths used to retrieve/set info
-	  route '/survey/:id', :via => [:get, :update, :delete]
-	  route '/survey',     :via => :create
+	  route '/something/:id', :via => [:get, :update, :delete]
+	  route '/something',     :via => :create
   		
       # this must be defined with the params that would be included in any route
 	  def to_param_options
@@ -70,6 +70,6 @@ There are several API objects that are available and not included in this gem. I
 
 # Copyright
 
-Copyright (c) 2011 RipTheJacker. See LICENSE.txt for
+Copyright (c) 2012 RipTheJacker. See LICENSE.txt for
 further details.
 
