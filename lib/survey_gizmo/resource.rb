@@ -9,7 +9,6 @@ module SurveyGizmo
       include Virtus
       instance_variable_set('@paths', {})
       instance_variable_set('@collections', {})
-      instance_variable_set('@_raw', {}) if ENV['GIZMO_DEBUG']
       SurveyGizmo::Resource.descendants << self
     end
 
@@ -188,12 +187,6 @@ module SurveyGizmo
       @_state.nil?
     end
 
-    # The raw data of the last Response
-    # @api private
-    def _raw
-      @_raw
-    end
-
     # @todo This seemed like a good way to prevent accidently trying to perform an action
     #   on a record at a point when it would fail. Not sure if it's really necessary though.
     [:clean, # stored and not dirty
@@ -226,7 +219,12 @@ module SurveyGizmo
     def errors
       @errors ||= []
     end
-
+    
+    # @return [Hash] The raw JSON returned by Survey Gizmo
+    def raw_response
+      _response.response if _response
+    end
+    
     # @visibility private
     def inspect
       attrs = self.class.attributes.map do |attrib|
@@ -247,14 +245,15 @@ module SurveyGizmo
       # The parsed JSON data of the response
       def data
         @_data ||= (@response['data'] || {})
-        # ap @_data if ENV['GIZMO_DEBUG']
       end
 
       # The error message if there is one
       def message
         @_message ||= @response['message']
       end
-
+      
+      attr_reader :response
+      
       private
       def cleanup_attribute_name(attr)
         attr.downcase.gsub(/[^[:alnum:]]+/,'_').gsub(/(url|variable|standard|shown)/,'').gsub(/_+/,'_').gsub(/^_/,'').gsub(/_$/,'')
@@ -302,7 +301,8 @@ module SurveyGizmo
         end
       end
     end
-
+    
+    
     protected
 
     def attributes_without_blanks
@@ -310,6 +310,7 @@ module SurveyGizmo
     end
 
     private
+    # The response object from SurveyGizmo. Useful for viewing the raw data returned
     attr_reader :_response
 
     def set_response(http)
