@@ -14,7 +14,7 @@ RSpec.configure do |config|
   config.include SurveyGizmoSpec::Methods
   
   config.before(:each) do
-    @base = 'https://restapi.surveygizmo.com/v1'
+    @base = 'https://restapi.surveygizmo.com/v3'
   end
   
   config.after(:suite) do

@@ -52,9 +52,7 @@ module SurveyGizmo
       # @return [Object, nil]
       def first(conditions = {}, filters = nil)
         response = Response.new SurveyGizmo.get(handle_route(:get, conditions) +  convert_filters_into_query_string(filters))
-        resource = response.ok? ? load(conditions.merge(response.data)) : nil
-        resource.instance_variable_set("@_raw", response.data) if ENV['GIZMO_DEBUG']
-        resource
+        response.ok? ? load(conditions.merge(response.data)) : nil
       end
 
       # Create a new resource

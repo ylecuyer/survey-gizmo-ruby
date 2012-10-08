@@ -47,7 +47,7 @@ describe "Survey Gizmo Resource" do
   end
 
   describe SurveyGizmo::API::Survey do
-    let(:create_attributes){ {:title => 'Spec', :type => 'survey', :status => 'In Design'} }
+    let(:create_attributes){ {:title => 'Spec', :_type => 'survey', :status => 'In Design'} }
     let(:get_attributes)   { create_attributes.merge(:id => 1234) }
     let(:update_attributes){ {:title => 'Updated'} }
     let(:first_params){ {:id => 1234} }
