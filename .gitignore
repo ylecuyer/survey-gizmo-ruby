@@ -7,3 +7,4 @@ pkg
 .DS_Store
 console.rb
 .document
+.rspec
