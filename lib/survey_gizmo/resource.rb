@@ -237,7 +237,7 @@ module SurveyGizmo
     # This class normalizes the response returned by Survey Gizmo
     class Response
       def ok?
-        @response['result_ok']
+        @response && @response['result_ok']
       end
 
       # The parsed JSON data of the response
@@ -274,7 +274,7 @@ module SurveyGizmo
 
       def initialize(response)
         @response = response.parsed_response
-        return if not ok?
+        return if @response.nil? or not ok?
         @_data = @response['data']
 
         # Handle really crappy [] notation in SG API, so far just in SurveyResponse
