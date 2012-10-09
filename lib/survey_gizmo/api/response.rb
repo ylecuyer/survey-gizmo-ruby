@@ -28,5 +28,9 @@ module SurveyGizmo; module API
       {:id => self.id, :survey_id => self.survey_id}
     end
 
+    def datesubmitted=(value)
+      self.date_submitted = value
+    end
+
   end
 end; end
