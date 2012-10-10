@@ -12,12 +12,8 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f }
 
 RSpec.configure do |config|
   config.include SurveyGizmoSpec::Methods
-  
+
   config.before(:each) do
     @base = 'https://restapi.surveygizmo.com/v3'
-  end
-  
-  config.after(:suite) do
-    SurveyGizmoSpec.cleanup_models
   end
 end
