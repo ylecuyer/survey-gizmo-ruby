@@ -27,6 +27,10 @@ module SurveyGizmo; module API
     def to_param_options
       {:id => self.id, :survey_id => self.survey_id}
     end
+    
+    def datesubmitted=(value)
+    	self.date_submitted = value
+    end
 
   end
 end; end
