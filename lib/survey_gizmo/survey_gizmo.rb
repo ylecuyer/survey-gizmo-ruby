@@ -5,6 +5,7 @@ require "active_support/core_ext/object/blank"
 require "active_support/concern"
 require "virtus"
 require "httparty"
+require "digest/md5"
 
 require "survey_gizmo/resource"
 require "survey_gizmo/collection"
@@ -21,6 +22,7 @@ require "survey_gizmo/api/email_message"
 module SurveyGizmo
   include HTTParty
   debug_output $stderr if ENV['GIZMO_DEBUG']
+  default_timeout 120  # 2 minutes!
 
   format :json
 
@@ -40,7 +42,7 @@ module SurveyGizmo
   #   The account password
   def self.setup(opts = {})
     self.options = opts
-    default_params({"user:pass" => opts.values_at(:user, :password).join(':')})
+    default_params({ "user:md5" => "#{opts[:user]}:#{Digest::MD5.hexdigest(opts[:password])}" })
   end
 
 end
