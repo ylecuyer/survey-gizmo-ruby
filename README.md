@@ -1,3 +1,12 @@
+# WARNING:
+
+My production account with SurveyGizmo has had major TimeOut problems for weeks.  Their support team has very nicely blamed me for it and offered to let me pay them to look at my application.  Since I provided them with a one-line curl command to reproduce the problem, this is particularly dismaying.  The problem is consistent with UI and API behavior, and indicates a defect they don't monitor for and can't debug.
+
+# Until there's a documented resolution to this defect, I don't think anyone should start a new project using the API at all
+
+-chorn 2012-11-07
+
+
 # Survey Gizmo (ruby)
 
 Integrate with the [Survey Gizmo API](http://developer.surveygizmo.com/resources/rest-api-documentation-version-1-01/) using an ActiveModel style interface. We currently support rest API **v3**. If you want to use version 1 of the API, please use gem version ~0.7.0
