@@ -225,10 +225,10 @@ module SurveyGizmo
     
     # @visibility private
     def inspect
-      attrs = self.class.attributes.map do |attrib|
+      attrs = self.class.attribute_set.map do |attrib|
         value = attrib.get!(self).inspect
 
-        "#{attrib.instance_variable_name}=#{value}" if attrib.respond_to?(:instance_variable_name)
+        "@#{attrib.name}=#{value}" if attrib.respond_to?(:name)
       end
 
       "#<#{self.class.name}:#{self.object_id} #{attrs.join(' ')}>"
@@ -237,7 +237,7 @@ module SurveyGizmo
     # This class normalizes the response returned by Survey Gizmo
     class Response
       def ok?
-        @response['result_ok']
+        @response && @response['result_ok']
       end
 
       # The parsed JSON data of the response
@@ -274,28 +274,30 @@ module SurveyGizmo
 
       def initialize(response)
         @response = response.parsed_response
-        return unless @response['data'].class == Hash
+        return if @response.nil? or not ok?
         @_data = @response['data']
 
         # Handle really crappy [] notation in SG API, so far just in SurveyResponse
-        @_data.keys.grep(/^\[/).each do |key|
-          next unless @_data[key].length > 0
+        (@_data.is_a?(Array) ? @_data : [@_data]).each do |data_item|
+          data_item.keys.grep(/^\[/).each do |key|
+            next unless data_item[key].length > 0
 
-          parent = find_attribute_parent(key)
-          @_data[parent] = {} unless @_data[parent]
+            parent = find_attribute_parent(key)
+            data_item[parent] = {} unless data_item[parent]
 
-          case key.downcase
-          when /(url|variable.*standard)/
-            @_data[parent][cleanup_attribute_name(key).to_sym] = @_data[key]
-          when /variable.*shown/
-            @_data[parent][cleanup_attribute_name(key).to_i] = @_data[key].include?("1")
-          when /variable/
-            @_data[parent][cleanup_attribute_name(key).to_i] = @_data[key].to_i
-          when /question/
-            @_data[parent][key] = @_data[key]
+            case key.downcase
+            when /(url|variable.*standard)/
+              data_item[parent][cleanup_attribute_name(key).to_sym] = data_item[key]
+            when /variable.*shown/
+              data_item[parent][cleanup_attribute_name(key).to_i] = data_item[key].include?("1")
+            when /variable/
+              data_item[parent][cleanup_attribute_name(key).to_i] = data_item[key].to_i
+            when /question/
+              data_item[parent][key] = data_item[key]
+            end
+
+            data_item.delete(key)
           end
-
-          @_data.delete(key)
         end
       end
     end

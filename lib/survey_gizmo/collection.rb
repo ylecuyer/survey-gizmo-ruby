@@ -1,6 +1,5 @@
 module SurveyGizmo
   class Collection
-    include Enumerable
 
     private
     # @param [Class] resource
