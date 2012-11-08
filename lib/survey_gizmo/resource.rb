@@ -65,6 +65,18 @@ module SurveyGizmo
         resource
       end
 
+      # Copy a resource
+      # @param [Integer] id
+      # @param [Hash] attributes
+      # @return [Resource]
+      #   The newly created resource instance
+      def copy(attributes = {})
+        attributes[:copy] = true
+        resource = new(attributes)
+        resource.__send__(:_copy)
+        resource
+      end
+
       # Deleted the Resource from Survey Gizmo
       # @param [Hash] conditions
       # @return [Boolean]
@@ -150,7 +162,7 @@ module SurveyGizmo
       if new?
         _create
       else
-        handle_response SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks) do 
+        handle_response SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks) do
           _response.ok? ? saved! : false
         end
       end
@@ -217,12 +229,12 @@ module SurveyGizmo
     def errors
       @errors ||= []
     end
-    
+
     # @return [Hash] The raw JSON returned by Survey Gizmo
     def raw_response
       _response.response if _response
     end
-    
+
     # @visibility private
     def inspect
       attrs = self.class.attribute_set.map do |attrib|
@@ -249,9 +261,9 @@ module SurveyGizmo
       def message
         @_message ||= @response['message']
       end
-      
+
       attr_reader :response
-      
+
       private
       def cleanup_attribute_name(attr)
         attr.downcase.gsub(/[^[:alnum:]]+/,'_').gsub(/(url|variable|standard|shown)/,'').gsub(/_+/,'_').gsub(/^_/,'').gsub(/_$/,'')
@@ -298,11 +310,11 @@ module SurveyGizmo
 
             data_item.delete(key)
           end
-        end
+        end unless @_data.nil?
       end
     end
-    
-    
+
+
     protected
 
     def attributes_without_blanks
@@ -330,6 +342,18 @@ module SurveyGizmo
 
     def _create(attributes = {})
       http = SurveyGizmo.put(handle_route(:create), :query => self.attributes_without_blanks)
+      handle_response http do
+        if _response.ok?
+          self.attributes = _response.data
+          saved!
+        else
+          false
+        end
+      end
+    end
+
+    def _copy(attributes = {})
+      http = SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks)
       handle_response http do
         if _response.ok?
           self.attributes = _response.data
