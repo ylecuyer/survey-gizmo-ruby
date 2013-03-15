@@ -1,10 +1,15 @@
 # WARNING:
 
-My production account with SurveyGizmo has had major TimeOut problems for weeks.  Their support team has very nicely blamed me for it and offered to let me pay them to look at my application.  Since I provided them with a one-line curl command to reproduce the problem, this is particularly dismaying.  The problem is consistent with UI and API behavior, and indicates a defect they don't monitor for and can't debug.
+SurveyGizmo doesn't test their REST API when they roll out changes.  They don't publish a list of active defects, and when you call/email for support it is unlikely you will geto a person that knows anything about programming or the REST API.  You can't talk to level 2 support, although they might offer you a discount on their paid consulting rates if the problem persists for more than a few weeks.
 
-# Until there's a documented resolution to this defect, I don't think anyone should start a new project using the API at all
+You might be able to work around an active SurveyGizmo debacle by change which API version you use one of::
 
--chorn 2012-11-07
+export GIZMO_URI="https://restapi.surveygizmo.com/v2"
+export GIZMO_URI="https://restapi.surveygizmo.com/head"
+
+...and then your application might work again.
+
+-chorn@chorn.com 2013-03-15
 
 
 # Survey Gizmo (ruby)
