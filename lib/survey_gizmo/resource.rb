@@ -277,7 +277,7 @@ module SurveyGizmo
 
       def initialize(response)
         @response = response.parsed_response
-        return unless @response['data'].class == Hash
+        return unless @response['data'] && @response['data'].class == Hash
         @_data = @response['data']
 
         # Handle really crappy [] notation in SG API, so far just in SurveyResponse
