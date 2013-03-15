@@ -5,6 +5,7 @@ SurveyGizmo doesn't test their REST API when they roll out changes.  They don't 
 You might be able to work around an active SurveyGizmo debacle by change which API version you use one of::
 
 export GIZMO_URI="https://restapi.surveygizmo.com/v2"
+
 export GIZMO_URI="https://restapi.surveygizmo.com/head"
 
 ...and then your application might work again.
