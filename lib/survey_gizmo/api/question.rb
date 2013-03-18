@@ -23,6 +23,7 @@ module SurveyGizmo; module API
 
     # @macro collection
     collection :options
+    collection :sub_question_skus
 
     # survey gizmo sends a hash back for :title
     # @private
