@@ -22,7 +22,7 @@ require "survey_gizmo/api/email_message"
 module SurveyGizmo
   include HTTParty
   debug_output $stderr if ENV['GIZMO_DEBUG']
-  default_timeout 600  # 6 minutes, SurveyGizmo has serious problems.
+  default_timeout 600  # 10 minutes, SurveyGizmo has serious problems.
 
   format :json
 
