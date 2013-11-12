@@ -1,6 +1,6 @@
 source :rubygems
 
-gem "activesupport", '~> 3.0'
+gem "activesupport", '>= 3.0'
 gem 'i18n'
 gem 'virtus'
 gem 'httparty'
