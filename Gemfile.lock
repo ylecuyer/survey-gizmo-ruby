@@ -6,7 +6,7 @@ PATH
       addressable
       httparty
       i18n
-      virtus
+      virtus (>= 1.0.0)
 
 GEM
   remote: https://rubygems.org/
