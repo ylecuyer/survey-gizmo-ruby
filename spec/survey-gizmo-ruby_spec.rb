@@ -58,8 +58,8 @@ describe "SurveyGizmo" do
       it { lambda{ described_class.collection :resources, 'ResourceTest'}.should_not raise_error }
 
       it "should have an accessor for the collection" do
-        described_class.public_instance_methods.should include('resources')
-        described_class.public_instance_methods.should include('resources=')
+        described_class.new.should respond_to('resources')
+        described_class.new.should respond_to('resources=')
       end
 
       it "should set an empty collection" do
@@ -84,8 +84,8 @@ describe "SurveyGizmo" do
 
       it "can handle multiple collections" do
         described_class.collection(:generic_resources)
-        described_class.public_instance_methods.should include('resources')
-        described_class.public_instance_methods.should include('generic_resources')
+        described_class.new.should respond_to('resources')
+        described_class.new.should respond_to('generic_resources')
       end
 
       it "can handle nested collections" do

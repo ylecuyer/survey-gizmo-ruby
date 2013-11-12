@@ -6,7 +6,7 @@ module SurveyGizmo
     extend ActiveSupport::Concern
 
     included do
-      include Virtus
+      include Virtus.model
       instance_variable_set('@paths', {})
       instance_variable_set('@collections', {})
       SurveyGizmo::Resource.descendants << self
