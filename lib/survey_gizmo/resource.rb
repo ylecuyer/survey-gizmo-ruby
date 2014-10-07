@@ -292,7 +292,7 @@ module SurveyGizmo
         # Handle really crappy [] notation in SG API, so far just in SurveyResponse
         (@_data.is_a?(Array) ? @_data : [@_data]).each do |data_item|
           data_item.keys.grep(/^\[/).each do |key|
-            next unless data_item[key].length > 0
+            next unless data_item[key].nil? || data_item[key].length > 0
 
             parent = find_attribute_parent(key)
             data_item[parent] = {} unless data_item[parent]
