@@ -7,7 +7,7 @@ module SurveyGizmo; module API
     #   @return [$2]
     attribute :id,             Integer
     attribute :team,           Integer
-    attribute :_type,          String
+    attribute :type,          String
     attribute :_subtype,       String
     attribute :status,         String
     attribute :forward_only,   Boolean
