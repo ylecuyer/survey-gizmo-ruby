@@ -38,12 +38,12 @@ module SurveyGizmo; module API
     attribute :scustomfield9,           String
     attribute :scustomfield10,          String
 
-    route '/survey/:survey_id/surveycampaign/:campaign_id/contact/:id', :via => [:get, :update, :delete]
-    route '/survey/:survey_id/surveycampaign/:campaign_id/contact', :via => :create
+    route '/survey/:survey_id/surveycampaign/:campaign_id/contact/:id', via: [:get, :update, :delete]
+    route '/survey/:survey_id/surveycampaign/:campaign_id/contact', via: :create
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
-      {:id => self.id, :survey_id => self.survey_id, :campaign_id => self.campaign_id}
+      {id: self.id, survey_id: self.survey_id, campaign_id: self.campaign_id}
     end
   end
 end; end
