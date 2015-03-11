@@ -24,8 +24,12 @@ module SurveyGizmo
       # Convert a [Hash] of filters into a query string
       # @param [Hash] filters - simple pagination or other options at the top level, and surveygizmo "filters" at the :filters key
       # @return [String]
+      #
       # example input: {page: 2, filters: [{:field=>"istestdata", :operator=>"<>", :value=>1}]}
-      # Surveygizmo expects URLs like: filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
+      # The top level keys (e.g. page, resultsperpage) get simply encoded in the url, while the contents of the array of hashes
+      # passed at filters[:filters] gets turned into the format surveygizmo expects, for example:
+      #
+      # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       def convert_filters_into_query_string(filters = nil)
         if filters && filters.size > 0
           output_filters = filters[:filters] || []
