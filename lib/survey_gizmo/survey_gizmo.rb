@@ -44,5 +44,4 @@ module SurveyGizmo
     self.options = opts
     default_params({ "user:md5" => "#{opts[:user]}:#{Digest::MD5.hexdigest(opts[:password])}" })
   end
-
 end

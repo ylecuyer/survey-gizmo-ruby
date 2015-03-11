@@ -1,5 +1,5 @@
-require "set"
-require "addressable/uri"
+require 'set'
+require 'addressable/uri'
 
 module SurveyGizmo
   module Resource
@@ -25,7 +25,7 @@ module SurveyGizmo
       # @param [Hash] filters
       # @return [String]
       def convert_filters_into_query_string(filters = nil)
-        "" unless filters && filters.size > 0
+        '' unless filters && filters.size > 0
         uri = Addressable::URI.new
         uri.query_values = filters
         "?#{uri.query}"
@@ -51,7 +51,7 @@ module SurveyGizmo
       # @param [Hash] filters
       # @return [Object, nil]
       def first(conditions = {}, filters = nil)
-        response = Response.new SurveyGizmo.get(handle_route(:get, conditions) +  convert_filters_into_query_string(filters))
+        response = Response.new SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters))
         response.ok? ? load(conditions.merge(response.data)) : nil
       end
 
@@ -137,7 +137,7 @@ module SurveyGizmo
         raise "No routes defined for `#{key}` in #{self.name}" unless path
         options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}){|hash, k| hash.merge(k.to_sym => interp.shift) }
         path.gsub(/:(\w+)/) do |m|
-          options[$1.to_sym].tap{ |result| raise(SurveyGizmo::URLError, "Missing parameters in request: `#{m}`") unless result }
+          options[$1.to_sym].tap { |result| raise(SurveyGizmo::URLError, "Missing parameters in request: `#{m}`") unless result }
         end
       end
     end
@@ -239,17 +239,19 @@ module SurveyGizmo
     # @visibility private
     def inspect
 # old_head
-#      attrs = self.class.attribute_set.map do |attrib|
+#      attribute_strings = self.class.attribute_set.map do |attrib|
 #        value = attrib.get!(self).inspect
 #
 #        "@#{attrib.name}=#{value}" if attrib.respond_to?(:name)
 #=======
       if ENV['GIZMO_DEBUG']
+        puts "CLASS\n-----"
         ap self.class
+        puts "CLASS ATTRIBUTE SET\n----------"
         ap self.class.attribute_set
       end
 
-      attrs = self.class.attribute_set.map do |attrib|
+      attribute_strings = self.class.attribute_set.map do |attrib|
         if ENV['GIZMO_DEBUG']
           ap attrib
           ap attrib.name
@@ -266,7 +268,7 @@ module SurveyGizmo
         "  \"#{attrib.name}\" => \"#{value}\"\n" unless value.strip.blank?
       end.compact
 
-      "#<#{self.class.name}:#{self.object_id}>\n#{attrs.join()}"
+      "#<#{self.class.name}:#{self.object_id}>\n#{attribute_strings.join()}"
     end
 
     # This class normalizes the response returned by Survey Gizmo
@@ -311,15 +313,15 @@ module SurveyGizmo
       def find_attribute_parent(attr)
         case attr.downcase
         when /url/
-          "url"
+          'url'
         when /variable.*standard/
-          "meta"
+          'meta'
         when /variable.*shown/
-          "shown"
+          'shown'
         when /variable/
-          "variable"
+          'variable'
         when /question/
-          "answers"
+          'answers'
         end
       end
 
@@ -344,7 +346,7 @@ module SurveyGizmo
             when /(url|variable.*standard)/
               data_item[parent][cleanup_attribute_name(key).to_sym] = data_item[key]
             when /variable.*shown/
-              data_item[parent][cleanup_attribute_name(key).to_i] = data_item[key].include?("1")
+              data_item[parent][cleanup_attribute_name(key).to_i] = data_item[key].include?('1')
             when /variable/
               data_item[parent][cleanup_attribute_name(key).to_i] = data_item[key].to_i
             when /question/
