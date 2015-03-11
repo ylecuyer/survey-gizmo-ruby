@@ -2,16 +2,13 @@
 
 SurveyGizmo doesn't test their REST API when they roll out changes.  They don't publish a list of active defects, and when you call/email for support it is unlikely you will geto a person that knows anything about programming or the REST API.  You can't talk to level 2 support, although they might offer you a discount on their paid consulting rates if the problem persists for more than a few weeks.
 
-You might be able to work around an active SurveyGizmo debacle by change which API version you use one of::
-
-export GIZMO_URI="https://restapi.surveygizmo.com/v2"
-
-export GIZMO_URI="https://restapi.surveygizmo.com/head"
-
-...and then your application might work again.
-
 -chorn@chorn.com 2013-03-15
 
+# REMINDER:
+
+SurveyGizmo breaks their API a few times a year.  You'd best look elsewhere.
+
+-chorn@chorn.com 2013-12-18
 
 # Survey Gizmo (ruby)
 
@@ -36,6 +33,10 @@ Integrate with the [Survey Gizmo API](http://developer.surveygizmo.com/resources
 	question.title = "Do you LOVE Ruby?"
 	question.save # => true
 	question.saved? # => true
+	
+	questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
+	
+	responses = SurveyGizmo::API::Response.all({survey_id: survey.id}, {page: 1})
 	
 	# Error handling
 	question.save # => false

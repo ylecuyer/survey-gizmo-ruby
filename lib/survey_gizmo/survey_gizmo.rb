@@ -1,23 +1,24 @@
-require "active_support/core_ext/string"
-require "active_support/core_ext/module"
-require "active_support/core_ext/hash"
-require "active_support/core_ext/object/blank"
-require "active_support/concern"
-require "virtus"
-require "httparty"
-require "digest/md5"
+require 'active_support/core_ext/string'
+require 'active_support/core_ext/module'
+require 'active_support/core_ext/hash'
+require 'active_support/core_ext/object/blank'
+require 'active_support/concern'
+require 'awesome_print'
+require 'virtus'
+require 'httparty'
+require 'digest/md5'
 
-require "survey_gizmo/resource"
-require "survey_gizmo/collection"
+require 'survey_gizmo/resource'
+require 'survey_gizmo/collection'
 
-require "survey_gizmo/api/survey"
-require "survey_gizmo/api/survey_campaign"
-require "survey_gizmo/api/question"
-require "survey_gizmo/api/option"
-require "survey_gizmo/api/page"
-require "survey_gizmo/api/contact"
-require "survey_gizmo/api/response"
-require "survey_gizmo/api/email_message"
+require 'survey_gizmo/api/survey'
+require 'survey_gizmo/api/survey_campaign'
+require 'survey_gizmo/api/question'
+require 'survey_gizmo/api/option'
+require 'survey_gizmo/api/page'
+require 'survey_gizmo/api/contact'
+require 'survey_gizmo/api/response'
+require 'survey_gizmo/api/email_message'
 
 module SurveyGizmo
   include HTTParty
@@ -44,5 +45,4 @@ module SurveyGizmo
     self.options = opts
     default_params({ "user:md5" => "#{opts[:user]}:#{Digest::MD5.hexdigest(opts[:password])}" })
   end
-
 end

@@ -1,5 +1,5 @@
-require "set"
-require "addressable/uri"
+require 'set'
+require 'addressable/uri'
 
 module SurveyGizmo
   module Resource
@@ -22,13 +22,34 @@ module SurveyGizmo
     module ClassMethods
 
       # Convert a [Hash] of filters into a query string
-      # @param [Hash] filters
+      # @param [Hash] filters - simple pagination or other options at the top level, and surveygizmo "filters" at the :filters key
       # @return [String]
+      #
+      # example input: {page: 2, filters: [{:field=>"istestdata", :operator=>"<>", :value=>1}]}
+      # The top level keys (e.g. page, resultsperpage) get simply encoded in the url, while the contents of the array of hashes
+      # passed at filters[:filters] gets turned into the format surveygizmo expects, for example:
+      #
+      # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       def convert_filters_into_query_string(filters = nil)
-        "" unless filters && filters.size > 0
-        uri = Addressable::URI.new
-        uri.query_values = filters
-        "?#{uri.query}"
+        if filters && filters.size > 0
+          output_filters = filters[:filters] || []
+          filter_hash = {}
+          output_filters.each_with_index do |filter,i|
+            filter_hash.merge!({
+              "filter[field][#{i}]".to_sym => "#{filter[:field]}",
+              "filter[operator][#{i}]".to_sym => "#{filter[:operator]}",
+              "filter[value][#{i}]".to_sym => "#{filter[:value]}",
+            })
+          end
+          simple_filters = filters.reject {|k,v| k == :filters}
+          filter_hash.merge!(simple_filters)
+
+          uri = Addressable::URI.new
+          uri.query_values = filter_hash
+          "?#{uri.query}"
+        else
+          ''
+        end
       end
 
       # Get a list of resources
@@ -51,7 +72,7 @@ module SurveyGizmo
       # @param [Hash] filters
       # @return [Object, nil]
       def first(conditions = {}, filters = nil)
-        response = Response.new SurveyGizmo.get(handle_route(:get, conditions) +  convert_filters_into_query_string(filters))
+        response = Response.new SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters))
         response.ok? ? load(conditions.merge(response.data)) : nil
       end
 
@@ -137,7 +158,7 @@ module SurveyGizmo
         raise "No routes defined for `#{key}` in #{self.name}" unless path
         options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}){|hash, k| hash.merge(k.to_sym => interp.shift) }
         path.gsub(/:(\w+)/) do |m|
-          options[$1.to_sym].tap{ |result| raise(SurveyGizmo::URLError, "Missing parameters in request: `#{m}`") unless result }
+          options[$1.to_sym].tap { |result| raise(SurveyGizmo::URLError, "Missing parameters in request: `#{m}`") unless result }
         end
       end
     end
@@ -163,6 +184,7 @@ module SurveyGizmo
         _create
       else
         handle_response SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks) do
+          warn _response.message if !_response.ok? && ENV['GIZMO_DEBUG']
           _response.ok? ? saved! : false
         end
       end
@@ -237,24 +259,51 @@ module SurveyGizmo
 
     # @visibility private
     def inspect
-      attrs = self.class.attribute_set.map do |attrib|
-        value = attrib.get!(self).inspect
-
-        "@#{attrib.name}=#{value}" if attrib.respond_to?(:name)
+      if ENV['GIZMO_DEBUG']
+        ap "CLASS: #{self.class}"
       end
 
-      "#<#{self.class.name}:#{self.object_id} #{attrs.join(' ')}>"
+      attribute_strings = self.class.attribute_set.map do |attrib|
+        if ENV['GIZMO_DEBUG']
+          ap attrib
+          ap attrib.name
+          ap self.send(attrib.name)
+          ap self.send(attrib.name).class
+        end
+
+        if self.send(attrib.name).class == Hash
+          value = self.send(attrib.name).inspect
+        else
+          value = self.send(attrib.name).to_s
+        end
+
+        "  \"#{attrib.name}\" => \"#{value}\"\n" unless value.strip.blank?
+      end.compact
+
+      "#<#{self.class.name}:#{self.object_id}>\n#{attribute_strings.join()}"
     end
 
     # This class normalizes the response returned by Survey Gizmo
     class Response
       def ok?
-        @response && @response['result_ok']
+        if ENV['GIZMO_DEBUG']
+          puts "SG Response: "
+          ap @response
+        end
+        if @response['result_ok'] && @response['result_ok'].to_s.downcase == 'false' && @response['message'] && @response['code'] && @response['message'] =~ /service/i
+          raise Exception, "#{@response['message']}: #{@response['code']}"
+        end
+        @response['result_ok'] && @response['result_ok'].to_s.downcase == 'true'
       end
 
       # The parsed JSON data of the response
       def data
-        @_data ||= (@response['data'] || {})
+        unless @_data
+          @_data = {'id' => @response['id']} if @response && @response['id']
+          @_data = @response['data'] if @response && @response['data']
+        end
+
+        @_data ||= {}
       end
 
       # The error message if there is one
@@ -272,22 +321,21 @@ module SurveyGizmo
       def find_attribute_parent(attr)
         case attr.downcase
         when /url/
-          "url"
+          'url'
         when /variable.*standard/
-          "meta"
+          'meta'
         when /variable.*shown/
-          "shown"
+          'shown'
         when /variable/
-          "variable"
+          'variable'
         when /question/
-          "answers"
+          'answers'
         end
       end
 
       def initialize(response)
         @response = response.parsed_response
-        return if @response.nil? or not ok?
-        @_data = @response['data']
+        return unless data
 
         # Handle really crappy [] notation in SG API, so far just in SurveyResponse
         (@_data.is_a?(Array) ? @_data : [@_data]).each do |data_item|
@@ -301,7 +349,7 @@ module SurveyGizmo
             when /(url|variable.*standard)/
               data_item[parent][cleanup_attribute_name(key).to_sym] = data_item[key]
             when /variable.*shown/
-              data_item[parent][cleanup_attribute_name(key).to_i] = data_item[key].include?("1")
+              data_item[parent][cleanup_attribute_name(key).to_i] = data_item[key].include?('1')
             when /variable/
               data_item[parent][cleanup_attribute_name(key).to_i] = data_item[key].to_i
             when /question/
@@ -344,6 +392,10 @@ module SurveyGizmo
       http = SurveyGizmo.put(handle_route(:create), :query => self.attributes_without_blanks)
       handle_response http do
         if _response.ok?
+          if ENV['GIZMO_DEBUG']
+            puts "SG Set attributes during _create"
+            ap @_response
+          end
           self.attributes = _response.data
           saved!
         else

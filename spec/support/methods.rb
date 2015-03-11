@@ -9,9 +9,12 @@ module SurveyGizmoSpec
     end
 
     def json_response(result, data)
-      body = {:result_ok => result}
-      result ? body.merge!(:data => data) : body.merge!(:message => data)
-      {:headers => {'Content-Type' => 'application/json'}, :body => body.to_json}
+      body = {result_ok: result}
+      result ? body.merge!(data: data) : body.merge!(message: data)
+      {
+        headers: {'Content-Type' => 'application/json'},
+        body: body.to_json
+      }
     end
   end
 end
