@@ -23,7 +23,7 @@ module SurveyGizmo
     def each
       lazy_load
       if block_given?
-        @collection.each{ |o| yield(o) }
+        @collection.each { |o| yield(o) }
       else
         @collection.each
       end
@@ -40,7 +40,7 @@ module SurveyGizmo
       return @model if defined?(@model)
       return (@model = options[:target]) if options[:target].is_a?(Class)
       name_string = options[:target].is_a?(Symbol) ? ActiveSupport::Inflector.classify(options[:target]) : options[:target]
-      @model = name_string[/::/] ? Object.const_get?(name_string) : Resource.descendants.detect{ |d| ActiveSupport::Inflector.demodulize(d.name) == name_string }
+      @model = name_string[/::/] ? Object.const_get?(name_string) : Resource.descendants.detect { |d| ActiveSupport::Inflector.demodulize(d.name) == name_string }
       raise NameError, "#{name_string} is not a descendant of SurveyGizmo::Resource" unless @model
       @model
     end
