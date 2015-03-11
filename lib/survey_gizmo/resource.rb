@@ -163,6 +163,7 @@ module SurveyGizmo
         _create
       else
         handle_response SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks) do
+          warn _response.message if !_response.ok? && ENV['GIZMO_DEBUG']
           _response.ok? ? saved! : false
         end
       end
@@ -237,24 +238,62 @@ module SurveyGizmo
 
     # @visibility private
     def inspect
-      attrs = self.class.attribute_set.map do |attrib|
-        value = attrib.get!(self).inspect
-
-        "@#{attrib.name}=#{value}" if attrib.respond_to?(:name)
+# old_head
+#      attrs = self.class.attribute_set.map do |attrib|
+#        value = attrib.get!(self).inspect
+#
+#        "@#{attrib.name}=#{value}" if attrib.respond_to?(:name)
+#=======
+      if ENV['GIZMO_DEBUG']
+        ap self.class
+        ap self.class.attribute_set
       end
 
-      "#<#{self.class.name}:#{self.object_id} #{attrs.join(' ')}>"
+      attrs = self.class.attribute_set.map do |attrib|
+        if ENV['GIZMO_DEBUG']
+          ap attrib
+          ap attrib.name
+          ap self.send(attrib.name)
+          ap self.send(attrib.name).class
+        end
+
+        if self.send(attrib.name).class == Hash
+          value = self.send(attrib.name).inspect
+        else
+          value = self.send(attrib.name).to_s
+        end
+
+        "  \"#{attrib.name}\" => \"#{value}\"\n" unless value.strip.blank?
+      end.compact
+
+      "#<#{self.class.name}:#{self.object_id}>\n#{attrs.join()}"
     end
 
     # This class normalizes the response returned by Survey Gizmo
     class Response
       def ok?
-        @response && @response['result_ok']
+        if ENV['GIZMO_DEBUG']
+          puts "SG Response: "
+          ap @response
+        end
+        if @response['result_ok'] && @response['result_ok'].to_s.downcase == 'false' && @response['message'] && @response['code'] && @response['message'] =~ /service/i
+          raise Exception, "#{@response['message']}: #{@response['code']}"
+        end
+        @response['result_ok'] && @response['result_ok'].to_s.downcase == 'true'
       end
 
       # The parsed JSON data of the response
       def data
-        @_data ||= (@response['data'] || {})
+        if ENV['GIZMO_DEBUG']
+          puts "SG Data: "
+          ap @response['data']
+        end
+        unless @_data
+          @_data = {'id' => @response['id']} if @response && @response['id']
+          @_data = @response['data'] if @response && @response['data'] # Array ?????
+        end
+
+        @_data ||= {}
       end
 
       # The error message if there is one
@@ -286,8 +325,12 @@ module SurveyGizmo
 
       def initialize(response)
         @response = response.parsed_response
-        return if @response.nil? or not ok?
-        @_data = @response['data']
+
+#old head
+#        return if @response.nil? or not ok?
+#        @_data = @response['data']
+
+        return unless data && data.class == Hash  # Sometimes data is an array, sometimes it is a hash???
 
         # Handle really crappy [] notation in SG API, so far just in SurveyResponse
         (@_data.is_a?(Array) ? @_data : [@_data]).each do |data_item|
@@ -344,6 +387,10 @@ module SurveyGizmo
       http = SurveyGizmo.put(handle_route(:create), :query => self.attributes_without_blanks)
       handle_response http do
         if _response.ok?
+          if ENV['GIZMO_DEBUG']
+            puts "SG Set attributes during _create"
+            ap @_response
+          end
           self.attributes = _response.data
           saved!
         else
