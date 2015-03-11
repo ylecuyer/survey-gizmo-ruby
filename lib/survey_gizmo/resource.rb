@@ -257,8 +257,6 @@ module SurveyGizmo
     def inspect
       if ENV['GIZMO_DEBUG']
         ap "CLASS: #{self.class}"
-        ap "CLASS ATTRIBUTE SET\n----------"
-        ap self.class.attribute_set
       end
 
       attribute_strings = self.class.attribute_set.map do |attrib|
