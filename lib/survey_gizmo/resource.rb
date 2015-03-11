@@ -286,14 +286,9 @@ module SurveyGizmo
 
       # The parsed JSON data of the response
       def data
-        if ENV['GIZMO_DEBUG']
-          puts "SG Data: "
-          ap @response['data']
-        end
-
         unless @_data
           @_data = {'id' => @response['id']} if @response && @response['id']
-          @_data = @response['data'] if @response && @response['data'] # Array ?????
+          @_data = @response['data'] if @response && @response['data']
         end
 
         @_data ||= {}
