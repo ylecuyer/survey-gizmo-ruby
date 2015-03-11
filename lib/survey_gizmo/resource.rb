@@ -290,6 +290,7 @@ module SurveyGizmo
           puts "SG Data: "
           ap @response['data']
         end
+
         unless @_data
           @_data = {'id' => @response['id']} if @response && @response['id']
           @_data = @response['data'] if @response && @response['data'] # Array ?????
@@ -327,12 +328,7 @@ module SurveyGizmo
 
       def initialize(response)
         @response = response.parsed_response
-
-#old head
-#        return if @response.nil? or not ok?
-#        @_data = @response['data']
-
-        return unless data && data.class == Hash  # Sometimes data is an array, sometimes it is a hash???
+        return unless data
 
         # Handle really crappy [] notation in SG API, so far just in SurveyResponse
         (@_data.is_a?(Array) ? @_data : [@_data]).each do |data_item|
