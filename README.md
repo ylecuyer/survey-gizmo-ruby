@@ -20,56 +20,57 @@ Integrate with the [Survey Gizmo API](http://developer.surveygizmo.com/resources
 
 ## Basic Usage
 
-   require 'survey-gizmo-ruby'
-
-   # somewhere in your app define your survey gizmo login credentials.
-   SurveyGizmo.setup(:user => 'you@somewhere.com', :password => 'mypassword')
-
-   survey = SurveyGizmo::API::Survey.first(:id => 12345)
-   survey.title # => My Title
-   survey.pages # => [page1, page2,...]
-
-   question = SurveyGizmo::API::Question.create(:survey_id => survey.id, :title => 'Do you like ruby?', :type => 'checkbox')
-   question.title = "Do you LOVE Ruby?"
-   question.save # => true
-   question.saved? # => true
-
-   questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
-   responses = SurveyGizmo::API::Response.all({survey_id: survey.id}, {page: 1})
-
-   # Error handling
-   question.save # => false
-   question.errors # => ['There was an error']
-
+	require 'survey-gizmo-ruby'
+	
+	# somewhere in your app define your survey gizmo login credentials.
+	SurveyGizmo.setup(:user => 'you@somewhere.com', :password => 'mypassword')
+	
+	survey = SurveyGizmo::API::Survey.first(:id => 12345)
+	survey.title # => My Title
+	survey.pages # => [page1, page2,...]
+	
+	question = SurveyGizmo::API::Question.create(:survey_id => survey.id, :title => 'Do you like ruby?', :type => 'checkbox')
+	question.title = "Do you LOVE Ruby?"
+	question.save # => true
+	question.saved? # => true
+	
+	questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
+	
+	responses = SurveyGizmo::API::Response.all({survey_id: survey.id}, {page: 1})
+	
+	# Error handling
+	question.save # => false
+	question.errors # => ['There was an error']
+	
 ## Adding API Objects
 
 Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`, `Response`, `EmailMessage`, `SurveyCampaign`, `Contact`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the how to do so:
 
-   class SomeObject
-     # the base where most of the methods for handling the API are stored
-     include SurveyGizmo::Resource
-
+	class SomeObject
+	  # the base where most of the methods for handling the API are stored
+	  include SurveyGizmo::Resource
+      
       # the attribtues the object should respond to
-     attribute :id,          Integer
-     attribute :title,       String
-     attribute :status,      String
-     attribute :type,        String
-     attribute :created_on,  DateTime
-
+	  attribute :id,          Integer
+	  attribute :title,       String
+	  attribute :status,      String
+	  attribute :type,        String
+	  attribute :created_on,  DateTime
+  
       # defing the paths used to retrieve/set info
-     route '/something/:id', :via => [:get, :update, :delete]
-     route '/something',     :via => :create
-
+	  route '/something/:id', :via => [:get, :update, :delete]
+	  route '/something',     :via => :create
+  		
       # this must be defined with the params that would be included in any route
-     def to_param_options
-       {:id => self.id}
-     end
-   end
+	  def to_param_options
+	    {:id => self.id}
+	  end
+	end
 
 The [Virtus](https://github.com/solnic/virtus) gem is included to handle the attributes, so please check their documentation as well.
 
 # Contributing to survey-gizmo-ruby
-
+ 
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
 * Take a gander at the github issues beforehand
 * Fork the project
