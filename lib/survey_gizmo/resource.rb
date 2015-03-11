@@ -255,16 +255,9 @@ module SurveyGizmo
 
     # @visibility private
     def inspect
-# old_head
-#      attribute_strings = self.class.attribute_set.map do |attrib|
-#        value = attrib.get!(self).inspect
-#
-#        "@#{attrib.name}=#{value}" if attrib.respond_to?(:name)
-#=======
       if ENV['GIZMO_DEBUG']
-        puts "CLASS\n-----"
-        ap self.class
-        puts "CLASS ATTRIBUTE SET\n----------"
+        ap "CLASS: #{self.class}"
+        ap "CLASS ATTRIBUTE SET\n----------"
         ap self.class.attribute_set
       end
 
