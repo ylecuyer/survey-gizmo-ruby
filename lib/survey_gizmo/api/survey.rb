@@ -23,8 +23,8 @@ module SurveyGizmo; module API
     attribute :modified_on,    DateTime
     attribute :copy,           Boolean
 
-    route '/survey/:id', :via => [:get, :update, :delete]
-    route '/survey',     :via => :create
+    route '/survey/:id', via: [:get, :update, :delete]
+    route '/survey',     via: :create
 
     # @macro collection
     collection :pages
@@ -41,7 +41,7 @@ module SurveyGizmo; module API
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
-      {:id => self.id}
+      {id: self.id}
     end
   end
 end; end

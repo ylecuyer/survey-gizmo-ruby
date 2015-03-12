@@ -12,7 +12,6 @@ module SurveyGizmo; module API
     attribute :after,         Integer
     attribute :survey_id,     Integer
 
-
     # routing
     route '/survey/:survey_id/surveypage', :via => :create
     route '/survey/:survey_id/surveypage/:id', :via => [:get, :update, :delete]
@@ -23,14 +22,14 @@ module SurveyGizmo; module API
     # survey gizmo sends a hash back for :title
     # @private
     def title_with_multilingual=(val)
-      self.title_without_multilingual = val.is_a?(Hash) ? val : { "English" => val }
+      self.title_without_multilingual = val.is_a?(Hash) ? val : { 'English' => val }
     end
 
     alias_method_chain :title=, :multilingual
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
-      {:id => self.id, :survey_id => self.survey_id}
+      {id: self.id, survey_id: self.survey_id}
     end
   end
 end; end

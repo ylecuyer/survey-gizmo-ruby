@@ -1,16 +1,16 @@
-require "spec_helper"
-describe "Survey Gizmo Resource" do
+require 'spec_helper'
+describe 'Survey Gizmo Resource' do
 
   describe SurveyGizmo::Resource do
     before(:each) do
-      SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
+      SurveyGizmo.setup(user: 'test@test.com', password: 'password')
     end
 
     let(:described_class)   { SurveyGizmoSpec::ResourceTest }
     let(:create_attributes) { {title: 'Spec', test_id: 5} }
-    let(:get_attributes)    { create_attributes.merge(id: 1) }
     let(:update_attributes) { {title: 'Updated'} }
     let(:first_params)      { {id: 1, test_id: 5} }
+    let(:get_attributes)    { create_attributes.merge(id: 1) }
     let(:uri_paths){
       {
         :get => '/test/1',
@@ -20,7 +20,7 @@ describe "Survey Gizmo Resource" do
       }
     }
 
-    it "#new?" do
+    it '#new?' do
       described_class.new.should be_new
     end
 
@@ -34,10 +34,10 @@ describe "Survey Gizmo Resource" do
 
     it '#valid?'
 
-    it "should raise an error if params are missing" do
+    it 'should raise an error if params are missing' do
       lambda {
-        SurveyGizmoSpec::ResourceTest.destroy(:test_id => 5)
-      }.should raise_error(SurveyGizmo::URLError, 'Missing parameters in request: `:id`')
+        SurveyGizmoSpec::ResourceTest.destroy(test_id: 5)
+      }.should raise_error(SurveyGizmo::URLError, 'Missing RESTful parameters in request: `:id`')
     end
 
     it_should_behave_like 'an API object'
@@ -79,7 +79,7 @@ describe "Survey Gizmo Resource" do
 
   describe SurveyGizmo::API::Question do
     let(:base_params)       { {survey_id: 1234, page_id: 1} }
-    let(:create_attributes) { base_params.merge(:title => 'Spec Question', :type => 'radio', :properties => {"required" => true, "option_sort" => false}) }
+    let(:create_attributes) { base_params.merge(:title => 'Spec Question', :type => 'radio', :properties => {'required' => true, 'option_sort' => false}) }
     let(:get_attributes)    { create_attributes.merge(id: 1) }
     let(:update_attributes) { base_params.merge(title: 'Updated') }
     let(:first_params)      { base_params.merge(id: 1) }
@@ -118,9 +118,9 @@ describe "Survey Gizmo Resource" do
   describe SurveyGizmo::API::Option do
     let(:survey_and_page)   { {survey_id: 1234, page_id: 1}}
     let(:create_attributes) { survey_and_page.merge(question_id: 1, title: 'Spec Question', value: 'Spec Answer') }
-    let(:get_attributes)    { create_attributes.merge(id: 1) }
     let(:update_attributes) { survey_and_page.merge(question_id: 1, title: 'Updated') }
     let(:first_params)      { survey_and_page.merge(id: 1, question_id: 1) }
+    let(:get_attributes)    { create_attributes.merge(id: 1) }
     let(:uri_paths) {
       h = { :create => '/survey/1234/surveypage/1/surveyquestion/1/surveyoption' }
       h.default = '/survey/1234/surveypage/1/surveyquestion/1/surveyoption/1'

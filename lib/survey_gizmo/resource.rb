@@ -27,7 +27,7 @@ module SurveyGizmo
       #
       # example input: {page: 2, filters: [{:field=>"istestdata", :operator=>"<>", :value=>1}]}
       # The top level keys (e.g. page, resultsperpage) get simply encoded in the url, while the contents of the array of hashes
-      # passed at filters[:filters] gets turned into the format surveygizmo expects, for example:
+      # passed at filters[:filters] gets turned into the format surveygizmo expects for its internal filtering, for example:
       #
       # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       def convert_filters_into_query_string(filters = nil)
@@ -60,12 +60,14 @@ module SurveyGizmo
         response = Response.new SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters))
         if response.ok?
           _collection = SurveyGizmo::Collection.new(self, nil, response.data)
-          _collection.send(:options=, {:target => self, :parent => self})
+          _collection.send(:options=, {target: self, parent: self})
 
-          # Hack in the survey_id property because SurveyGizmo does not return it in most objects!
-          # Could probably do this for all conditions to the request (that's what happens in .first below)
-          if conditions[:survey_id] && instance_methods.include?(:survey_id)
-            _collection.each { |c| c.survey_id ||= conditions[:survey_id] }
+          # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
+          # not often part of the SurveyGizmo's returned data
+          conditions.keys.each do |k|
+            if conditions[k] && instance_methods.include?(k)
+              _collection.each { |c| c[k] ||= conditions[k] }
+            end
           end
 
           _collection
@@ -80,7 +82,7 @@ module SurveyGizmo
       # @return [Object, nil]
       def first(conditions = {}, filters = nil)
         response = Response.new SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters))
-        response.ok? ? load(conditions.merge(response.data)) : nil
+        response.ok? ? load(conditions.merge(response.data)) : nil # Add in the properties from the conditions hash
       end
 
       # Create a new resource
@@ -142,7 +144,7 @@ module SurveyGizmo
       #     the $1 collection
       #   @scope instance
       def collection(resource_name, model = nil)
-        @collections[resource_name] = {:parent => self, :target => (model ? model : resource_name)} # workaround for weird bug with passing a class to Collection
+        @collections[resource_name] = {parent: self, target: (model ? model : resource_name)} # workaround for weird bug with passing a class to Collection
         class_eval(<<-EOS)
           def #{resource_name}
             @#{resource_name} ||= []
@@ -159,13 +161,16 @@ module SurveyGizmo
         @collections.dup.freeze
       end
 
+      # This method replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
+      # values being passed in interpolation hash with the same keys.
       # @api private
-      def handle_route(key, *interp)
+      def handle_route(key, interpolation_hash)
         path = @paths[key]
         raise "No routes defined for `#{key}` in #{self.name}" unless path
-        options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}) { |hash, k| hash.merge(k.to_sym => interp.shift) }
+
         path.gsub(/:(\w+)/) do |m|
-          options[$1.to_sym].tap { |result| raise(SurveyGizmo::URLError, "Missing parameters in request: `#{m}`") unless result }
+          raise(SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`") unless interpolation_hash[$1.to_sym]
+          interpolation_hash[$1.to_sym]
         end
       end
     end
@@ -190,7 +195,7 @@ module SurveyGizmo
       if new?
         _create
       else
-        handle_response SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks) do
+        handle_response(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks)) do
           warn _response.message if !_response.ok? && ENV['GIZMO_DEBUG']
           _response.ok? ? saved! : false
         end
@@ -201,7 +206,7 @@ module SurveyGizmo
     # @return [self, false]
     #   Returns the object, if saved. Otherwise returns false.
     def reload
-      handle_response SurveyGizmo.get(handle_route(:get)) do
+      handle_response(SurveyGizmo.get(handle_route(:get))) do
         if _response.ok?
           self.attributes = _response.data
           clean!
@@ -215,7 +220,7 @@ module SurveyGizmo
     # @return [Boolean]
     def destroy
       return false if new? || destroyed?
-      handle_response SurveyGizmo.delete(handle_route(:delete)) do
+      handle_response(SurveyGizmo.delete(handle_route(:delete))) do
         _response.ok? ? destroyed! : false
       end
     end
@@ -296,7 +301,7 @@ module SurveyGizmo
 
       def ok?
         if ENV['GIZMO_DEBUG']
-          puts "SG Response: "
+          ap 'SG Response: '
           ap @response
         end
 
@@ -325,7 +330,11 @@ module SurveyGizmo
       private
 
       def cleanup_attribute_name(attr)
-        attr.downcase.gsub(/[^[:alnum:]]+/,'_').gsub(/(url|variable|standard|shown)/,'').gsub(/_+/,'_').gsub(/^_/,'').gsub(/_$/,'')
+        attr.downcase.gsub(/[^[:alnum:]]+/, '_')
+                     .gsub(/(url|variable|standard|shown)/, '')
+                     .gsub(/_+/, '_')
+                     .gsub(/^_/, '')
+                     .gsub(/_$/, '')
       end
 
       def find_attribute_parent(attr)
@@ -348,7 +357,7 @@ module SurveyGizmo
         return unless data
 
         # Handle really crappy [] notation in SG API, so far just in SurveyResponse
-        (@_data.is_a?(Array) ? @_data : [@_data]).each do |data_item|
+        (data.is_a?(Array) ? data : [data]).each do |data_item|
           data_item.keys.grep(/^\[/).each do |key|
             next if data_item[key].nil? || data_item[key].length == 0
 
@@ -368,7 +377,7 @@ module SurveyGizmo
 
             data_item.delete(key)
           end
-        end unless @_data.nil?
+        end
       end
     end
 
@@ -376,7 +385,7 @@ module SurveyGizmo
     protected
 
     def attributes_without_blanks
-      self.attributes.reject{|k,v| v.blank? }
+      self.attributes.reject { |k,v| v.blank? }
     end
 
     private
@@ -399,8 +408,8 @@ module SurveyGizmo
     end
 
     def _create(attributes = {})
-      http = SurveyGizmo.put(handle_route(:create), :query => self.attributes_without_blanks)
-      handle_response http do
+      http = SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks)
+      handle_response(http) do
         if _response.ok?
           if ENV['GIZMO_DEBUG']
             puts "SG Set attributes during _create"
@@ -416,7 +425,7 @@ module SurveyGizmo
 
     def _copy(attributes = {})
       http = SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks)
-      handle_response http do
+      handle_response(http) do
         if _response.ok?
           self.attributes = _response.data
           saved!
@@ -425,6 +434,5 @@ module SurveyGizmo
         end
       end
     end
-
   end
 end
