@@ -159,13 +159,20 @@ module SurveyGizmo
         @collections.dup.freeze
       end
 
+      # This method replaces the :page_id, :survey_id, etc strings defined in each model's routes with the values being passed
+      # to the request.
       # @api private
-      def handle_route(key, *interp)
+      def handle_route(key, *interpolation_hash)
         path = @paths[key]
         raise "No routes defined for `#{key}` in #{self.name}" unless path
-        options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}) { |hash, k| hash.merge(k.to_sym => interp.shift) }
+        options = if interpolation_hash.last.is_a?(Hash)
+                    interpolation_hash.pop
+                  else
+                    path.scan(/:(\w+)/).inject({}) { |hash, k| hash.merge(k.to_sym => interpolation_hash.shift) }
+                  end
+
         path.gsub(/:(\w+)/) do |m|
-          options[$1.to_sym].tap { |result| raise(SurveyGizmo::URLError, "Missing parameters in request: `#{m}`") unless result }
+          options[$1.to_sym].tap { |result| raise(SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`") unless result }
         end
       end
     end
