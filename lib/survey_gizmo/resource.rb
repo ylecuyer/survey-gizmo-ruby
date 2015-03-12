@@ -27,7 +27,7 @@ module SurveyGizmo
       #
       # example input: {page: 2, filters: [{:field=>"istestdata", :operator=>"<>", :value=>1}]}
       # The top level keys (e.g. page, resultsperpage) get simply encoded in the url, while the contents of the array of hashes
-      # passed at filters[:filters] gets turned into the format surveygizmo expects, for example:
+      # passed at filters[:filters] gets turned into the format surveygizmo expects for its internal filtering, for example:
       #
       # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       def convert_filters_into_query_string(filters = nil)
@@ -62,10 +62,12 @@ module SurveyGizmo
           _collection = SurveyGizmo::Collection.new(self, nil, response.data)
           _collection.send(:options=, {:target => self, :parent => self})
 
-          # Hack in the survey_id property because SurveyGizmo does not return it in most objects!
-          # Could probably do this for all conditions to the request (that's what happens in .first below)
-          if conditions[:survey_id] && instance_methods.include?(:survey_id)
-            _collection.each { |c| c.survey_id ||= conditions[:survey_id] }
+          # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
+          # not often part of the SurveyGizmo's returned data
+          conditions.keys.each do |k|
+            if conditions[k] && instance_methods.include?(k)
+              _collection.each { |c| c[k] ||= conditions[k] }
+            end
           end
 
           _collection
@@ -80,7 +82,7 @@ module SurveyGizmo
       # @return [Object, nil]
       def first(conditions = {}, filters = nil)
         response = Response.new SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters))
-        response.ok? ? load(conditions.merge(response.data)) : nil
+        response.ok? ? load(conditions.merge(response.data)) : nil # Add in the properties from the conditions hash
       end
 
       # Create a new resource
