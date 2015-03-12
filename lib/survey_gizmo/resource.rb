@@ -60,7 +60,7 @@ module SurveyGizmo
         response = Response.new SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters))
         if response.ok?
           _collection = SurveyGizmo::Collection.new(self, nil, response.data)
-          _collection.send(:options=, {:target => self, :parent => self})
+          _collection.send(:options=, {target: self, parent: self})
 
           # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
           # not often part of the SurveyGizmo's returned data

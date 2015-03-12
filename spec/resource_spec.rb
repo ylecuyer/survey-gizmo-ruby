@@ -3,7 +3,7 @@ describe 'Survey Gizmo Resource' do
 
   describe SurveyGizmo::Resource do
     before(:each) do
-      SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
+      SurveyGizmo.setup(user: 'test@test.com', password: 'password')
     end
 
     let(:described_class)   { SurveyGizmoSpec::ResourceTest }
