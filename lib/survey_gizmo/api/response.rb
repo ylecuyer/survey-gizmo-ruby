@@ -20,12 +20,12 @@ module SurveyGizmo; module API
     attribute :answers,              Hash       # READ-ONLY
 
     # routing
-    route '/survey/:survey_id/surveyresponse',     :via => :create
-    route '/survey/:survey_id/surveyresponse/:id', :via => [:get, :update, :delete]
+    route '/survey/:survey_id/surveyresponse',     via: :create
+    route '/survey/:survey_id/surveyresponse/:id', via: [:get, :update, :delete]
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
-      {:id => self.id, :survey_id => self.survey_id}
+      {id: self.id, survey_id: self.survey_id}
     end
   end
 end; end

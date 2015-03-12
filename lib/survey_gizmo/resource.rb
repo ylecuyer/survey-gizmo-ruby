@@ -144,7 +144,7 @@ module SurveyGizmo
       #     the $1 collection
       #   @scope instance
       def collection(resource_name, model = nil)
-        @collections[resource_name] = {:parent => self, :target => (model ? model : resource_name)} # workaround for weird bug with passing a class to Collection
+        @collections[resource_name] = {parent: self, target: (model ? model : resource_name)} # workaround for weird bug with passing a class to Collection
         class_eval(<<-EOS)
           def #{resource_name}
             @#{resource_name} ||= []
@@ -161,20 +161,16 @@ module SurveyGizmo
         @collections.dup.freeze
       end
 
-      # This method replaces the :page_id, :survey_id, etc strings defined in each model's routes with the values being passed
-      # to the request.
+      # This method replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
+      # values being passed in interpolation hash with the same keys.
       # @api private
-      def handle_route(key, *interpolation_hash)
+      def handle_route(key, interpolation_hash)
         path = @paths[key]
         raise "No routes defined for `#{key}` in #{self.name}" unless path
-        options = if interpolation_hash.last.is_a?(Hash)
-                    interpolation_hash.pop
-                  else
-                    path.scan(/:(\w+)/).inject({}) { |hash, k| hash.merge(k.to_sym => interpolation_hash.shift) }
-                  end
 
         path.gsub(/:(\w+)/) do |m|
-          options[$1.to_sym].tap { |result| raise(SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`") unless result }
+          raise(SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`") unless interpolation_hash[$1.to_sym]
+          interpolation_hash[$1.to_sym]
         end
       end
     end
@@ -434,6 +430,5 @@ module SurveyGizmo
         end
       end
     end
-
   end
 end
