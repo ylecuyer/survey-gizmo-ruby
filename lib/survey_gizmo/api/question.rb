@@ -5,25 +5,25 @@ module SurveyGizmo; module API
 
     # @macro [attach] virtus_attribute
     #   @return [$2]
-    attribute :id,            Integer
-    attribute :title,         String
-    attribute :type,          String
-    attribute :description,   String
-    attribute :shortname,     String
-    attribute :properties,    Hash
-    attribute :after,         Integer
-    attribute :survey_id,     Integer
-    attribute :page_id,       Integer, :default => 1
+    attribute :id,                Integer
+    attribute :title,             String
+    attribute :type,              String
+    attribute :description,       String
+    attribute :shortname,         String
+    attribute :properties,        Hash
+    attribute :after,             Integer
+    attribute :survey_id,         Integer
+    attribute :page_id,           Integer, :default => 1
+    attribute :sub_question_skus, Array
 
     alias_attribute :_subtype, :type
 
-    route '/survey/:survey_id/surveyquestion/:id', :via => :get
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion', :via => :create
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', :via => [:update, :delete]
+    route '/survey/:survey_id/surveyquestion/:id', via: :get
+    route '/survey/:survey_id/surveypage/:page_id/surveyquestion', via: :create
+    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', via: [:update, :delete]
 
     # @macro collection
     collection :options
-    collection :sub_question_skus
 
     # survey gizmo sends a hash back for :title
     # @private
@@ -33,9 +33,20 @@ module SurveyGizmo; module API
 
     alias_method_chain :title=, :multilingual
 
+    # These are not returned by the .all request for a survey_id!
+    def sub_questions
+      return @sub_questions if @subquestions || sub_question_skus.nil?
+
+      @sub_questions = []
+      sub_question_skus.each do |sub_question_id|
+        @sub_questions << SurveyGizmo::API::Question.first(survey_id: survey_id, id: sub_question_id)
+      end
+      @sub_questions
+    end
+
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
-      {:id => self.id, :survey_id => self.survey_id, :page_id => self.page_id}
+      {id: self.id, survey_id: self.survey_id, page_id: self.page_id}
     end
   end
 end; end

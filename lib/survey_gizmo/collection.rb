@@ -51,7 +51,7 @@ module SurveyGizmo
 
     def lazy_load
       return if loaded?
-      @collection = @array.map {|hash| load_object(hash) }
+      @collection = @array.map { |hash| load_object(hash) }
       mark_loaded
     end
 

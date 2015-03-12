@@ -61,6 +61,13 @@ module SurveyGizmo
         if response.ok?
           _collection = SurveyGizmo::Collection.new(self, nil, response.data)
           _collection.send(:options=, {:target => self, :parent => self})
+
+          # Hack in the survey_id property because SurveyGizmo does not return it in most objects!
+          # Could probably do this for all conditions to the request (that's what happens in .first below)
+          if conditions[:survey_id] && instance_methods.include?(:survey_id)
+            _collection.each { |c| c.survey_id ||= conditions[:survey_id] }
+          end
+
           _collection
         else
           []
@@ -116,7 +123,7 @@ module SurveyGizmo
       def route(path, options)
         methods = options[:via]
         methods = [:get, :create, :update, :delete] if methods == :any
-        methods.is_a?(Array) ? methods.each{|m| @paths[m] = path } : (@paths[methods] = path)
+        methods.is_a?(Array) ? methods.each { |m| @paths[m] = path } : (@paths[methods] = path)
         nil
       end
 
@@ -156,7 +163,7 @@ module SurveyGizmo
       def handle_route(key, *interp)
         path = @paths[key]
         raise "No routes defined for `#{key}` in #{self.name}" unless path
-        options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}){|hash, k| hash.merge(k.to_sym => interp.shift) }
+        options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}) { |hash, k| hash.merge(k.to_sym => interp.shift) }
         path.gsub(/:(\w+)/) do |m|
           options[$1.to_sym].tap { |result| raise(SurveyGizmo::URLError, "Missing parameters in request: `#{m}`") unless result }
         end
