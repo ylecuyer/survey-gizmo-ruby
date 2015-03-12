@@ -6,12 +6,11 @@ describe "Survey Gizmo Resource" do
       SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
     end
 
-    let(:described_class) { SurveyGizmoSpec::ResourceTest }
-
-    let(:create_attributes){ {:title => 'Spec', :test_id => 5} }
-    let(:get_attributes)   { create_attributes.merge(:id => 1) }
-    let(:update_attributes){ {:title => 'Updated'} }
-    let(:first_params){ {:id => 1, :test_id => 5} }
+    let(:described_class)   { SurveyGizmoSpec::ResourceTest }
+    let(:create_attributes) { {:title => 'Spec', :test_id => 5} }
+    let(:get_attributes)    { create_attributes.merge(:id => 1) }
+    let(:update_attributes) { {:title => 'Updated'} }
+    let(:first_params)      { {:id => 1, :test_id => 5} }
     let(:uri_paths){
       {
         :get => '/test/1',
@@ -24,7 +23,6 @@ describe "Survey Gizmo Resource" do
     it "#new?" do
       described_class.new.should be_new
     end
-
 
     it '#reload' do
       stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
@@ -60,10 +58,10 @@ describe "Survey Gizmo Resource" do
   end
 
   describe SurveyGizmo::API::Survey do
-    let(:create_attributes){ { title: 'Spec', type: 'survey', status: 'In Design' } }
-    let(:get_attributes)   { create_attributes.merge(id: 1234) }
-    let(:update_attributes){ { title: 'Updated'} }
-    let(:first_params){ {:id => 1234} }
+    let(:create_attributes) { { title: 'Spec', type: 'survey', status: 'In Design' } }
+    let(:get_attributes)    { create_attributes.merge(first_params) }
+    let(:update_attributes) { { title: 'Updated'} }
+    let(:first_params)      { { id: 1234} }
     let(:uri_paths){
       h = { :create => '/survey' }
       h.default = '/survey/1234'
@@ -80,13 +78,12 @@ describe "Survey Gizmo Resource" do
   end
 
   describe SurveyGizmo::API::Question do
-    let(:create_attributes){ {:survey_id => 1234, :page_id => 1, :title => 'Spec Question', :type => 'radio', :properties => {"required" => true, "option_sort" => false} } }
-    let(:get_attributes)   {
-      create_attributes.merge(:id => 1)
-    }
-    let(:update_attributes){ {:survey_id => 1234, :page_id => 1, :title => 'Updated'} }
-    let(:first_params)     { {:id => 1, :survey_id => 1234, :page_id => 1} }
-    let(:uri_paths){
+    let(:base_params)       { {survey_id: 1234, page_id: 1} }
+    let(:create_attributes) { base_params.merge(:title => 'Spec Question', :type => 'radio', :properties => {"required" => true, "option_sort" => false}) }
+    let(:get_attributes)    { create_attributes.merge(id: 1) }
+    let(:update_attributes) { base_params.merge(:title => 'Updated') }
+    let(:first_params)      { base_params.merge(id: 1) }
+    let(:uri_paths) {
       { :get =>    '/survey/1234/surveyquestion/1',
         :create => '/survey/1234/surveypage/1/surveyquestion',
         :update => '/survey/1234/surveypage/1/surveyquestion/1',
@@ -97,14 +94,24 @@ describe "Survey Gizmo Resource" do
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
 
-    it "should handle the title hash returned from the API" do
-      @question = described_class.new('title' => {'English' => 'Some title'})
-      @question.title.should == 'Some title'
+    it 'should handle the title hash returned from the API' do
+      expect(described_class.new('title' => {'English' => 'Some title'}).title).to eq('Some title')
     end
 
-    it "should handle the _subtype key" do
-      @question = described_class.new(:_subtype => 'radio')
-      @question.type.should == 'radio'
+    it 'should handle the _subtype key' do
+      described_class.new(:_subtype => 'radio').type.should == 'radio'
+    end
+
+    it 'should have no subquestions' do
+      expect(described_class.new().sub_questions).to eq([])
+    end
+
+    context 'with subquestions' do
+      let(:question_with_subquestions) { described_class.new(survey_id: 1234, sub_question_skus: [1, 2])}
+      it 'should have no subquestions' do
+        stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
+        expect(question_with_subquestions.sub_questions.size).to eq(2)
+      end
     end
   end
 
