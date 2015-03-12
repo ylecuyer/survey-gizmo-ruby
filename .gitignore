@@ -2,8 +2,6 @@
 *.rbc
 .bundle
 .config
-.ruby_version
-.ruby-version
 .yardoc
 Gemfile.lock
 InstalledFiles
@@ -19,3 +17,5 @@ test/version_tmp
 tmp
 test.rb
 .DS_Store
+.ruby-version
+
