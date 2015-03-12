@@ -346,7 +346,7 @@ module SurveyGizmo
             next if data_item[key].nil? || data_item[key].length == 0
 
             parent = find_attribute_parent(key)
-            data_item[parent] = {} unless data_item[parent]
+            data_item[parent] ||= {}
 
             case key.downcase
             when /(url|variable.*standard)/

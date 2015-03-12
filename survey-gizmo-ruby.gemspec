@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |gem|
   gem.name = 'survey-gizmo-ruby'
-  gem.version = '1.1.0'
+  gem.version = '1.1.1'
   gem.authors = ['Kabari Hendrick', 'Chris Horn', 'Adrien Jarthon', 'Lumos Labs, Inc.']
   gem.email = ['adrien.jarthon@dimelo.com']
   gem.description = 'Gem to use the SurveyGizmo.com REST API, v3+'

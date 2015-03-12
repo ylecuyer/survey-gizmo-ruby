@@ -10,7 +10,7 @@ module SurveyGizmo; module API
     attribute :contact_id,           Integer
     attribute :data,                 String
     attribute :status,               String
-    attribute :date_submitted,       DateTime
+    attribute :datesubmitted,        DateTime
     attribute :is_test_data,         Boolean
     attribute :sResponseComment,     String
     attribute :variable,             Hash       # READ-ONLY
