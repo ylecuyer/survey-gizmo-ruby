@@ -195,7 +195,7 @@ module SurveyGizmo
       if new?
         _create
       else
-        handle_response SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks) do
+        handle_response(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks)) do
           warn _response.message if !_response.ok? && ENV['GIZMO_DEBUG']
           _response.ok? ? saved! : false
         end
@@ -206,7 +206,7 @@ module SurveyGizmo
     # @return [self, false]
     #   Returns the object, if saved. Otherwise returns false.
     def reload
-      handle_response SurveyGizmo.get(handle_route(:get)) do
+      handle_response(SurveyGizmo.get(handle_route(:get))) do
         if _response.ok?
           self.attributes = _response.data
           clean!
@@ -220,7 +220,7 @@ module SurveyGizmo
     # @return [Boolean]
     def destroy
       return false if new? || destroyed?
-      handle_response SurveyGizmo.delete(handle_route(:delete)) do
+      handle_response(SurveyGizmo.delete(handle_route(:delete))) do
         _response.ok? ? destroyed! : false
       end
     end
@@ -301,7 +301,7 @@ module SurveyGizmo
 
       def ok?
         if ENV['GIZMO_DEBUG']
-          puts "SG Response: "
+          ap 'SG Response: '
           ap @response
         end
 
@@ -330,7 +330,11 @@ module SurveyGizmo
       private
 
       def cleanup_attribute_name(attr)
-        attr.downcase.gsub(/[^[:alnum:]]+/,'_').gsub(/(url|variable|standard|shown)/,'').gsub(/_+/,'_').gsub(/^_/,'').gsub(/_$/,'')
+        attr.downcase.gsub(/[^[:alnum:]]+/, '_')
+                     .gsub(/(url|variable|standard|shown)/, '')
+                     .gsub(/_+/, '_')
+                     .gsub(/^_/, '')
+                     .gsub(/_$/, '')
       end
 
       def find_attribute_parent(attr)
@@ -353,7 +357,7 @@ module SurveyGizmo
         return unless data
 
         # Handle really crappy [] notation in SG API, so far just in SurveyResponse
-        (@_data.is_a?(Array) ? @_data : [@_data]).each do |data_item|
+        (data.is_a?(Array) ? data : [data]).each do |data_item|
           data_item.keys.grep(/^\[/).each do |key|
             next if data_item[key].nil? || data_item[key].length == 0
 
@@ -373,7 +377,7 @@ module SurveyGizmo
 
             data_item.delete(key)
           end
-        end unless @_data.nil?
+        end
       end
     end
 
@@ -381,7 +385,7 @@ module SurveyGizmo
     protected
 
     def attributes_without_blanks
-      self.attributes.reject{|k,v| v.blank? }
+      self.attributes.reject { |k,v| v.blank? }
     end
 
     private
@@ -404,8 +408,8 @@ module SurveyGizmo
     end
 
     def _create(attributes = {})
-      http = SurveyGizmo.put(handle_route(:create), :query => self.attributes_without_blanks)
-      handle_response http do
+      http = SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks)
+      handle_response(http) do
         if _response.ok?
           if ENV['GIZMO_DEBUG']
             puts "SG Set attributes during _create"
@@ -421,7 +425,7 @@ module SurveyGizmo
 
     def _copy(attributes = {})
       http = SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks)
-      handle_response http do
+      handle_response(http) do
         if _response.ok?
           self.attributes = _response.data
           saved!
