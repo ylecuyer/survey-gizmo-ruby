@@ -80,9 +80,9 @@ describe 'Survey Gizmo Resource' do
   describe SurveyGizmo::API::Question do
     let(:base_params)       { {survey_id: 1234, page_id: 1} }
     let(:create_attributes) { base_params.merge(:title => 'Spec Question', :type => 'radio', :properties => {'required' => true, 'option_sort' => false}) }
-    let(:get_attributes)    { create_attributes.merge(id: 1) }
     let(:update_attributes) { base_params.merge(title: 'Updated') }
     let(:first_params)      { base_params.merge(id: 1) }
+    let(:get_attributes)    { create_attributes.merge(id: 1) }
     let(:uri_paths) {
       { :get =>    '/survey/1234/surveyquestion/1',
         :create => '/survey/1234/surveypage/1/surveyquestion',
@@ -116,7 +116,7 @@ describe 'Survey Gizmo Resource' do
   end
 
   describe SurveyGizmo::API::Option do
-    let(:survey_and_page)   { {survey_id: 1234, page_id: 1}}
+    let(:survey_and_page)   { {survey_id: 1234, page_id: 1} }
     let(:create_attributes) { survey_and_page.merge(question_id: 1, title: 'Spec Question', value: 'Spec Answer') }
     let(:update_attributes) { survey_and_page.merge(question_id: 1, title: 'Updated') }
     let(:first_params)      { survey_and_page.merge(id: 1, question_id: 1) }

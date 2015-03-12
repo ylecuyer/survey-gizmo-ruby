@@ -41,6 +41,8 @@ Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) 
         question.errors # => ['There was an error']
 	
 	# Retrieving Questions for a given survey.  Note that page_id is a required parameter.
+	# Watch out for sub_questions - they are not returned by this call and must be individually retrieved
+	# with the .sub_questions method!
 	questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
 	
 	# Retrieving SurveyResponses for a given survey.  
