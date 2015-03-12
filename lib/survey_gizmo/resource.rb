@@ -285,11 +285,14 @@ module SurveyGizmo
 
     # This class normalizes the response returned by Survey Gizmo
     class Response
+      attr_reader :response
+
       def ok?
         if ENV['GIZMO_DEBUG']
           puts "SG Response: "
           ap @response
         end
+
         if @response['result_ok'] && @response['result_ok'].to_s.downcase == 'false' && @response['message'] && @response['code'] && @response['message'] =~ /service/i
           raise Exception, "#{@response['message']}: #{@response['code']}"
         end
@@ -311,9 +314,9 @@ module SurveyGizmo
         @_message ||= @response['message']
       end
 
-      attr_reader :response
 
       private
+
       def cleanup_attribute_name(attr)
         attr.downcase.gsub(/[^[:alnum:]]+/,'_').gsub(/(url|variable|standard|shown)/,'').gsub(/_+/,'_').gsub(/^_/,'').gsub(/_$/,'')
       end

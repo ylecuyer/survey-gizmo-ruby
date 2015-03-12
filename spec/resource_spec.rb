@@ -60,9 +60,9 @@ describe "Survey Gizmo Resource" do
   end
 
   describe SurveyGizmo::API::Survey do
-    let(:create_attributes){ {:title => 'Spec', :type => 'survey', :status => 'In Design'} }
-    let(:get_attributes)   { create_attributes.merge(:id => 1234) }
-    let(:update_attributes){ {:title => 'Updated'} }
+    let(:create_attributes){ { title: 'Spec', type: 'survey', status: 'In Design' } }
+    let(:get_attributes)   { create_attributes.merge(id: 1234) }
+    let(:update_attributes){ { title: 'Updated'} }
     let(:first_params){ {:id => 1234} }
     let(:uri_paths){
       h = { :create => '/survey' }
@@ -72,6 +72,11 @@ describe "Survey Gizmo Resource" do
 
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
+
+    it 'should parse the number of completed records correctly' do
+      survey = described_class.new('title' => {'English' => 'Some title'}, 'statistics' => [["Partial", 2], ["Disqualified", 28], ["Complete", 15]])
+      expect(survey.number_of_completed_responses).to eq(15)
+    end
   end
 
   describe SurveyGizmo::API::Question do
