@@ -67,6 +67,5 @@ module SurveyGizmo
     def loaded?
       @loaded
     end
-
   end
 end
