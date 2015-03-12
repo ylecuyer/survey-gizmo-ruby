@@ -61,6 +61,13 @@ module SurveyGizmo
         if response.ok?
           _collection = SurveyGizmo::Collection.new(self, nil, response.data)
           _collection.send(:options=, {:target => self, :parent => self})
+
+          # Hack in the survey_id property because SurveyGizmo does not return it in most objects!
+          # Could probably do this for all conditions to the request (that's what happens in .first below)
+          if conditions[:survey_id] && instance_methods.include?(:survey_id)
+            _collection.each { |c| c.survey_id ||= conditions[:survey_id] }
+          end
+
           _collection
         else
           []
@@ -116,7 +123,7 @@ module SurveyGizmo
       def route(path, options)
         methods = options[:via]
         methods = [:get, :create, :update, :delete] if methods == :any
-        methods.is_a?(Array) ? methods.each{|m| @paths[m] = path } : (@paths[methods] = path)
+        methods.is_a?(Array) ? methods.each { |m| @paths[m] = path } : (@paths[methods] = path)
         nil
       end
 
@@ -156,7 +163,7 @@ module SurveyGizmo
       def handle_route(key, *interp)
         path = @paths[key]
         raise "No routes defined for `#{key}` in #{self.name}" unless path
-        options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}){|hash, k| hash.merge(k.to_sym => interp.shift) }
+        options = interp.last.is_a?(Hash) ? interp.pop : path.scan(/:(\w+)/).inject({}) { |hash, k| hash.merge(k.to_sym => interp.shift) }
         path.gsub(/:(\w+)/) do |m|
           options[$1.to_sym].tap { |result| raise(SurveyGizmo::URLError, "Missing parameters in request: `#{m}`") unless result }
         end
@@ -285,11 +292,14 @@ module SurveyGizmo
 
     # This class normalizes the response returned by Survey Gizmo
     class Response
+      attr_reader :response
+
       def ok?
         if ENV['GIZMO_DEBUG']
           puts "SG Response: "
           ap @response
         end
+
         if @response['result_ok'] && @response['result_ok'].to_s.downcase == 'false' && @response['message'] && @response['code'] && @response['message'] =~ /service/i
           raise Exception, "#{@response['message']}: #{@response['code']}"
         end
@@ -311,9 +321,9 @@ module SurveyGizmo
         @_message ||= @response['message']
       end
 
-      attr_reader :response
 
       private
+
       def cleanup_attribute_name(attr)
         attr.downcase.gsub(/[^[:alnum:]]+/,'_').gsub(/(url|variable|standard|shown)/,'').gsub(/_+/,'_').gsub(/^_/,'').gsub(/_$/,'')
       end
@@ -343,7 +353,7 @@ module SurveyGizmo
             next if data_item[key].nil? || data_item[key].length == 0
 
             parent = find_attribute_parent(key)
-            data_item[parent] = {} unless data_item[parent]
+            data_item[parent] ||= {}
 
             case key.downcase
             when /(url|variable.*standard)/

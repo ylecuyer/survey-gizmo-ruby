@@ -46,7 +46,7 @@ describe "Survey Gizmo Resource" do
     it_should_behave_like 'an object with errors'
 
     context '#convert_filters_into_query_string' do
-      let(:page)   { 2 }
+      let(:page)    { 2 }
       let(:filters) { {page: 2, filters: [{field: 'istestdata', operator: '<>', value: 1}] }}
 
       it 'should generate the correct page request' do
@@ -60,9 +60,9 @@ describe "Survey Gizmo Resource" do
   end
 
   describe SurveyGizmo::API::Survey do
-    let(:create_attributes){ {:title => 'Spec', :type => 'survey', :status => 'In Design'} }
-    let(:get_attributes)   { create_attributes.merge(:id => 1234) }
-    let(:update_attributes){ {:title => 'Updated'} }
+    let(:create_attributes){ { title: 'Spec', type: 'survey', status: 'In Design' } }
+    let(:get_attributes)   { create_attributes.merge(id: 1234) }
+    let(:update_attributes){ { title: 'Updated'} }
     let(:first_params){ {:id => 1234} }
     let(:uri_paths){
       h = { :create => '/survey' }
@@ -72,6 +72,11 @@ describe "Survey Gizmo Resource" do
 
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
+
+    it 'should parse the number of completed records correctly' do
+      survey = described_class.new('title' => {'English' => 'Some title'}, 'statistics' => [["Partial", 2], ["Disqualified", 28], ["Complete", 15]])
+      expect(survey.number_of_completed_responses).to eq(15)
+    end
   end
 
   describe SurveyGizmo::API::Question do
@@ -80,7 +85,7 @@ describe "Survey Gizmo Resource" do
       create_attributes.merge(:id => 1)
     }
     let(:update_attributes){ {:survey_id => 1234, :page_id => 1, :title => 'Updated'} }
-    let(:first_params){ {:id => 1, :survey_id => 1234, :page_id => 1} }
+    let(:first_params)     { {:id => 1, :survey_id => 1234, :page_id => 1} }
     let(:uri_paths){
       { :get =>    '/survey/1234/surveyquestion/1',
         :create => '/survey/1234/surveypage/1/surveyquestion',
@@ -104,13 +109,11 @@ describe "Survey Gizmo Resource" do
   end
 
   describe SurveyGizmo::API::Option do
-    let(:create_attributes){ {:survey_id => 1234, :page_id => 1, :question_id => 1, :title => 'Spec Question', :value => 'Spec Answer'} }
-    let(:get_attributes)   {
-      create_attributes.merge(:id => 1)
-    }
-    let(:update_attributes){ {:survey_id => 1234, :page_id => 1, :question_id => 1, :title => 'Updated'} }
+    let(:create_attributes) { {:survey_id => 1234, :page_id => 1, :question_id => 1, :title => 'Spec Question', :value => 'Spec Answer'} }
+    let(:get_attributes)    { create_attributes.merge(:id => 1) }
+    let(:update_attributes) { {:survey_id => 1234, :page_id => 1, :question_id => 1, :title => 'Updated'} }
     let(:first_params){ {:id => 1, :survey_id => 1234, :page_id => 1, :question_id => 1} }
-    let(:uri_paths){
+    let(:uri_paths) {
       h = { :create => '/survey/1234/surveypage/1/surveyquestion/1/surveyoption' }
       h.default = '/survey/1234/surveypage/1/surveyquestion/1/surveyoption/1'
       h
@@ -121,12 +124,10 @@ describe "Survey Gizmo Resource" do
   end
 
   describe SurveyGizmo::API::Page do
-    let(:create_attributes){ {:survey_id => 1234, :title => {'English' => 'Spec Page'}} }
-    let(:get_attributes)   {
-      create_attributes.merge(:id => 1)
-    }
-    let(:update_attributes){ {:survey_id => 1234, :title => 'Updated'} }
-    let(:first_params){ {:id => 1, :survey_id => 1234 } }
+    let(:create_attributes) { {:survey_id => 1234, :title => {'English' => 'Spec Page'}} }
+    let(:get_attributes)    { create_attributes.merge(:id => 1) }
+    let(:update_attributes) { {:survey_id => 1234, :title => 'Updated'} }
+    let(:first_params)      { {:id => 1, :survey_id => 1234 } }
     let(:uri_paths){
       h = { :create => '/survey/1234/surveypage' }
       h.default = '/survey/1234/surveypage/1'
