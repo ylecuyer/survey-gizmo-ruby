@@ -108,7 +108,7 @@ describe "Survey Gizmo Resource" do
 
     context 'with subquestions' do
       let(:question_with_subquestions) { described_class.new(survey_id: 1234, sub_question_skus: [1, 2])}
-      it 'should have no subquestions' do
+      it 'should have 2 subquestions' do
         stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
         expect(question_with_subquestions.sub_questions.size).to eq(2)
       end
