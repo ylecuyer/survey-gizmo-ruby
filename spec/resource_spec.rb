@@ -7,10 +7,10 @@ describe "Survey Gizmo Resource" do
     end
 
     let(:described_class)   { SurveyGizmoSpec::ResourceTest }
-    let(:create_attributes) { {:title => 'Spec', :test_id => 5} }
-    let(:get_attributes)    { create_attributes.merge(:id => 1) }
-    let(:update_attributes) { {:title => 'Updated'} }
-    let(:first_params)      { {:id => 1, :test_id => 5} }
+    let(:create_attributes) { {title: 'Spec', test_id: 5} }
+    let(:get_attributes)    { create_attributes.merge(id: 1) }
+    let(:update_attributes) { {title: 'Updated'} }
+    let(:first_params)      { {id: 1, test_id: 5} }
     let(:uri_paths){
       {
         :get => '/test/1',
@@ -45,7 +45,7 @@ describe "Survey Gizmo Resource" do
 
     context '#convert_filters_into_query_string' do
       let(:page)    { 2 }
-      let(:filters) { {page: 2, filters: [{field: 'istestdata', operator: '<>', value: 1}] }}
+      let(:filters) { {page: page, filters: [{field: 'istestdata', operator: '<>', value: 1}] }}
 
       it 'should generate the correct page request' do
         expect(SurveyGizmoSpec::ResourceTest.convert_filters_into_query_string(page: page)).to eq("?page=#{page}")
@@ -72,7 +72,7 @@ describe "Survey Gizmo Resource" do
     it_should_behave_like 'an object with errors'
 
     it 'should parse the number of completed records correctly' do
-      survey = described_class.new('title' => {'English' => 'Some title'}, 'statistics' => [["Partial", 2], ["Disqualified", 28], ["Complete", 15]])
+      survey = described_class.new('statistics' => [['Partial', 2], ['Disqualified', 28], ['Complete', 15]])
       expect(survey.number_of_completed_responses).to eq(15)
     end
   end
@@ -81,7 +81,7 @@ describe "Survey Gizmo Resource" do
     let(:base_params)       { {survey_id: 1234, page_id: 1} }
     let(:create_attributes) { base_params.merge(:title => 'Spec Question', :type => 'radio', :properties => {"required" => true, "option_sort" => false}) }
     let(:get_attributes)    { create_attributes.merge(id: 1) }
-    let(:update_attributes) { base_params.merge(:title => 'Updated') }
+    let(:update_attributes) { base_params.merge(title: 'Updated') }
     let(:first_params)      { base_params.merge(id: 1) }
     let(:uri_paths) {
       { :get =>    '/survey/1234/surveyquestion/1',
@@ -116,10 +116,11 @@ describe "Survey Gizmo Resource" do
   end
 
   describe SurveyGizmo::API::Option do
-    let(:create_attributes) { {:survey_id => 1234, :page_id => 1, :question_id => 1, :title => 'Spec Question', :value => 'Spec Answer'} }
-    let(:get_attributes)    { create_attributes.merge(:id => 1) }
-    let(:update_attributes) { {:survey_id => 1234, :page_id => 1, :question_id => 1, :title => 'Updated'} }
-    let(:first_params){ {:id => 1, :survey_id => 1234, :page_id => 1, :question_id => 1} }
+    let(:survey_and_page)   { {survey_id: 1234, page_id: 1}}
+    let(:create_attributes) { survey_and_page.merge(question_id: 1, title: 'Spec Question', value: 'Spec Answer') }
+    let(:get_attributes)    { create_attributes.merge(id: 1) }
+    let(:update_attributes) { survey_and_page.merge(question_id: 1, title: 'Updated') }
+    let(:first_params)      { survey_and_page.merge(id: 1, question_id: 1) }
     let(:uri_paths) {
       h = { :create => '/survey/1234/surveypage/1/surveyquestion/1/surveyoption' }
       h.default = '/survey/1234/surveypage/1/surveyquestion/1/surveyoption/1'
