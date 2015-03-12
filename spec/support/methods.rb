@@ -5,7 +5,7 @@ module SurveyGizmoSpec
     end
 
     def request_params(opts = {})
-      {"user:pass" => 'test@test.com:password'}.merge(opts)
+      {'user:pass' => 'test@test.com:password'}.merge(opts)
     end
 
     def json_response(result, data)

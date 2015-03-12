@@ -10,7 +10,7 @@
 
 # Survey Gizmo (ruby)
 
-Integrate with the [Survey Gizmo API](http://developer.surveygizmo.com/resources/rest-api-documentation-version-1-01/) using an ActiveModel style interface. We currently support rest API **v3**. If you want to use version 1 of the API, please use gem version ~0.7.0
+Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) using an ActiveModel style interface. We currently support rest API **v3**. If you want to use version 1 of the API, please use gem version ~0.7.0
 
 ## Installation
 
