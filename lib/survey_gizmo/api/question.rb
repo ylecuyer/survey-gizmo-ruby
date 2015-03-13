@@ -5,16 +5,17 @@ module SurveyGizmo; module API
 
     # @macro [attach] virtus_attribute
     #   @return [$2]
-    attribute :id,                Integer
-    attribute :title,             String
-    attribute :type,              String
-    attribute :description,       String
-    attribute :shortname,         String
-    attribute :properties,        Hash
-    attribute :after,             Integer
-    attribute :survey_id,         Integer
-    attribute :page_id,           Integer, :default => 1
-    attribute :sub_question_skus, Array
+    attribute :id,                 Integer
+    attribute :title,              String
+    attribute :type,               String
+    attribute :description,        String
+    attribute :shortname,          String
+    attribute :properties,         Hash
+    attribute :after,              Integer
+    attribute :survey_id,          Integer
+    attribute :page_id,            Integer, :default => 1
+    attribute :sub_question_skus,  Array
+    attribute :parent_question_id, Integer
 
     alias_attribute :_subtype, :type
 
@@ -22,9 +23,22 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion', via: :create
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', via: [:update, :delete]
 
-    # @macro collection
-    collection :options
+    def survey
+      @survey ||= SurveyGizmo::API::Survey.first(id: survey_id)
+    end
 
+    def options
+      @options ||= SurveyGizmo::API::Option.all(survey_id: survey_id, page_id: page_id, question_id: id)
+    end
+
+    def parent_question
+      @parent_question ||= parent_question_id ? SurveyGizmo::API::Question.first(survey_id: survey_id, id: parent_question_id) : nil
+    end
+
+    def sub_questions
+      @sub_questions ||= sub_question_skus.map {|subquestion_id| SurveyGizmo::API::Question.first(survey_id: survey_id, id: subquestion_id)}
+                                          .each {|subquestion| subquestion.parent_question_id = id}
+    end
     # survey gizmo sends a hash back for :title
     # @private
     def title_with_multilingual=(val)
@@ -32,17 +46,6 @@ module SurveyGizmo; module API
     end
 
     alias_method_chain :title=, :multilingual
-
-    # These are not returned by the .all request for a survey_id!
-    def sub_questions
-      return @sub_questions if @subquestions || sub_question_skus.nil?
-
-      @sub_questions = []
-      sub_question_skus.each do |sub_question_id|
-        @sub_questions << SurveyGizmo::API::Question.first(survey_id: survey_id, id: sub_question_id)
-      end
-      @sub_questions
-    end
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
