@@ -56,7 +56,7 @@ module SurveyGizmo
       # @param [Hash] filters
       # @return [Array] of objects of this class
       def all(conditions = {}, filters = nil)
-        response = Response.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
+        response = RestResponse.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
         if response.ok?
           _collection = response.data.map {|datum| datum.is_a?(Hash) ? self.new(datum) : datum}
 
@@ -83,7 +83,7 @@ module SurveyGizmo
       # @param [Hash] filters
       # @return [Object, nil]
       def first(conditions = {}, filters = nil)
-        response = Response.new(SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters)))
+        response = RestResponse.new(SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters)))
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo's returned data
         response.ok? ? new(conditions.merge(response.data)) : nil
@@ -115,7 +115,7 @@ module SurveyGizmo
       # @param [Hash] conditions
       # @return [Boolean]
       def destroy(conditions)
-        Response.new(SurveyGizmo.delete(handle_route(:delete, conditions))).ok?
+        RestResponse.new(SurveyGizmo.delete(handle_route(:delete, conditions))).ok?
       end
 
       # Define the path where a resource is located
@@ -162,10 +162,8 @@ module SurveyGizmo
     # Save the instance to Survey Gizmo
     def save
       if id #Then it's an update
-        handle_response(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks)) do
-          warn _response.message if !_response.ok? && ENV['GIZMO_DEBUG']
-          _response.ok?
-        end
+        handle_response(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
+        @latest_response.ok?
       else
         _create
       end
@@ -175,13 +173,12 @@ module SurveyGizmo
     # @return [self, false]
     #   Returns the object, if saved. Otherwise returns false.
     def reload
-      handle_response(SurveyGizmo.get(handle_route(:get))) do
-        if _response.ok?
-          self.attributes = _response.data
-          self
-        else
-          false
-        end
+      handle_response(SurveyGizmo.get(handle_route(:get)))
+      if @latest_response.ok?
+        self.attributes = @latest_response['data']
+        self
+      else
+        false
       end
     end
 
@@ -189,9 +186,8 @@ module SurveyGizmo
     # @return [Boolean]
     def destroy
       if id
-        handle_response(SurveyGizmo.delete(handle_route(:delete))) do
-          _response.ok?
-        end
+        handle_response(SurveyGizmo.delete(handle_route(:delete)))
+        @latest_response.ok?
       else
         false
       end
@@ -207,11 +203,6 @@ module SurveyGizmo
     # @return [Array]
     def errors
       @errors ||= []
-    end
-
-    # @return [Hash] The raw JSON returned by Survey Gizmo
-    def raw_response
-      _response.response if _response
     end
 
     # @visibility private
@@ -240,92 +231,6 @@ module SurveyGizmo
       "#<#{self.class.name}:#{self.object_id}>\n#{attribute_strings.join()}"
     end
 
-    # This class normalizes the response returned by Survey Gizmo
-    class Response
-      attr_reader :response
-
-      def ok?
-        if ENV['GIZMO_DEBUG']
-          ap 'SG Response: '
-          ap @response
-        end
-
-        if @response['result_ok'] && @response['result_ok'].to_s.downcase == 'false' && @response['message'] && @response['code'] && @response['message'] =~ /service/i
-          raise Exception, "#{@response['message']}: #{@response['code']}"
-        end
-        @response['result_ok'] && @response['result_ok'].to_s.downcase == 'true'
-      end
-
-      # The parsed JSON data of the response
-      def data
-        unless @_data
-          @_data = {'id' => @response['id']} if @response && @response['id']
-          @_data = @response['data'] if @response && @response['data']
-        end
-
-        @_data ||= {}
-      end
-
-      # The error message if there is one
-      def message
-        @_message ||= @response['message']
-      end
-
-
-      private
-
-      def cleanup_attribute_name(attr)
-        attr.downcase.gsub(/[^[:alnum:]]+/, '_')
-                     .gsub(/(url|variable|standard|shown)/, '')
-                     .gsub(/_+/, '_')
-                     .gsub(/^_/, '')
-                     .gsub(/_$/, '')
-      end
-
-      def find_attribute_parent(attr)
-        case attr.downcase
-        when /url/
-          'url'
-        when /variable.*standard/
-          'meta'
-        when /variable.*shown/
-          'shown'
-        when /variable/
-          'variable'
-        when /question/
-          'answers'
-        end
-      end
-
-      def initialize(response)
-        @response = response.parsed_response
-        return unless data
-
-        # Handle really crappy [] notation in SG API, so far just in SurveyResponse
-        (data.is_a?(Array) ? data : [data]).each do |data_item|
-          data_item.keys.grep(/^\[/).each do |key|
-            next if data_item[key].nil? || data_item[key].length == 0
-
-            parent = find_attribute_parent(key)
-            data_item[parent] ||= {}
-
-            case key.downcase
-            when /(url|variable.*standard)/
-              data_item[parent][cleanup_attribute_name(key).to_sym] = data_item[key]
-            when /variable.*shown/
-              data_item[parent][cleanup_attribute_name(key).to_i] = data_item[key].include?('1')
-            when /variable/
-              data_item[parent][cleanup_attribute_name(key).to_i] = data_item[key].to_i
-            when /question/
-              data_item[parent][key] = data_item[key]
-            end
-
-            data_item.delete(key)
-          end
-        end
-      end
-    end
-
 
     protected
 
@@ -334,34 +239,32 @@ module SurveyGizmo
     end
 
     private
-    # The response object from SurveyGizmo. Useful for viewing the raw data returned
-    attr_reader :_response
-
-    def set_response(http)
-      @_response = Response.new(http)
-    end
-
     def handle_route(key)
       self.class.handle_route(key, to_param_options)
     end
 
-    def handle_response(resp, &block)
-      set_response(resp)
-      (self.errors << _response.message) unless _response.ok?
-      self.errors.clear if !self.errors.empty? && _response.ok?
-      instance_eval(&block)
+    def handle_response(rest_response, &block)
+      if ENV['GIZMO_DEBUG']
+        ap "SG Set attributes during _create"
+        ap http_response
+      end
+
+      @latest_response = rest_response
+      if @latest_response.ok?
+        self.errors.clear
+        true
+      else
+        errors << @latest_response.message
+        false
+      end
     end
 
     # Returns itself if successfully saved, but with attributes added by SurveyGizmo
     def _create(attributes = {})
       http = SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks)
       handle_response(http) do
-        if _response.ok?
-          if ENV['GIZMO_DEBUG']
-            ap "SG Set attributes during _create"
-            ap @_response
-          end
-          self.attributes = _response.data
+        if @_response.ok?
+          self.attributes = @response.data
           self
         else
           false
@@ -370,10 +273,10 @@ module SurveyGizmo
     end
 
     def _copy(attributes = {})
-      http = SurveyGizmo.post(handle_route(:update), :query => self.attributes_without_blanks)
+      http = SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks)
       handle_response(http) do
-        if _response.ok?
-          self.attributes = _response.data
+        if @_response.ok?
+          self.attributes = @response.data
         else
           false
         end
