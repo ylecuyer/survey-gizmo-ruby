@@ -5,16 +5,17 @@ module SurveyGizmo; module API
 
     # @macro [attach] virtus_attribute
     #   @return [$2]
-    attribute :id,                Integer
-    attribute :title,             String
-    attribute :type,              String
-    attribute :description,       String
-    attribute :shortname,         String
-    attribute :properties,        Hash
-    attribute :after,             Integer
-    attribute :survey_id,         Integer
-    attribute :page_id,           Integer, :default => 1
-    attribute :sub_question_skus, Array
+    attribute :id,                 Integer
+    attribute :title,              String
+    attribute :type,               String
+    attribute :description,        String
+    attribute :shortname,          String
+    attribute :properties,         Hash
+    attribute :after,              Integer
+    attribute :survey_id,          Integer
+    attribute :page_id,            Integer, :default => 1
+    attribute :sub_question_skus,  Array
+    attribute :parent_question_id, Integer
 
     alias_attribute :_subtype, :type
 

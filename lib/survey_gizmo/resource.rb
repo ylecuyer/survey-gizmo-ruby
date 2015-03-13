@@ -70,7 +70,15 @@ module SurveyGizmo
             end
           end
 
-          _collection
+          # Sub questions are not pulled by default so we have to retrieve them and mark their parent question
+          sub_questions = []
+          if self == SurveyGizmo::API::Question
+            _collection.each do |question|
+              sub_questions += question.sub_questions.each {|sq| sq.parent_question_id = question.id}
+            end
+          end
+
+          _collection + sub_questions
         else
           []
         end
