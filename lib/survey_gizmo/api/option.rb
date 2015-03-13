@@ -14,8 +14,8 @@ module SurveyGizmo; module API
     attribute :properties,    Hash
 
     # routing
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption',     :via => :create
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption/:id', :via => [:get, :update, :delete]
+    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption',     via: :create
+    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption/:id', via: [:get, :update, :delete]
 
     # survey gizmo sends a hash back for :title
     # @private
@@ -27,7 +27,7 @@ module SurveyGizmo; module API
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
-      {:id => self.id, :survey_id => self.survey_id, :page_id => self.page_id, :question_id => self.question_id}
+      {id: self.id, survey_id: self.survey_id, page_id: self.page_id, question_id: self.question_id}
     end
   end
 end; end

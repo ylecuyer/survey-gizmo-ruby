@@ -58,7 +58,7 @@ module SurveyGizmo
       def all(conditions = {}, filters = nil)
         response = Response.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
         if response.ok?
-          _collection = response.data.map {|datum| datum.is_a?(Hash) ? self.load(datum) : datum}
+          _collection = response.data.map {|datum| datum.is_a?(Hash) ? self.new(datum) : datum}
 
           # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
           # not often part of the SurveyGizmo's returned data
@@ -86,7 +86,7 @@ module SurveyGizmo
         response = Response.new(SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters)))
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo's returned data
-        response.ok? ? load(conditions.merge(response.data)) : nil
+        response.ok? ? new(conditions.merge(response.data)) : nil
       end
 
       # Create a new resource
@@ -115,8 +115,7 @@ module SurveyGizmo
       # @param [Hash] conditions
       # @return [Boolean]
       def destroy(conditions)
-        response = Response.new SurveyGizmo.delete(handle_route(:delete, conditions))
-        response.ok?
+        Response.new(SurveyGizmo.delete(handle_route(:delete, conditions))).ok?
       end
 
       # Define the path where a resource is located
@@ -131,13 +130,6 @@ module SurveyGizmo
         methods = [:get, :create, :update, :delete] if methods == :any
         methods.is_a?(Array) ? methods.each { |m| @paths[m] = path } : (@paths[methods] = path)
         nil
-      end
-
-      # @api private
-      def load(attributes = {})
-        resource = new(attributes)
-        resource.__send__(:clean!)
-        resource
       end
 
       # This method replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
@@ -168,17 +160,14 @@ module SurveyGizmo
     end
 
     # Save the instance to Survey Gizmo
-    #
-    # @return [Boolean]
-    #   true if Resource instance is saved
     def save
-      if new?
-        _create
-      else
+      if id #Then it's an update
         handle_response(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks)) do
           warn _response.message if !_response.ok? && ENV['GIZMO_DEBUG']
-          _response.ok? ? saved! : false
+          _response.ok?
         end
+      else
+        _create
       end
     end
 
@@ -189,7 +178,7 @@ module SurveyGizmo
       handle_response(SurveyGizmo.get(handle_route(:get))) do
         if _response.ok?
           self.attributes = _response.data
-          clean!
+          self
         else
           false
         end
@@ -199,37 +188,13 @@ module SurveyGizmo
     # Deleted the Resource from Survey Gizmo
     # @return [Boolean]
     def destroy
-      return false if new? || destroyed?
-      handle_response(SurveyGizmo.delete(handle_route(:delete))) do
-        _response.ok? ? destroyed! : false
+      if id
+        handle_response(SurveyGizmo.delete(handle_route(:delete))) do
+          _response.ok?
+        end
+      else
+        false
       end
-    end
-
-    # The state of the current Resource
-    # @api private
-    def new?
-      @_state.nil?
-    end
-
-    # @todo This seemed like a good way to prevent accidently trying to perform an action
-    #   on a record at a point when it would fail. Not sure if it's really necessary though.
-    [:clean, # stored and not dirty
-      :saved, # stored and not modified
-      :destroyed, # duh!
-      :zombie  # needs to be stored
-    ].each do |state|
-      # Change the method state to $1
-      define_method("#{state}!") do
-        @_state = state
-        true
-      end
-
-      # Inquire about the method state if $1
-      define_method("#{state}?") do
-        @_state == state
-      end
-
-      private "#{state}!"
     end
 
     # Sets the hash that will be used to interpolate values in routes. It needs to be defined per model.
@@ -387,16 +352,17 @@ module SurveyGizmo
       instance_eval(&block)
     end
 
+    # Returns itself if successfully saved, but with attributes added by SurveyGizmo
     def _create(attributes = {})
       http = SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks)
       handle_response(http) do
         if _response.ok?
           if ENV['GIZMO_DEBUG']
-            puts "SG Set attributes during _create"
+            ap "SG Set attributes during _create"
             ap @_response
           end
           self.attributes = _response.data
-          saved!
+          self
         else
           false
         end
@@ -408,7 +374,6 @@ module SurveyGizmo
       handle_response(http) do
         if _response.ok?
           self.attributes = _response.data
-          saved!
         else
           false
         end

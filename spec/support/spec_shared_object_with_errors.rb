@@ -4,8 +4,6 @@ shared_examples_for 'an object with errors' do
     stub_request(:any, /#{@base}/).to_return(json_response(false, 'There was an error!'))
   end
 
-  it "should be in zombie state if requests fail"
-
   context "class methods" do
     it { described_class.first(get_attributes).should be_nil }
     it { described_class.all(get_attributes).should be_empty }
@@ -29,7 +27,7 @@ shared_examples_for 'an object with errors' do
       stub_request(:any, /#{@base}/).to_return(json_response(false, 'There was an error!'), json_response(true, get_attributes))
       @obj.save.should == false
       @obj.errors.should_not be_empty
-      @obj.save.should == true
+      @obj.save.id.nil?.should == false
       @obj.errors.should be_empty
     end
   end
