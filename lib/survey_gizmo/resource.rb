@@ -56,7 +56,7 @@ module SurveyGizmo
       # @param [Hash] filters
       # @return [Array] of objects of this class
       def all(conditions = {}, filters = nil)
-        response = Response.new SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters))
+        response = Response.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
         if response.ok?
           _collection = response.data.map {|datum| datum.is_a?(Hash) ? self.load(datum) : datum}
 
@@ -83,8 +83,10 @@ module SurveyGizmo
       # @param [Hash] filters
       # @return [Object, nil]
       def first(conditions = {}, filters = nil)
-        response = Response.new SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters))
-        response.ok? ? load(conditions.merge(response.data)) : nil # Add in the properties from the conditions hash
+        response = Response.new(SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters)))
+        # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
+        # not often part of the SurveyGizmo's returned data
+        response.ok? ? load(conditions.merge(response.data)) : nil
       end
 
       # Create a new resource
@@ -138,17 +140,13 @@ module SurveyGizmo
         resource
       end
 
-      # @api private
-      def collections
-        @collections.dup.freeze
-      end
-
       # This method replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
       # values being passed in interpolation hash with the same keys.
       # @api private
       def handle_route(key, interpolation_hash)
         path = @paths[key]
         raise "No routes defined for `#{key}` in #{self.name}" unless path
+        raise "User/password hash not setup!" if SurveyGizmo.default_params.empty?
 
         path.gsub(/:(\w+)/) do |m|
           raise(SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`") unless interpolation_hash[$1.to_sym]
