@@ -9,15 +9,9 @@ module SurveyGizmo
       @array          = Array(values)
       @collection     = []
       @loaded         = false
-      @options        = resource.collections[name]
     end
 
     public
-
-    # @private
-    def length
-      @array.length
-    end
 
     # @private
     def each

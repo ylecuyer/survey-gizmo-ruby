@@ -8,7 +8,6 @@ module SurveyGizmo
     included do
       include Virtus.model
       instance_variable_set('@paths', {})
-      instance_variable_set('@collections', {})
       SurveyGizmo::Resource.descendants << self
     end
 
@@ -59,8 +58,7 @@ module SurveyGizmo
       def all(conditions = {}, filters = nil)
         response = Response.new SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters))
         if response.ok?
-          _collection = SurveyGizmo::Collection.new(self, nil, response.data)
-          _collection.send(:options=, {target: self, parent: self})
+          _collection = response.data.map {|datum| datum.is_a?(Hash) ? self.load(datum) : datum}
 
           # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
           # not often part of the SurveyGizmo's returned data
@@ -77,7 +75,6 @@ module SurveyGizmo
               sub_questions += question.sub_questions.each {|sq| sq.parent_question_id = question.id}
             end
           end
-
           _collection + sub_questions
         else
           []
@@ -142,26 +139,6 @@ module SurveyGizmo
         resource = new(attributes)
         resource.__send__(:clean!)
         resource
-      end
-
-      # Defines a new collection. These are child objects of the resource.
-      # @macro [new] collection
-      #   @param [Symbol] resource_name the name of the collection, pluralized
-      #   @param [Class] model and optional class name if the class name does not match the resource_name
-      #   @return [Collection]
-      #     the $1 collection
-      #   @scope instance
-      def collection(resource_name, model = nil)
-        @collections[resource_name] = {parent: self, target: (model ? model : resource_name)} # workaround for weird bug with passing a class to Collection
-        class_eval(<<-EOS)
-          def #{resource_name}
-            @#{resource_name} ||= []
-          end
-
-          def #{resource_name}=(array)
-            @#{resource_name} = SurveyGizmo::Collection.new(#{self}, :#{resource_name}, array)
-          end
-        EOS
       end
 
       # @api private

@@ -27,7 +27,9 @@ module SurveyGizmo; module API
     route '/survey',     via: :create
 
     # @macro collection
-    collection :pages
+    def pages
+      SurveyGizmo::Page.all(survey_id: id)
+    end
 
     # Statistics array of arrays looks like:
     # [["Partial", 2], ["Disqualified", 28], ["Complete", 15]]
