@@ -20,10 +20,6 @@ describe 'Survey Gizmo Resource' do
       }
     }
 
-    it '#new?' do
-      described_class.new.should be_new
-    end
-
     it '#reload' do
       stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
       obj = described_class.new(get_attributes.merge(update_attributes))
@@ -31,8 +27,6 @@ describe 'Survey Gizmo Resource' do
       obj.reload
       obj.attributes.reject{|k,v| v.blank? }.should == get_attributes
     end
-
-    it '#valid?'
 
     it 'should raise an error if params are missing' do
       lambda {
