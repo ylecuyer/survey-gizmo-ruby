@@ -27,7 +27,7 @@ module SurveyGizmo; module API
     route '/survey',     via: :create
 
     def pages
-      SurveyGizmo::Page.all(survey_id: id)
+      @pages ||= SurveyGizmo::API::Page.all(survey_id: id)
     end
 
     # Statistics array of arrays looks like:

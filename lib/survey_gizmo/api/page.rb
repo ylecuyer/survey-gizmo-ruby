@@ -17,7 +17,7 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveypage/:id', :via => [:get, :update, :delete]
 
     def questions
-      SurveyGizmo::API::Question.all(survey_id: survey_id, page_id: id)
+      @questions ||= SurveyGizmo::API::Question.all(survey_id: survey_id, page_id: id)
     end
 
     # survey gizmo sends a hash back for :title
