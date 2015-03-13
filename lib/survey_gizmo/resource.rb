@@ -8,7 +8,6 @@ module SurveyGizmo
     included do
       include Virtus.model
       instance_variable_set('@paths', {})
-      instance_variable_set('@collections', {})
       SurveyGizmo::Resource.descendants << self
     end
 
@@ -55,12 +54,11 @@ module SurveyGizmo
       # Get a list of resources
       # @param [Hash] conditions
       # @param [Hash] filters
-      # @return [SurveyGizmo::Collection, Array]
+      # @return [Array] of objects of this class
       def all(conditions = {}, filters = nil)
-        response = Response.new SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters))
+        response = Response.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
         if response.ok?
-          _collection = SurveyGizmo::Collection.new(self, nil, response.data)
-          _collection.send(:options=, {target: self, parent: self})
+          _collection = response.data.map {|datum| datum.is_a?(Hash) ? self.load(datum) : datum}
 
           # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
           # not often part of the SurveyGizmo's returned data
@@ -70,6 +68,10 @@ module SurveyGizmo
             end
           end
 
+          # Sub questions are not pulled by default so we have to retrieve them and mark their parent question
+          if self == SurveyGizmo::API::Question
+            _collection += _collection.map {|question| question.sub_questions}.flatten
+          end
           _collection
         else
           []
@@ -81,8 +83,10 @@ module SurveyGizmo
       # @param [Hash] filters
       # @return [Object, nil]
       def first(conditions = {}, filters = nil)
-        response = Response.new SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters))
-        response.ok? ? load(conditions.merge(response.data)) : nil # Add in the properties from the conditions hash
+        response = Response.new(SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters)))
+        # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
+        # not often part of the SurveyGizmo's returned data
+        response.ok? ? load(conditions.merge(response.data)) : nil
       end
 
       # Create a new resource
@@ -136,37 +140,13 @@ module SurveyGizmo
         resource
       end
 
-      # Defines a new collection. These are child objects of the resource.
-      # @macro [new] collection
-      #   @param [Symbol] resource_name the name of the collection, pluralized
-      #   @param [Class] model and optional class name if the class name does not match the resource_name
-      #   @return [Collection]
-      #     the $1 collection
-      #   @scope instance
-      def collection(resource_name, model = nil)
-        @collections[resource_name] = {parent: self, target: (model ? model : resource_name)} # workaround for weird bug with passing a class to Collection
-        class_eval(<<-EOS)
-          def #{resource_name}
-            @#{resource_name} ||= []
-          end
-
-          def #{resource_name}=(array)
-            @#{resource_name} = SurveyGizmo::Collection.new(#{self}, :#{resource_name}, array)
-          end
-        EOS
-      end
-
-      # @api private
-      def collections
-        @collections.dup.freeze
-      end
-
       # This method replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
       # values being passed in interpolation hash with the same keys.
       # @api private
       def handle_route(key, interpolation_hash)
         path = @paths[key]
         raise "No routes defined for `#{key}` in #{self.name}" unless path
+        raise "User/password hash not setup!" if SurveyGizmo.default_params.empty?
 
         path.gsub(/:(\w+)/) do |m|
           raise(SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`") unless interpolation_hash[$1.to_sym]

@@ -9,7 +9,6 @@ require 'httparty'
 require 'digest/md5'
 
 require 'survey_gizmo/resource'
-require 'survey_gizmo/collection'
 
 require 'survey_gizmo/api/survey'
 require 'survey_gizmo/api/survey_campaign'
@@ -43,6 +42,11 @@ module SurveyGizmo
   #   The account password
   def self.setup(opts = {})
     self.options = opts
-    default_params({ "user:md5" => "#{opts[:user]}:#{Digest::MD5.hexdigest(opts[:password])}" })
+    default_params({ 'user:md5' => "#{opts[:user]}:#{Digest::MD5.hexdigest(opts[:password])}" })
+  end
+
+  def self.reset
+    @@options = {}
+    default_params({})
   end
 end

@@ -13,10 +13,10 @@ describe 'Survey Gizmo Resource' do
     let(:get_attributes)    { create_attributes.merge(id: 1) }
     let(:uri_paths){
       {
-        :get => '/test/1',
-        :create => '/test/5/resource',
-        :update => '/test/5/resource/1',
-        :delete => '/test/5/resource/1'
+        get:    '/test/1',
+        create: '/test/5/resource',
+        update: '/test/5/resource/1',
+        delete: '/test/5/resource/1'
       }
     }
 
@@ -79,10 +79,10 @@ describe 'Survey Gizmo Resource' do
 
   describe SurveyGizmo::API::Question do
     let(:base_params)       { {survey_id: 1234, page_id: 1} }
-    let(:create_attributes) { base_params.merge(:title => 'Spec Question', :type => 'radio', :properties => {'required' => true, 'option_sort' => false}) }
-    let(:get_attributes)    { create_attributes.merge(id: 1) }
+    let(:create_attributes) { base_params.merge(title: 'Spec Question', type: 'radio', properties: {'required' => true, 'option_sort' => false}) }
     let(:update_attributes) { base_params.merge(title: 'Updated') }
     let(:first_params)      { base_params.merge(id: 1) }
+    let(:get_attributes)    { create_attributes.merge(id: 1) }
     let(:uri_paths) {
       { :get =>    '/survey/1234/surveyquestion/1',
         :create => '/survey/1234/surveypage/1/surveyquestion',
@@ -106,17 +106,27 @@ describe 'Survey Gizmo Resource' do
       expect(described_class.new().sub_questions).to eq([])
     end
 
+    it 'should find the survey' do
+      stub_request(:get, /#{@base}\/survey\/1234/).to_return(json_response(true, get_attributes))
+      described_class.new(base_params).survey
+      a_request(:get, /#{@base}\/survey\/1234/).should have_been_made
+    end
+
     context 'with subquestions' do
-      let(:question_with_subquestions) { described_class.new(survey_id: 1234, sub_question_skus: [1, 2])}
-      it 'should have 2 subquestions' do
+      let(:parent_id) { 33 }
+      let(:question_with_subquestions) { described_class.new(id: parent_id, survey_id: 1234, sub_question_skus: [1, 2])}
+      it 'should have 2 subquestions and they should have the right parent question' do
         stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
         expect(question_with_subquestions.sub_questions.size).to eq(2)
+
+        question_with_subquestions.sub_questions.first.parent_question
+        a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{parent_id}/).should have_been_made
       end
     end
   end
 
   describe SurveyGizmo::API::Option do
-    let(:survey_and_page)   { {survey_id: 1234, page_id: 1}}
+    let(:survey_and_page)   { {survey_id: 1234, page_id: 1} }
     let(:create_attributes) { survey_and_page.merge(question_id: 1, title: 'Spec Question', value: 'Spec Answer') }
     let(:update_attributes) { survey_and_page.merge(question_id: 1, title: 'Updated') }
     let(:first_params)      { survey_and_page.merge(id: 1, question_id: 1) }
