@@ -30,6 +30,10 @@ module SurveyGizmo; module API
       @pages ||= SurveyGizmo::API::Page.all(survey_id: id)
     end
 
+    def questions
+      @questions ||= pages.map {|p| SurveyGizmo::API::Question.all(survey_id: id, page_id: p.id)}.flatten
+    end
+
     # Statistics array of arrays looks like:
     # [["Partial", 2], ["Disqualified", 28], ["Complete", 15]]
     def number_of_completed_responses
