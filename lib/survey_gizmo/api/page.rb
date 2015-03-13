@@ -16,8 +16,9 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveypage', :via => :create
     route '/survey/:survey_id/surveypage/:id', :via => [:get, :update, :delete]
 
-    # @macro collection
-    collection :questions
+    def questions
+      @questions ||= SurveyGizmo::API::Question.all(survey_id: survey_id, page_id: id)
+    end
 
     # survey gizmo sends a hash back for :title
     # @private

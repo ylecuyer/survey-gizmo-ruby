@@ -9,7 +9,6 @@ require 'httparty'
 require 'digest/md5'
 
 require 'survey_gizmo/resource'
-require 'survey_gizmo/collection'
 
 require 'survey_gizmo/api/survey'
 require 'survey_gizmo/api/survey_campaign'

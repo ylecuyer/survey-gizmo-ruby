@@ -23,8 +23,9 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion', via: :create
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', via: [:update, :delete]
 
-    # @macro collection
-    collection :options
+    def options
+      @options ||= SurveyGizmo::API::Option.all(survey_id: survey_id, page_id: page_id, question_id: id)
+    end
 
     # survey gizmo sends a hash back for :title
     # @private
