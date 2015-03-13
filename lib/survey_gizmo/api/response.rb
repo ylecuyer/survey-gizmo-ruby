@@ -23,6 +23,10 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveyresponse',     via: :create
     route '/survey/:survey_id/surveyresponse/:id', via: [:get, :update, :delete]
 
+    def survey
+      @survey ||= SurveyGizmo::API::Survey.first(id: survey_id)
+    end
+
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
       {id: self.id, survey_id: self.survey_id}

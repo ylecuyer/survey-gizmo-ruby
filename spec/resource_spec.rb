@@ -106,11 +106,21 @@ describe 'Survey Gizmo Resource' do
       expect(described_class.new().sub_questions).to eq([])
     end
 
+    it 'should find the survey' do
+      stub_request(:get, /#{@base}\/survey\/1234/).to_return(json_response(true, get_attributes))
+      described_class.new(base_params).survey
+      a_request(:get, /#{@base}\/survey\/1234/).should have_been_made
+    end
+
     context 'with subquestions' do
-      let(:question_with_subquestions) { described_class.new(survey_id: 1234, sub_question_skus: [1, 2])}
-      it 'should have 2 subquestions' do
+      let(:parent_id) { 33 }
+      let(:question_with_subquestions) { described_class.new(id: parent_id, survey_id: 1234, sub_question_skus: [1, 2])}
+      it 'should have 2 subquestions and they should have the right parent question' do
         stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
         expect(question_with_subquestions.sub_questions.size).to eq(2)
+
+        question_with_subquestions.sub_questions.first.parent_question
+        a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{parent_id}/).should have_been_made
       end
     end
   end
