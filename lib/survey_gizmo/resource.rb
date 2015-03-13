@@ -54,7 +54,7 @@ module SurveyGizmo
       # Get a list of resources
       # @param [Hash] conditions
       # @param [Hash] filters
-      # @return [SurveyGizmo::Collection, Array]
+      # @return [Array] of objects of this class
       def all(conditions = {}, filters = nil)
         response = Response.new SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters))
         if response.ok?

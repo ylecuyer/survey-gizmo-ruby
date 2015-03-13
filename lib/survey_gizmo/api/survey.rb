@@ -26,7 +26,6 @@ module SurveyGizmo; module API
     route '/survey/:id', via: [:get, :update, :delete]
     route '/survey',     via: :create
 
-    # @macro collection
     def pages
       SurveyGizmo::Page.all(survey_id: id)
     end

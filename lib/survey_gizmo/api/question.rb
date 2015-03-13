@@ -23,7 +23,6 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion', via: :create
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', via: [:update, :delete]
 
-    # @macro collection
     def options
       SurveyGizmo::API::Option.all(survey_id: survey_id, question_id: id)
     end
