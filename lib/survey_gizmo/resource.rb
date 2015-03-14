@@ -61,17 +61,18 @@ module SurveyGizmo
           _collection = response.data.map {|datum| datum.is_a?(Hash) ? self.new(datum) : datum}
 
           # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
-          # not often part of the SurveyGizmo's returned data
+          # not often part of the SurveyGizmo returned data
           conditions.keys.each do |k|
             if conditions[k] && instance_methods.include?(k)
               _collection.each { |c| c[k] ||= conditions[k] }
             end
           end
 
-          # Sub questions are not pulled by default so we have to retrieve them and mark their parent question
+          # Sub questions are not pulled by default so we have to retrieve them
           if self == SurveyGizmo::API::Question
             _collection += _collection.map {|question| question.sub_questions}.flatten
           end
+
           _collection
         else
           []

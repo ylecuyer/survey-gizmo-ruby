@@ -4,12 +4,6 @@ SurveyGizmo doesn't test their REST API when they roll out changes.  They don't 
 
 -chorn@chorn.com 2013-03-15
 
-# REMINDER:
-
-SurveyGizmo breaks their API a few times a year.  You'd best look elsewhere.
-
--chorn@chorn.com 2013-12-18
-
 # Survey Gizmo (ruby)
 
 Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) using an ActiveModel style interface. We currently support rest API **v3**. If you want to use version 1 of the API, please use gem version ~0.7.0
@@ -50,7 +44,14 @@ Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) 
 	filters  = {page: 2, filters: [{field: 'istestdata', operator: '<>', value: 1}] }
 	responses = SurveyGizmo::API::Response.all({survey_id: survey_id}, filters)
 
-	
+## Debugging
+
+The GIZMO_DEBUG environment variable will trigger full printouts of SurveyGizmo's HTTP responses and variable introspection for almost everything
+
+	cd /my/app
+	export GIZMO_DEBUG=true
+	bundle exec rails whatever
+
 ## Adding API Objects
 
 Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`, `Response`, `EmailMessage`, `SurveyCampaign`, `Contact`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the how to do so:
