@@ -1,11 +1,11 @@
 # This class normalizes the response returned by Survey Gizmo
 class RestResponse
   attr_accessor :raw_response
-  attr_accessor :response
+  attr_accessor :parsed_response
 
   def initialize(rest_response)
     @raw_response = rest_response
-    @response = rest_response.parsed_response
+    @parsed_response = rest_response.parsed_response
     return unless data
 
     # Handle really crappy [] notation in SG API, so far just in SurveyResponse
@@ -35,23 +35,23 @@ class RestResponse
   def ok?
     if ENV['GIZMO_DEBUG']
       ap 'SG Response: '
-      ap @response
+      ap @parsed_response
     end
 
-    if @response['result_ok'] && @response['result_ok'].to_s.downcase == 'false' && @response['message'] && @response['code'] && @response['message'] =~ /service/i
-      raise Exception, "#{@response['message']}: #{@response['code']}"
+    if @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'false' && @parsed_response['message'] && @parsed_response['code'] && @parsed_response['message'] =~ /service/i
+      raise Exception, "#{@parsed_response['message']}: #{@parsed_response['code']}"
     end
-    @response['result_ok'] && @response['result_ok'].to_s.downcase == 'true'
+    @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
   end
 
   # The parsed JSON data of the response
   def data
-    @_data ||= @response['data'] #|| {'id' => @response['id']}
+    @_data ||= @parsed_response['data'] #|| {'id' => @parsed_response['id']}
   end
 
   # The error message if there is one
   def message
-    @_message ||= @response['message']
+    @_message ||= @parsed_response['message']
   end
 
 

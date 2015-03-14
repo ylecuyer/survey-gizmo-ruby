@@ -23,9 +23,9 @@ describe 'Survey Gizmo Resource' do
     it '#reload' do
       stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
       obj = described_class.new(get_attributes.merge(update_attributes))
-      obj.attributes.reject{|k,v| v.blank? }.should == get_attributes.merge(update_attributes)
+      obj.attributes.reject {|k,v| v.blank? }.should == get_attributes.merge(update_attributes)
       obj.reload
-      obj.attributes.reject{|k,v| v.blank? }.should == get_attributes
+      obj.attributes.reject {|k,v| v.blank? }.should == get_attributes
     end
 
     it 'should raise an error if params are missing' do
