@@ -23,7 +23,7 @@ Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) 
 	require 'survey-gizmo-ruby'
 	
 	# somewhere in your app define your survey gizmo login credentials.
-	SurveyGizmo.setup(:user => 'you@somewhere.com', :password => 'mypassword')
+	SurveyGizmo.setup(user: 'you@somewhere.com', password: 'mypassword')
 	
 	# Retrieve the survey with id: 12345
 	survey = SurveyGizmo::API::Survey.first(id: 12345)
@@ -31,10 +31,9 @@ Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) 
 	survey.pages # => [page1, page2,...]
 	
 	# Create a question for your survey
-	question = SurveyGizmo::API::Question.create(:survey_id => survey.id, :title => 'Do you like ruby?', :type => 'checkbox')
+	question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
 	question.title = "Do you LOVE Ruby?"
-	question.save # => true
-	question.saved? # => true
+	question.save # => question # (but now with the id assigned by SurveyGizmo as the :id property) 
 	
         # Error handling
         question.save # => false
