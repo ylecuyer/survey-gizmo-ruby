@@ -46,22 +46,6 @@ shared_examples_for 'an API object' do
     end
   end
 
-  context "instance#update" do
-    before(:each) do
-      @obj = described_class.new(get_attributes)
-    end
-
-    it "should make a request" do
-      stub_api_call(:post)
-      @obj.update
-      a_request(:post, /#{@base}#{uri_paths[:update]}/).should have_been_made
-    end
-
-    xit "cannot be updated if new" do
-      @obj.update(update_attributes).should be_false
-    end
-  end
-
   context "instance#destroy" do
     before(:each) do
       @obj = described_class.new(get_attributes)
