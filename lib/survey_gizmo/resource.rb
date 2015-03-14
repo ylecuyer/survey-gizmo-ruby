@@ -95,7 +95,7 @@ module SurveyGizmo
       #   The newly created Resource instance
       def create(attributes = {})
         resource = new(attributes)
-        resource.__send__(:_create)
+        resource.create_record_in_surveygizmo
         resource
       end
 
@@ -165,7 +165,7 @@ module SurveyGizmo
         handle_response(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
         @latest_response.ok?
       else
-        _create
+        create_record_in_surveygizmo
       end
     end
 
@@ -231,6 +231,18 @@ module SurveyGizmo
       "#<#{self.class.name}:#{self.object_id}>\n#{attribute_strings.join()}"
     end
 
+    # Returns itself if successfully saved, but with attributes added by SurveyGizmo
+    def create_record_in_surveygizmo(attributes = {})
+      http = RestResponse.new(SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks))
+      handle_response(http)
+      if http.ok?
+        self.attributes = http.data
+        self
+      else
+        false
+      end
+    end
+
 
     protected
 
@@ -250,18 +262,6 @@ module SurveyGizmo
         true
       else
         errors << @latest_response.message
-        false
-      end
-    end
-
-    # Returns itself if successfully saved, but with attributes added by SurveyGizmo
-    def _create(attributes = {})
-      http = RestResponse.new(SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks))
-      handle_response(http)
-      if http.ok?
-        self.attributes = http.data
-        self
-      else
         false
       end
     end
