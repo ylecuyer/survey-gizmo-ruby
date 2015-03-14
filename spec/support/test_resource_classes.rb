@@ -12,7 +12,7 @@ module SurveyGizmoSpec
     route '/test/:test_id/resource/:id', :via => [:update, :delete]
 
     def to_param_options
-      {:id => self.id, :test_id => self.test_id}
+      {id: self.id, test_id: self.test_id}
     end
   end
 
