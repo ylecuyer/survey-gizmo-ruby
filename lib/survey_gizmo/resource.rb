@@ -147,18 +147,6 @@ module SurveyGizmo
       end
     end
 
-    # Updates attributes and saves this Resource instance
-    #
-    # @param [Hash] attributes
-    #   attributes to be updated
-    #
-    # @return [Boolean]
-    #   true if resource is saved
-    def update(attributes = {})
-      self.attributes = attributes
-      self.save
-    end
-
     # Save the instance to Survey Gizmo
     def save
       if id #Then it's an update
