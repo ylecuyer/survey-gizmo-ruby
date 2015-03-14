@@ -35,6 +35,8 @@ Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) 
 	
 	# Retrieving Questions for a given survey.  Note that page_id is a required parameter.
 	questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
+	# Or
+	questions = survey.questions
 	
 	# Retrieving SurveyResponses for a given survey.  
 	# Note that because of both options being hashes, you need to enclose them both in braces to page successfully!
