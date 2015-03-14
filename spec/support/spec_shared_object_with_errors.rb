@@ -1,6 +1,6 @@
 shared_examples_for 'an object with errors' do
   before(:each) do
-    SurveyGizmo.setup(:user => 'test@test.com', :password => 'password')
+    SurveyGizmo.setup(user: 'test@test.com', password: 'password')
     stub_request(:any, /#{@base}/).to_return(json_response(false, 'There was an error!'))
   end
 
