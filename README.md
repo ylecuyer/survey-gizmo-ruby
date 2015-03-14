@@ -2,6 +2,7 @@
 
 > SurveyGizmo doesn't test their REST API when they roll out changes.  They don't publish a list of active defects, and when you call/email for support it is unlikely you will geto a person that knows anything about programming or the REST API.  You can't talk to level 2 support, although they might offer you a discount on their paid consulting rates if the problem persists for more than a few weeks.
 
+-— chorn@chorn.com 2013-03-15
 
 # Survey Gizmo (ruby)
 
@@ -23,7 +24,7 @@ SurveyGizmo.setup(user: 'you@somewhere.com', password: 'mypassword')
 
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)
-   survey.title # => My Title
+survey.title # => My Title
 survey.pages # => [page1, page2,...]
 
 # Create a question for your survey
