@@ -37,7 +37,7 @@ gem 'survey-gizmo-ruby'
 	
 	# Retrieving Questions for a given survey.  Note that page_id is a required parameter.
 	questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
-	# Or
+	# Or just retrieve all questions for all pages of this survey
 	questions = survey.questions
 	
 	# Retrieving SurveyResponses for a given survey.  
