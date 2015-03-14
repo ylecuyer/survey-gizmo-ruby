@@ -2,7 +2,6 @@
 
 > SurveyGizmo doesn't test their REST API when they roll out changes.  They don't publish a list of active defects, and when you call/email for support it is unlikely you will geto a person that knows anything about programming or the REST API.  You can't talk to level 2 support, although they might offer you a discount on their paid consulting rates if the problem persists for more than a few weeks.
 
-— chorn@chorn.com 2013-03-15
 
 # Survey Gizmo (ruby)
 
