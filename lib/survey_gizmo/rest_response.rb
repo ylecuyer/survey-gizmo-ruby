@@ -3,6 +3,35 @@ class RestResponse
   attr_accessor :raw_response
   attr_accessor :response
 
+  def initialize(rest_response)
+    @raw_response = rest_response
+    @response = rest_response.parsed_response
+    return unless data
+
+    # Handle really crappy [] notation in SG API, so far just in SurveyResponse
+    (data.is_a?(Array) ? data : [data]).each do |datum|
+      datum.keys.grep(/^\[/).each do |key|
+        next if datum[key].nil? || datum[key].length == 0
+
+        parent = find_attribute_parent(key)
+        datum[parent] ||= {}
+
+        case key.downcase
+        when /(url|variable.*standard)/
+          datum[parent][cleanup_attribute_name(key).to_sym] = datum[key]
+        when /variable.*shown/
+          datum[parent][cleanup_attribute_name(key).to_i] = datum[key].include?('1')
+        when /variable/
+          datum[parent][cleanup_attribute_name(key).to_i] = datum[key].to_i
+        when /question/
+          datum[parent][key] = datum[key]
+        end
+
+        datum.delete(key)
+      end
+    end
+  end
+
   def ok?
     if ENV['GIZMO_DEBUG']
       ap 'SG Response: '
@@ -48,35 +77,6 @@ class RestResponse
       'variable'
     when /question/
       'answers'
-    end
-  end
-
-  def initialize(response)
-    @raw_response = response
-    @response = response.parsed_response
-    return unless data
-
-    # Handle really crappy [] notation in SG API, so far just in SurveyResponse
-    (data.is_a?(Array) ? data : [data]).each do |datum|
-      datum.keys.grep(/^\[/).each do |key|
-        next if datum[key].nil? || datum[key].length == 0
-
-        parent = find_attribute_parent(key)
-        datum[parent] ||= {}
-
-        case key.downcase
-        when /(url|variable.*standard)/
-          datum[parent][cleanup_attribute_name(key).to_sym] = datum[key]
-        when /variable.*shown/
-          datum[parent][cleanup_attribute_name(key).to_i] = datum[key].include?('1')
-        when /variable/
-          datum[parent][cleanup_attribute_name(key).to_i] = datum[key].to_i
-        when /question/
-          datum[parent][key] = datum[key]
-        end
-
-        datum.delete(key)
-      end
     end
   end
 end
