@@ -20,39 +20,37 @@ gem 'survey-gizmo-ruby'
 
 ## Basic Usage
 
-```ruby
-require 'survey-gizmo-ruby'
+	require 'survey-gizmo-ruby'
+	
+	# somewhere in your app define your survey gizmo login credentials.
+	SurveyGizmo.setup(user: 'you@somewhere.com', password: 'mypassword')
+	
+	# Retrieve the survey with id: 12345
+	survey = SurveyGizmo::API::Survey.first(id: 12345)
+	survey.title # => My Title
+	survey.pages # => [page1, page2,...]
+	
+	# Create a question for your survey
+	question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
+	question.title = "Do you LOVE Ruby?"
+	question.save # => question # (but now with the id assigned by SurveyGizmo as the :id property) 
+	
+        # Error handling
+        question.save # => false
+        question.errors # => ['There was an error']
+	
+	# Retrieving Questions for a given survey.  Note that page_id is a required parameter.
+	questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
+	
+	# Retrieving SurveyResponses for a given survey.  
+	# Note that because of both options being hashes, you need to enclose them both in braces to page successfully!
+	responses = SurveyGizmo::API::Response.all({survey_id: survey.id}, {page: 1})
+	
+	# Retrieving page 2 of non test data SurveyResponses
+	filters  = {page: 2, filters: [{field: 'istestdata', operator: '<>', value: 1}] }
+	responses = SurveyGizmo::API::Response.all({survey_id: survey_id}, filters)
 
-# somewhere in your app define your survey gizmo login credentials.
-SurveyGizmo.setup(:user => 'you@somewhere.com', :password => 'mypassword')
-
-# Retrieve the survey with id: 12345
-survey = SurveyGizmo::API::Survey.first(id: 12345)
-survey.title # => My Title
-survey.pages # => [page1, page2,...]
-
-# Create a question for your survey
-question = SurveyGizmo::API::Question.create(:survey_id => survey.id, :title => 'Do you like ruby?', :type => 'checkbox')
-question.title = "Do you LOVE Ruby?"
-question.save # => true
-question.saved? # => true
-
-# Error handling
-question.save # => false
-question.errors # => ['There was an error']
-
-# Retrieving Questions for a given survey.  Note that page_id is a required parameter.
-questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
-
-# Retrieving SurveyResponses for a given survey.
-# Note that because of both options being hashes, you need to enclose them both in braces to page successfully!
-responses = SurveyGizmo::API::Response.all({survey_id: survey.id}, {page: 1})
-
-# Retrieving page 2 of non test data SurveyResponses
-filters  = {page: 2, filters: [{field: 'istestdata', operator: '<>', value: 1}] }
-responses = SurveyGizmo::API::Response.all({survey_id: survey_id}, filters)
-```
-
+	
 ## Adding API Objects
 
 Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`, `Response`, `EmailMessage`, `SurveyCampaign`, `Contact`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the how to do so:
