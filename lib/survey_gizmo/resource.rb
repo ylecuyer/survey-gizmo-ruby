@@ -244,11 +244,6 @@ module SurveyGizmo
     end
 
     def handle_response(rest_response, &block)
-      if ENV['GIZMO_DEBUG']
-        ap "SG Set attributes during _create"
-        ap http_response
-      end
-
       @latest_response = rest_response
       if @latest_response.ok?
         self.errors.clear
@@ -261,22 +256,21 @@ module SurveyGizmo
 
     # Returns itself if successfully saved, but with attributes added by SurveyGizmo
     def _create(attributes = {})
-      http = SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks)
-      handle_response(http) do
-        if @_response.ok?
-          self.attributes = @response.data
-          self
-        else
-          false
-        end
+      http = RestResponse.new(SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks))
+      handle_response(http)
+      if http.ok?
+        self.attributes = http.data
+        self
+      else
+        false
       end
     end
 
     def _copy(attributes = {})
-      http = SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks)
+      http = RestResponse.new(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
       handle_response(http) do
-        if @_response.ok?
-          self.attributes = @response.data
+        if http.ok?
+          self.attributes = http.data
         else
           false
         end
