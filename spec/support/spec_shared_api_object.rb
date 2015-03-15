@@ -46,41 +46,9 @@ shared_examples_for 'an API object' do
     end
   end
 
-  context "instance#update" do
-    before(:each) do
-      @obj = described_class.new(get_attributes)
-      @obj.__send__(:clean!)
-    end
-
-    it "should make a request" do
-      stub_api_call(:post)
-      @obj.update
-      a_request(:post, /#{@base}#{uri_paths[:update]}/).should have_been_made
-    end
-
-    it 'should change object state to saved' do
-      stub_api_call(:post)
-      @obj.update(update_attributes)
-      @obj.should be_saved
-    end
-
-    it "should not be marked saved if the request fails" do
-      stub_api_call(:post, false)
-      @obj.update
-      @obj.should_not be_saved
-    end
-
-    xit "cannot be updated if new" do
-      @obj.instance_variable_set('@_state', nil)
-      @obj.update(update_attributes).should be_false
-    end
-
-  end
-
   context "instance#destroy" do
     before(:each) do
       @obj = described_class.new(get_attributes)
-      @obj.__send__(:clean!)
     end
 
     it "should make a request" do
@@ -89,20 +57,8 @@ shared_examples_for 'an API object' do
       a_request(:delete, /#{@base}#{uri_paths[:delete]}/).should have_been_made
     end
 
-    it 'should change object state to destroyed' do
-      stub_api_call(:delete)
-      @obj.destroy
-      @obj.should be_destroyed
-    end
-
-    it "should not be marked destroyed if the request fails" do
-      stub_api_call(:delete, false)
-      @obj.destroy
-      @obj.should_not be_destroyed
-    end
-
     it "cannot be destroyed if new" do
-      @obj.instance_variable_set('@_state', nil)
+      @obj.id = nil
       @obj.destroy.should be_false
     end
   end
@@ -130,7 +86,6 @@ shared_examples_for 'an API object' do
 
     it "should call update on a created resource" do
       obj = described_class.new(get_attributes)
-      obj.__send__(:clean!)
       stub_api_call(:post)
       obj.save
       a_request(:post, /#{@base}#{uri_paths[:update]}/).should have_been_made

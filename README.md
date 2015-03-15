@@ -2,11 +2,7 @@
 
 > SurveyGizmo doesn't test their REST API when they roll out changes.  They don't publish a list of active defects, and when you call/email for support it is unlikely you will geto a person that knows anything about programming or the REST API.  You can't talk to level 2 support, although they might offer you a discount on their paid consulting rates if the problem persists for more than a few weeks.
 
-— chorn@chorn.com 2013-03-15
-
-> SurveyGizmo breaks their API a few times a year.  You'd best look elsewhere.
-
-— chorn@chorn.com 2013-12-18
+-— chorn@chorn.com 2013-03-15
 
 # Survey Gizmo (ruby)
 
@@ -24,7 +20,7 @@ gem 'survey-gizmo-ruby'
 require 'survey-gizmo-ruby'
 
 # somewhere in your app define your survey gizmo login credentials.
-SurveyGizmo.setup(:user => 'you@somewhere.com', :password => 'mypassword')
+SurveyGizmo.setup(user: 'you@somewhere.com', password: 'mypassword')
 
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)
@@ -32,17 +28,18 @@ survey.title # => My Title
 survey.pages # => [page1, page2,...]
 
 # Create a question for your survey
-question = SurveyGizmo::API::Question.create(:survey_id => survey.id, :title => 'Do you like ruby?', :type => 'checkbox')
+question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
 question.title = "Do you LOVE Ruby?"
-question.save # => true
-question.saved? # => true
+question.save # => question # (but now with the id assigned by SurveyGizmo as the :id property)
 
-# Error handling
-question.save # => false
-question.errors # => ['There was an error']
+  # Error handling
+  question.save # => false
+  question.errors # => ['There was an error']
 
 # Retrieving Questions for a given survey.  Note that page_id is a required parameter.
 questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
+# Or just retrieve all questions for all pages of this survey
+questions = survey.questions
 
 # Retrieving SurveyResponses for a given survey.
 # Note that because of both options being hashes, you need to enclose them both in braces to page successfully!
@@ -51,6 +48,16 @@ responses = SurveyGizmo::API::Response.all({survey_id: survey.id}, {page: 1})
 # Retrieving page 2 of non test data SurveyResponses
 filters  = {page: 2, filters: [{field: 'istestdata', operator: '<>', value: 1}] }
 responses = SurveyGizmo::API::Response.all({survey_id: survey_id}, filters)
+```
+
+## Debugging
+
+The GIZMO_DEBUG environment variable will trigger full printouts of SurveyGizmo's HTTP responses and variable introspection for almost everything
+
+```bash
+cd /my/app
+export GIZMO_DEBUG=true
+bundle exec rails whatever
 ```
 
 ## Adding API Objects
