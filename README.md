@@ -1,5 +1,20 @@
 ##### WARNING:
 
+This is version 2.0 of the API, which introduces breaking changes.  People who need backwards compatibility can use 1.1.7.
+
+What's fixed/better:
+* Filtering of requests is implemented
+* Requests for the questions in a survey now retrieve ALL of the questions, even the sneaky sub_questions that weren't directly returned to a basic API request.
+
+What broke:
+* SurveyGizmo objects (Survey, SurveyQuestion, etc) no longer track their own state (:new, :zombie, :saved, etc etc) - state tracking was useless anyways because exceptions always were raised on errors.
+* There is no more SurveyGizmo::Collection class...  now there are just Arrays.
+* There is no more lazy loading/instantiation.
+
+What's different:
+* Variables are not autoloaded.  That is to say when you load a Survey, the API request that loads the associated questions is not executed until you ask for them with the #questions method
+
+Also a past warning from another author:
 > SurveyGizmo doesn't test their REST API when they roll out changes.  They don't publish a list of active defects, and when you call/email for support it is unlikely you will geto a person that knows anything about programming or the REST API.  You can't talk to level 2 support, although they might offer you a discount on their paid consulting rates if the problem persists for more than a few weeks.
 
 -— chorn@chorn.com 2013-03-15
@@ -101,7 +116,9 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 
 ## Missing Features
 
-There are several API objects that are available and not included in this gem. It is also missing OAuth authentication ability. Also, the error notification isn't intuitive. It'd be great if someone could help tackle those!
+* It would be nice to implement enumerable on the Question and (especially) Response objects so people don't have to implement their own paging
+* There are several API objects that are available and not included in this gem.
+* It is also missing OAuth authentication ability.
 
 
 # Copyright
