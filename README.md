@@ -4,7 +4,7 @@ This is version 2.0 of the API, which introduces breaking changes.  People who n
 
 What's fixed/better:
 * Filtering of requests is implemented
-* Requests for the question in a survey now gets ALL of the questions, even the sneaky sub_questions that weren't directly returned to a basic API request.
+* Requests for the questions in a survey now retrieve ALL of the questions, even the sneaky sub_questions that weren't directly returned to a basic API request.
 
 What broke:
 * SurveyGizmo objects (Survey, SurveyQuestion, etc) no longer track their own state (:new, :zombie, :saved, etc etc) - state tracking was useless anyways because exceptions always were raised on errors.
@@ -116,7 +116,9 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 
 ## Missing Features
 
-There are several API objects that are available and not included in this gem. It is also missing OAuth authentication ability. Also, the error notification isn't intuitive. It'd be great if someone could help tackle those!
+* It would be nice to implement enumerable on the Question and (especially) Response objects so people don't have to implement their own paging
+* There are several API objects that are available and not included in this gem.
+* It is also missing OAuth authentication ability.
 
 
 # Copyright
