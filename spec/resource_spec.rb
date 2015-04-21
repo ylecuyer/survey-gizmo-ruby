@@ -1,6 +1,9 @@
 require 'spec_helper'
 describe 'Survey Gizmo Resource' do
 
+  let(:create_attributes_to_compare) { }
+  let(:get_attributes_to_compare) { }
+
   describe SurveyGizmo::Resource do
     before(:each) do
       SurveyGizmo.setup(user: 'test@test.com', password: 'password')
@@ -149,4 +152,22 @@ describe 'Survey Gizmo Resource' do
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
   end
+
+  describe SurveyGizmo::API::Response do
+    let(:create_attributes) { {:survey_id => 1234, :datesubmitted => "2015-04-15 05:46:30" } }
+    let(:create_attributes_to_compare) { create_attributes.merge(:datesubmitted => Time.parse("2015-04-15 05:46:30 EST")) }
+    let(:get_attributes)    { create_attributes.merge(:id => 1) }
+    let(:get_attributes_to_compare)    { create_attributes_to_compare.merge(:id => 1) }
+    let(:update_attributes) { {:survey_id => 1234, :title => 'Updated'} }
+    let(:first_params)      { {:id => 1, :survey_id => 1234 } }
+    let(:uri_paths){
+      h = { :create => '/survey/1234/surveyresponse' }
+      h.default = '/survey/1234/surveyresponse/1'
+      h
+    }
+
+    it_should_behave_like 'an API object'
+    it_should_behave_like 'an object with errors'
+  end
+
 end

@@ -10,6 +10,15 @@ class RestResponse
 
     # Handle really crappy [] notation in SG API, so far just in SurveyResponse
     (data.is_a?(Array) ? data : [data]).each do |datum|
+
+      # SurveyGizmo returns date information in EST, but does not
+      # provide time zone information in their API responses.
+      #
+      # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
+      unless datum["datesubmitted"].blank?
+        datum["datesubmitted"] = datum["datesubmitted"] + " EST"
+      end
+
       datum.keys.grep(/^\[/).each do |key|
         next if datum[key].nil? || datum[key].length == 0
 
