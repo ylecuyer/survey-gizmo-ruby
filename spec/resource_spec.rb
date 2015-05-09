@@ -1,4 +1,5 @@
 require 'spec_helper'
+
 describe 'Survey Gizmo Resource' do
 
   let(:create_attributes_to_compare) { }
@@ -170,4 +171,18 @@ describe 'Survey Gizmo Resource' do
     it_should_behave_like 'an object with errors'
   end
 
+  describe SurveyGizmo::API::AccountTeams do
+    let(:create_attributes) { { teamid: 1234, teamname: 'team' } }
+    let(:get_attributes)    { create_attributes.merge(id: 1234) }
+    let(:update_attributes) { create_attributes }
+    let(:first_params)      { { teamname: 'team' } }
+    let(:uri_paths) do
+      h = { :create => '/account_teams/1234' }
+      h.default = '/account_teams/1234'
+      h
+    end
+
+    it_should_behave_like 'an API object'
+    it_should_behave_like 'an object with errors'
+  end
 end
