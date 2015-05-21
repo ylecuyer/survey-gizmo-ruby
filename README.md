@@ -77,14 +77,14 @@ bundle exec rails whatever
 
 ## Adding API Objects
 
-Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`, `Response`, `EmailMessage`, `SurveyCampaign`, `Contact`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the how to do so:
+Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`, `Response`, `EmailMessage`, `SurveyCampaign`, `Contact`, `AccountTeams`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the how to do so:
 
 ```ruby
 class SomeObject
   # the base where most of the methods for handling the API are stored
   include SurveyGizmo::Resource
 
-  # the attribtues the object should respond to
+  # the attributes the object should respond to
   attribute :id,          Integer
   attribute :title,       String
   attribute :status,      String
