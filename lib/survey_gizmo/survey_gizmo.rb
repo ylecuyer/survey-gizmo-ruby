@@ -30,7 +30,7 @@ module SurveyGizmo
   URLError = Class.new(RuntimeError)
 
   # The base uri for this version of the API is $1
-  base_uri 'https://restapi.surveygizmo.com/v3'
+  base_uri 'https://restapi.surveygizmo.com/v4'
 
   @@options = {}
   mattr_accessor :options

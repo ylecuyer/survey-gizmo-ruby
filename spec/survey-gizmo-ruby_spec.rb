@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe SurveyGizmo do
   it 'should have a base uri' do
-    SurveyGizmo.base_uri.should == 'https://restapi.surveygizmo.com/v3'
+    SurveyGizmo.base_uri.should == 'https://restapi.surveygizmo.com/v4'
   end
 
   it 'should raise an error if auth isn\'t configured' do
