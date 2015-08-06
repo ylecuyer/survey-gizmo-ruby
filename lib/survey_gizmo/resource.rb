@@ -290,7 +290,8 @@ module SurveyGizmo
         @_data = @response['data']
 
         # Handle really crappy [] notation in SG API, so far just in SurveyResponse
-        (@_data.is_a?(Array) ? @_data : [@_data]).each do |data_item|
+        items = (@_data.is_a?(Array) ? @_data : [@_data]).compact
+        items.each do |data_item|
           data_item.keys.grep(/^\[/).each do |key|
             next if data_item[key].nil? || data_item[key].length == 0
 
@@ -310,7 +311,7 @@ module SurveyGizmo
 
             data_item.delete(key)
           end
-        end unless @_data.nil?
+        end unless items.blank?
       end
     end
 
