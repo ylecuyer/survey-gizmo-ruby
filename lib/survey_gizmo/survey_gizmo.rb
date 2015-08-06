@@ -8,17 +8,19 @@ require 'virtus'
 require 'httparty'
 require 'digest/md5'
 
+
 require 'survey_gizmo/resource'
 require 'survey_gizmo/rest_response'
 
-require 'survey_gizmo/api/survey'
-require 'survey_gizmo/api/survey_campaign'
-require 'survey_gizmo/api/question'
+require 'survey_gizmo/api/account_teams'
+require 'survey_gizmo/api/contact'
+require 'survey_gizmo/api/email_message'
 require 'survey_gizmo/api/option'
 require 'survey_gizmo/api/page'
-require 'survey_gizmo/api/contact'
+require 'survey_gizmo/api/question'
 require 'survey_gizmo/api/response'
-require 'survey_gizmo/api/email_message'
+require 'survey_gizmo/api/survey'
+require 'survey_gizmo/api/survey_campaign'
 
 module SurveyGizmo
   include HTTParty
