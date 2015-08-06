@@ -6,7 +6,7 @@ module SurveyGizmo; module API
     # @macro [attach] virtus_attribute
     #   @return [$2]
     attribute :id,             Integer
-    attribute :team,           Integer
+    attribute :team,           Array
     attribute :type,           String
     attribute :_subtype,       String
     attribute :status,         String
@@ -47,6 +47,11 @@ module SurveyGizmo; module API
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
       {id: self.id}
+    end
+
+    def belongs_to_team?(team_name)
+      if team
+      end
     end
   end
 end; end

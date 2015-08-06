@@ -1,3 +1,6 @@
+# This REST endpoint is only available to accounts with admin privileges
+# This code is untested.
+
 module SurveyGizmo;
   module API
     class AccountTeams
