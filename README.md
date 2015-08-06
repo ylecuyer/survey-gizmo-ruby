@@ -57,7 +57,8 @@ questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
 questions = survey.questions
 
 # Retrieving SurveyResponses for a given survey.
-# Note that because of both options being hashes, you need to enclose them both in braces to page successfully!
+# Note that because of both options being hashes, you need to enclose them both in
+# braces to page successfully!
 responses = SurveyGizmo::API::Response.all({survey_id: survey.id}, {page: 1})
 
 # Retrieving page 2 of non test data SurveyResponses
@@ -116,10 +117,8 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 
 ## Missing Features
 
-* It would be nice to implement enumerable on the Question and (especially) Response objects so people don't have to implement their own paging
-* There are several API objects that are available and not included in this gem.
-* It is also missing OAuth authentication ability.
-
+* There are several API objects that are available and not included in this gem.  AccountTeams, for instance, has some skeleton code but is untested.
+* OAuth authentication ability.
 
 # Copyright
 
