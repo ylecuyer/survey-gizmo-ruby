@@ -8,7 +8,6 @@ require 'virtus'
 require 'httparty'
 require 'digest/md5'
 
-
 require 'survey_gizmo/resource'
 require 'survey_gizmo/rest_response'
 
@@ -31,25 +30,14 @@ module SurveyGizmo
 
   URLError = Class.new(RuntimeError)
 
-  # The base uri for this version of the API is $1
-  base_uri 'https://restapi.surveygizmo.com/v4'
-
-  @@options = {}
-  mattr_accessor :options
-
   # Setup the account credentials to access the API
   # @param [Hash] opts
   # @option opts [#to_s] :user
   #   The username for your account. Usually your email address
   # @option opts [#to_s] :password
   #   The account password
-  def self.setup(opts = {})
-    self.options = opts
-    default_params({ 'user:md5' => "#{opts[:user]}:#{Digest::MD5.hexdigest(opts[:password])}" })
-  end
-
-  def self.reset
-    @@options = {}
-    default_params({})
+  def self.setup
+    base_uri "https://restapi.surveygizmo.com/#{SurveyGizmo.configuration.api_version}"
+    default_params({ 'user:md5' => "#{SurveyGizmo.configuration.user}:#{Digest::MD5.hexdigest(SurveyGizmo.configuration.password)}" })
   end
 end

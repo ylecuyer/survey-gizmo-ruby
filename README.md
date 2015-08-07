@@ -1,27 +1,18 @@
-#### WARNING:
-
-This is version `2.0.0` of the gem, which introduces breaking changes. People who need backwards compatibility can use `1.0.4`.
-
-What's fixed/better:
-* Filtering of requests is implemented
-* Requests for the questions in a survey now retrieve ALL of the questions, even the sneaky sub_questions that weren't directly returned to a basic API request.
-
-What broke:
-* SurveyGizmo objects (Survey, SurveyQuestion, etc) no longer track their own state (:new, :zombie, :saved, etc etc) - state tracking was useless anyways because exceptions always were raised on errors.
-* There is no more SurveyGizmo::Collection class...  now there are just Arrays.
-* There is no more lazy loading/instantiation.
-
-What's different:
-* Variables are not autoloaded.  That is to say when you load a Survey, the API request that loads the associated questions is not executed until you ask for them with the #questions method
-
-Also a past warning from another author:
-> SurveyGizmo doesn't test their REST API when they roll out changes.  They don't publish a list of active defects, and when you call/email for support it is unlikely you will geto a person that knows anything about programming or the REST API.  You can't talk to level 2 support, although they might offer you a discount on their paid consulting rates if the problem persists for more than a few weeks.
-
-— chorn@chorn.com 2013-03-15
-
 # Survey Gizmo (ruby)
 
 Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) using an ActiveModel style interface. We currently support rest API **v4**. If you want to use version 1 of the API, please use gem version ~0.7.0
+
+## Versions
+
+### Major Changes in 3.0
+
+* BREAKING CHANGE: Configuration is completely different
+* Important Change: Defaults to using the v4 SurveyGizmo API endpoint to take advantage of various API bug fixes (notably team ownership is broken in v3)
+
+### Old versions
+
+[Version 2.0.1 is here](https://github.com/RipTheJacker/survey-gizmo-ruby/releases/tag/v2.0.1)
+[Version 1.0.5 is here](https://github.com/RipTheJacker/survey-gizmo-ruby/releases/tag/v1.0.5)
 
 ## Installation
 
@@ -34,8 +25,14 @@ gem 'survey-gizmo-ruby'
 ```ruby
 require 'survey-gizmo-ruby'
 
-# somewhere in your app define your survey gizmo login credentials.
-SurveyGizmo.setup(user: 'you@somewhere.com', password: 'mypassword')
+# Configure your credentials
+SurveyGizmo.configure do |config|
+  config.user = 'still_tippin@test.com'
+  config.password = 'ittakesgrindintobeaking'
+
+  # api_version defaults to v4, but you can probably set to v3 safely if you suspect an API bug
+  config.api_version = 'v4'
+end
 
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)

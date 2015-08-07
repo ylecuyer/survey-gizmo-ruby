@@ -6,10 +6,6 @@ describe 'Survey Gizmo Resource' do
   let(:get_attributes_to_compare) { }
 
   describe SurveyGizmo::Resource do
-    before(:each) do
-      SurveyGizmo.setup(user: 'test@test.com', password: 'password')
-    end
-
     let(:described_class)   { SurveyGizmoSpec::ResourceTest }
     let(:create_attributes) { {title: 'Spec', test_id: 5} }
     let(:update_attributes) { {title: 'Updated'} }
