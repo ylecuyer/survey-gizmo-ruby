@@ -46,12 +46,14 @@ module SurveyGizmo; module API
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
-      {id: self.id}
+      { id: self.id }
     end
 
-    def belongs_to_team?(team_name)
-      if team
-      end
+    # As of 2015-08-07, when you request data on multiple surveys from /survey, the team
+    # variable comes back as "0".  If you request one survey at a time from /survey/{id}, it works correctly.
+    def teams
+      @individual_survey ||= SurveyGizmo::API::Survey.first(id: self.id)
+      @individual_survey.team
     end
   end
 end; end
