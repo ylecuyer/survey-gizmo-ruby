@@ -14,7 +14,9 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 ### Old versions
 
 [Version 2.0.1 for the v3 API is here](https://github.com/RipTheJacker/survey-gizmo-ruby/releases/tag/v2.0.1)
+
 [Version 1.0.5 for the v2 API is here](https://github.com/RipTheJacker/survey-gizmo-ruby/releases/tag/v1.0.5)
+
 [Version 0.7.0 for the v1 API is here](https://github.com/RipTheJacker/survey-gizmo-ruby/releases/tag/v0.7.0)
 
 ## Installation
