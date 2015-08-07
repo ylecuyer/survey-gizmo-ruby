@@ -27,7 +27,7 @@ module SurveyGizmo; module API
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
-      {id: self.id, survey_id: self.survey_id, page_id: self.page_id, question_id: self.question_id}
+      { id: self.id, survey_id: self.survey_id, page_id: self.page_id, question_id: self.question_id }
     end
   end
 end; end
