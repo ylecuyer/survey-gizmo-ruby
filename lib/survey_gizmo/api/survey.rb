@@ -55,5 +55,13 @@ module SurveyGizmo; module API
       @individual_survey ||= SurveyGizmo::API::Survey.first(id: self.id)
       @individual_survey.team
     end
+
+    def team_names
+      teams.map { |t| t['name'] }
+    end
+
+    def belongs_to?(team)
+      team_names.any? { |t| t == team }
+    end
   end
 end; end
