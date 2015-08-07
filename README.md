@@ -1,6 +1,8 @@
 # Survey Gizmo (ruby)
 
-Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) using an ActiveModel style interface. We currently support rest API **v4**. If you want to use version 1 of the API, please use gem version ~0.7.0
+Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) using an ActiveModel style interface.
+
+Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ## Versions
 
@@ -11,8 +13,9 @@ Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) 
 
 ### Old versions
 
-[Version 2.0.1 is here](https://github.com/RipTheJacker/survey-gizmo-ruby/releases/tag/v2.0.1)
-[Version 1.0.5 is here](https://github.com/RipTheJacker/survey-gizmo-ruby/releases/tag/v1.0.5)
+[Version 2.0.1 for the v3 API is here](https://github.com/RipTheJacker/survey-gizmo-ruby/releases/tag/v2.0.1)
+[Version 1.0.5 for the v2 API is here](https://github.com/RipTheJacker/survey-gizmo-ruby/releases/tag/v1.0.5)
+[Version 0.7.0 for the v1 API is here](https://github.com/RipTheJacker/survey-gizmo-ruby/releases/tag/v0.7.0)
 
 ## Installation
 
@@ -30,7 +33,7 @@ SurveyGizmo.configure do |config|
   config.user = 'still_tippin@test.com'
   config.password = 'ittakesgrindintobeaking'
 
-  # api_version defaults to v4, but you can probably set to v3 safely if you suspect an API bug
+  # api_version defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
   config.api_version = 'v4'
 end
 
