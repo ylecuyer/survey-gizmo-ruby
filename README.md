@@ -61,11 +61,11 @@ questions = survey.questions
 # Retrieving SurveyResponses for a given survey.
 # Note that because of both options being hashes, you need to enclose them both in
 # braces to page successfully!
-responses = SurveyGizmo::API::Response.all({survey_id: survey.id}, {page: 1})
+responses = SurveyGizmo::API::Response.all({ survey_id: survey.id }, { page: 1 })
 
 # Retrieving page 2 of non test data SurveyResponses
-filters  = {page: 2, filters: [{field: 'istestdata', operator: '<>', value: 1}] }
-responses = SurveyGizmo::API::Response.all({survey_id: survey_id}, filters)
+filters  = {page: 2, filters: [{ field: 'istestdata', operator: '<>', value: 1 }] }
+responses = SurveyGizmo::API::Response.all({ survey_id: survey_id }, filters)
 ```
 
 ## Debugging
@@ -95,12 +95,13 @@ class SomeObject
   attribute :created_on,  DateTime
 
   # defing the paths used to retrieve/set info
-  route '/something/:id', :via => [:get, :update, :delete]
-  route '/something',     :via => :create
+  route '/something/:id', via: [:get, :update, :delete]
+  route '/something',     via: :create
 
-  # this must be defined with the params that would be included in any route
+  # this must be defined with the params that would be included in any route related
+  # to an instance of SomeObject
   def to_param_options
-    {:id => self.id}
+    { id: self.id }
   end
 end
 ```
