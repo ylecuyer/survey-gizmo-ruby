@@ -11,6 +11,10 @@ RSpec.configure do |config|
   config.include SurveyGizmoSpec::Methods
 
   config.before(:each) do
-    @base = 'https://restapi.surveygizmo.com/v3'
+    @base = 'https://restapi.surveygizmo.com/v4'
+    SurveyGizmo.configure do |config|
+      config.user = 'test@test.com'
+      config.password = 'password'
+    end
   end
 end
