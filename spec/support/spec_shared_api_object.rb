@@ -1,8 +1,4 @@
 shared_examples_for 'an API object' do
-  before(:all) do
-    SurveyGizmo.setup(user: 'test@test.com', password: 'password')
-  end
-
   it "should be descendant of SurveyGizmo::Resource" do
     SurveyGizmo::Resource.descendants.should include(described_class)
   end

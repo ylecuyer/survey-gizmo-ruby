@@ -15,8 +15,8 @@ class RestResponse
       # provide time zone information in their API responses.
       #
       # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
-      unless datum["datesubmitted"].blank?
-        datum["datesubmitted"] = datum["datesubmitted"] + " EST"
+      unless datum['datesubmitted'].blank?
+        datum['datesubmitted'] = datum['datesubmitted'] + ' EST'
       end
 
       datum.keys.grep(/^\[/).each do |key|

@@ -24,31 +24,31 @@ module SurveyGizmo
       # @param [Hash] filters - simple pagination or other options at the top level, and surveygizmo "filters" at the :filters key
       # @return [String]
       #
-      # example input: {page: 2, filters: [{:field=>"istestdata", :operator=>"<>", :value=>1}]}
-      # The top level keys (e.g. page, resultsperpage) get simply encoded in the url, while the contents of the array of hashes
-      # passed at filters[:filters] gets turned into the format surveygizmo expects for its internal filtering, for example:
+      # example input: { page: 2, filters: [{:field=>"istestdata", :operator=>"<>", :value=>1}] }
+      #
+      # The top level keys (e.g. page, resultsperpage) get simply encoded in the url, while the
+      # contents of the array of hashes passed at filters[:filters] gets turned into the format
+      # SurveyGizmo expects for its internal filtering, for example:
       #
       # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       def convert_filters_into_query_string(filters = nil)
-        if filters && filters.size > 0
-          output_filters = filters[:filters] || []
-          filter_hash = {}
-          output_filters.each_with_index do |filter,i|
-            filter_hash.merge!({
-              "filter[field][#{i}]".to_sym => "#{filter[:field]}",
-              "filter[operator][#{i}]".to_sym => "#{filter[:operator]}",
-              "filter[value][#{i}]".to_sym => "#{filter[:value]}",
-            })
-          end
-          simple_filters = filters.reject {|k,v| k == :filters}
-          filter_hash.merge!(simple_filters)
+        return '' unless filters && filters.size > 0
 
-          uri = Addressable::URI.new
-          uri.query_values = filter_hash
-          "?#{uri.query}"
-        else
-          ''
+        output_filters = filters[:filters] || []
+        filter_hash = {}
+        output_filters.each_with_index do |filter,i|
+          filter_hash.merge!(
+            "filter[field][#{i}]".to_sym    => "#{filter[:field]}",
+            "filter[operator][#{i}]".to_sym => "#{filter[:operator]}",
+            "filter[value][#{i}]".to_sym    => "#{filter[:value]}",
+          )
         end
+        simple_filters = filters.reject { |k,v| k == :filters }
+        filter_hash.merge!(simple_filters)
+
+        uri = Addressable::URI.new
+        uri.query_values = filter_hash
+        "?#{uri.query}"
       end
 
       # Get a list of resources
@@ -58,7 +58,7 @@ module SurveyGizmo
       def all(conditions = {}, filters = nil)
         response = RestResponse.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
         if response.ok?
-          _collection = response.data.map {|datum| datum.is_a?(Hash) ? self.new(datum) : datum}
+          _collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
 
           # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
           # not often part of the SurveyGizmo returned data
@@ -70,7 +70,7 @@ module SurveyGizmo
 
           # Sub questions are not pulled by default so we have to retrieve them
           if self == SurveyGizmo::API::Question
-            _collection += _collection.map {|question| question.sub_questions}.flatten
+            _collection += _collection.map { |question| question.sub_questions }.flatten
           end
 
           _collection
@@ -150,7 +150,8 @@ module SurveyGizmo
 
     # Save the instance to Survey Gizmo
     def save
-      if id #Then it's an update
+      if id
+        # Then it's an update, because we already know the surveygizmo assigned id
         handle_response(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
         @latest_response.ok?
       else
@@ -232,7 +233,6 @@ module SurveyGizmo
       end
     end
 
-
     protected
 
     def attributes_without_blanks
@@ -240,6 +240,7 @@ module SurveyGizmo
     end
 
     private
+
     def handle_route(key)
       self.class.handle_route(key, to_param_options)
     end
