@@ -114,14 +114,15 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 * Take a gander at the github issues beforehand
 * Fork the project
 * Start a feature/bugfix branch and hack away
-* Make sure to add tests for it!!!!
+* Make sure to add specs for it!!!!
 * Submit a pull request
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
-## Missing Features
+## Desirable/Missing Features
 
 * There are several API objects that are available and not included in this gem.  AccountTeams, for instance, has some skeleton code but is untested.
 * OAuth authentication ability.
+* Better specs with VCR/Webmock would be nice.
 
 # Copyright
 

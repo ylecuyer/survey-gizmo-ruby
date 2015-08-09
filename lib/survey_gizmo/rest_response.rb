@@ -55,7 +55,7 @@ class RestResponse
 
   # The parsed JSON data of the response
   def data
-    @_data ||= @parsed_response['data'] #|| {'id' => @parsed_response['id']}
+    @_data ||= @parsed_response['data']
   end
 
   # The error message if there is one

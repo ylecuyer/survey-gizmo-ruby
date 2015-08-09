@@ -30,8 +30,11 @@ module SurveyGizmo; module API
       @pages ||= SurveyGizmo::API::Page.all(survey_id: id)
     end
 
+    # Sub question handling is in resource.rb.  It should probably be here instead but if it gets moved here
+    # and people try to request all the questions for a specific page directly from a ::API::Question request,
+    # sub questions will not be included!  So I left it there for least astonishment.
     def questions
-      @questions ||= pages.map {|p| SurveyGizmo::API::Question.all(survey_id: id, page_id: p.id)}.flatten
+      @questions ||= pages.map { |p| SurveyGizmo::API::Question.all(survey_id: id, page_id: p.id) }.flatten
     end
 
     # Statistics array of arrays looks like:

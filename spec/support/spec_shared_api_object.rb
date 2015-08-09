@@ -20,7 +20,7 @@ shared_examples_for 'an API object' do
       stub_request(:put, /#{@base}/).to_return(json_response(true, create_attributes))
       obj = described_class.create(create_attributes)
 
-      obj.attributes.reject{|k,v| v.blank? }.should == (create_attributes_to_compare || create_attributes)
+      obj.attributes.reject { |k,v| v.blank? }.should == (create_attributes_to_compare || create_attributes)
     end
   end
 
