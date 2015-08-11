@@ -74,7 +74,7 @@ API timeouts are a regular occurrence with the SurveyGizmo API.  At Lumos Labs w
 
 ## Debugging
 
-The GIZMO_DEBUG environment variable will trigger full printouts of SurveyGizmo's HTTP responses and variable introspection for almost everything
+The GIZMO_DEBUG environment variable will trigger full printouts of SurveyGizmo's HTTP responses and variable introspection for almost everything.
 
 ```bash
 cd /my/app
