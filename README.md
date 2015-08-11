@@ -68,6 +68,10 @@ filters  = {page: 2, filters: [{ field: 'istestdata', operator: '<>', value: 1 }
 responses = SurveyGizmo::API::Response.all({ survey_id: survey_id }, filters)
 ```
 
+## On API Timeouts
+
+API timeouts are a regular occurrence with the SurveyGizmo API.  At Lumos Labs we use our own [Pester gem](https://github.com/lumoslabs/pester) to manage retry strategies.  It might work for you.
+
 ## Debugging
 
 The GIZMO_DEBUG environment variable will trigger full printouts of SurveyGizmo's HTTP responses and variable introspection for almost everything
