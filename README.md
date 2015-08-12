@@ -43,6 +43,14 @@ end
 survey = SurveyGizmo::API::Survey.first(id: 12345)
 survey.title # => My Title
 survey.pages # => [page1, page2,...]
+survey.number_of_completed_responses # => 355
+survey.server_has_new_results_since?(Time.now.utc - 2.days) # => true
+survey.team_names # => ['Development', 'Test']
+
+# Retrieving Questions for a given survey.  Note that page_id is a required parameter.
+questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
+# Or just retrieve all questions for all pages of this survey
+questions = survey.questions
 
 # Create a question for your survey
 question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
@@ -52,11 +60,6 @@ question.save # => question # (but now with the id assigned by SurveyGizmo as th
   # Error handling
   question.save # => false
   question.errors # => ['There was an error']
-
-# Retrieving Questions for a given survey.  Note that page_id is a required parameter.
-questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
-# Or just retrieve all questions for all pages of this survey
-questions = survey.questions
 
 # Retrieving SurveyResponses for a given survey.
 # Note that because of both options being hashes, you need to enclose them both in

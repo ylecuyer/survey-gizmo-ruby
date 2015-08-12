@@ -47,6 +47,16 @@ module SurveyGizmo; module API
       end
     end
 
+    def server_has_new_results_since?(time)
+      filters = [{
+        field: 'datesubmitted',
+        operator: '>=',
+        value: time.in_time_zone("Eastern Time (US & Canada)").strftime('%Y-%d-%m %H:%M:%S')
+      }]
+      responses = SurveyGizmo::API::Response.all({ survey_id: self.id }, { page: 1, filters: filters })
+      responses.size > 0
+    end
+
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
       { id: self.id }
