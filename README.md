@@ -43,6 +43,14 @@ end
 survey = SurveyGizmo::API::Survey.first(id: 12345)
 survey.title # => My Title
 survey.pages # => [page1, page2,...]
+survey.number_of_completed_responses # => 355
+survey.server_has_new_results_since?(Time.now.utc - 2.days) # => true
+survey.team_names # => ['Development', 'Test']
+
+# Retrieving Questions for a given survey.  Note that page_id is a required parameter.
+questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
+# Or just retrieve all questions for all pages of this survey
+questions = survey.questions
 
 # Create a question for your survey
 question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
@@ -52,11 +60,6 @@ question.save # => question # (but now with the id assigned by SurveyGizmo as th
   # Error handling
   question.save # => false
   question.errors # => ['There was an error']
-
-# Retrieving Questions for a given survey.  Note that page_id is a required parameter.
-questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
-# Or just retrieve all questions for all pages of this survey
-questions = survey.questions
 
 # Retrieving SurveyResponses for a given survey.
 # Note that because of both options being hashes, you need to enclose them both in
@@ -68,9 +71,13 @@ filters  = {page: 2, filters: [{ field: 'istestdata', operator: '<>', value: 1 }
 responses = SurveyGizmo::API::Response.all({ survey_id: survey_id }, filters)
 ```
 
+## On API Timeouts
+
+API timeouts are a regular occurrence with the SurveyGizmo API.  At Lumos Labs we use our own [Pester gem](https://github.com/lumoslabs/pester) to manage retry strategies.  It might work for you.
+
 ## Debugging
 
-The GIZMO_DEBUG environment variable will trigger full printouts of SurveyGizmo's HTTP responses and variable introspection for almost everything
+The GIZMO_DEBUG environment variable will trigger full printouts of SurveyGizmo's HTTP responses and variable introspection for almost everything.
 
 ```bash
 cd /my/app
@@ -114,14 +121,15 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 * Take a gander at the github issues beforehand
 * Fork the project
 * Start a feature/bugfix branch and hack away
-* Make sure to add tests for it!!!!
+* Make sure to add specs for it!!!!
 * Submit a pull request
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
-## Missing Features
+## Desirable/Missing Features
 
 * There are several API objects that are available and not included in this gem.  AccountTeams, for instance, has some skeleton code but is untested.
 * OAuth authentication ability.
+* Better specs with VCR/Webmock would be nice.
 
 # Copyright
 
