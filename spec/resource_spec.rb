@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe 'Survey Gizmo Resource' do
-
   let(:create_attributes_to_compare) { }
   let(:get_attributes_to_compare) { }
 

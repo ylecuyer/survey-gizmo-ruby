@@ -13,7 +13,7 @@ module SurveyGizmo; module API
     attribute :properties,         Hash
     attribute :after,              Integer
     attribute :survey_id,          Integer
-    attribute :page_id,            Integer, :default => 1
+    attribute :page_id,            Integer, default: 1
     attribute :sub_question_skus,  Array
     attribute :parent_question_id, Integer
 
