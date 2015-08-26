@@ -40,7 +40,7 @@ module SurveyGizmo; module API
     # Statistics array of arrays looks like:
     # [["Partial", 2], ["Disqualified", 28], ["Complete", 15]]
     def number_of_completed_responses
-      if statistics && !statistics.empty? && (completed_data = statistics.find {|a| a[0] == 'Complete'})
+      if statistics && !statistics.empty? && (completed_data = statistics.find { |a| a[0] == 'Complete' })
         completed_data[1]
       else
         0

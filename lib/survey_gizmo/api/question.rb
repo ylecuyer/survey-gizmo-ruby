@@ -39,6 +39,7 @@ module SurveyGizmo; module API
       @sub_questions ||= sub_question_skus.map { |subquestion_id| SurveyGizmo::API::Question.first(survey_id: survey_id, id: subquestion_id) }
                                           .each { |subquestion| subquestion.parent_question_id = id  }
     end
+
     # survey gizmo sends a hash back for :title
     # @private
     def title_with_multilingual=(val)
