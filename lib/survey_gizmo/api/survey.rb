@@ -3,8 +3,6 @@ module SurveyGizmo; module API
   class Survey
     include SurveyGizmo::Resource
 
-    # @macro [attach] virtus_attribute
-    #   @return [$2]
     attribute :id,             Integer
     attribute :team,           Array
     attribute :type,           String
@@ -25,6 +23,10 @@ module SurveyGizmo; module API
 
     route '/survey/:id', via: [:get, :update, :delete]
     route '/survey',     via: :create
+
+    def to_param_options
+      { id: self.id }
+    end
 
     def pages
       @pages ||= SurveyGizmo::API::Page.all(survey_id: id)
@@ -55,11 +57,6 @@ module SurveyGizmo; module API
       }]
       responses = SurveyGizmo::API::Response.all({ survey_id: self.id }, { page: 1, filters: filters })
       responses.size > 0
-    end
-
-    # @see SurveyGizmo::Resource#to_param_options
-    def to_param_options
-      { id: self.id }
     end
 
     # As of 2015-08-07, when you request data on multiple surveys from /survey, the team

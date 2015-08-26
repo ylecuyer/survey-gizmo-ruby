@@ -3,8 +3,6 @@ module SurveyGizmo; module API
   class Page
     include SurveyGizmo::Resource
 
-    # @macro [attach] virtus_attribute
-    #   @return [$2]
     attribute :id,            Integer
     attribute :title,         Hash
     attribute :description,   String
@@ -32,7 +30,6 @@ module SurveyGizmo; module API
 
     alias_method_chain :title=, :multilingual
 
-    # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
       { id: self.id, survey_id: self.survey_id }
     end

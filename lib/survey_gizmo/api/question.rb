@@ -3,8 +3,6 @@ module SurveyGizmo; module API
   class Question
     include SurveyGizmo::Resource
 
-    # @macro [attach] virtus_attribute
-    #   @return [$2]
     attribute :id,                 Integer
     attribute :title,              String
     attribute :type,               String
