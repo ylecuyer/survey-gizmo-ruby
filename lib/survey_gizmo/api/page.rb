@@ -23,7 +23,6 @@ module SurveyGizmo; module API
     end
 
     # survey gizmo sends a hash back for :title
-    # @private
     def title_with_multilingual=(val)
       self.title_without_multilingual = val.is_a?(Hash) ? val : { 'English' => val }
     end

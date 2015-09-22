@@ -63,7 +63,6 @@ class RestResponse
     @_message ||= @parsed_response['message']
   end
 
-
   private
 
   def cleanup_attribute_name(attr)
