@@ -1,15 +1,14 @@
 require 'spec_helper'
 
 describe 'Survey Gizmo Resource' do
-
   let(:create_attributes_to_compare) { }
   let(:get_attributes_to_compare) { }
 
   describe SurveyGizmo::Resource do
     let(:described_class)   { SurveyGizmoSpec::ResourceTest }
-    let(:create_attributes) { {title: 'Spec', test_id: 5} }
-    let(:update_attributes) { {title: 'Updated'} }
-    let(:first_params)      { {id: 1, test_id: 5} }
+    let(:create_attributes) { { title: 'Spec', test_id: 5 } }
+    let(:update_attributes) { { title: 'Updated' } }
+    let(:first_params)      { { id: 1, test_id: 5 } }
     let(:get_attributes)    { create_attributes.merge(id: 1) }
     let(:uri_paths){
       {
@@ -39,7 +38,7 @@ describe 'Survey Gizmo Resource' do
 
     context '#convert_filters_into_query_string' do
       let(:page)    { 2 }
-      let(:filters) { {page: page, filters: [{field: 'istestdata', operator: '<>', value: 1}] }}
+      let(:filters) { { page: page, filters: [{ field: 'istestdata', operator: '<>', value: 1 }] } }
 
       it 'should generate the correct page request' do
         expect(SurveyGizmoSpec::ResourceTest.convert_filters_into_query_string(page: page)).to eq("?page=#{page}")

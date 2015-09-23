@@ -130,7 +130,6 @@ module SurveyGizmo
         methods = options[:via]
         methods = [:get, :create, :update, :delete] if methods == :any
         methods.is_a?(Array) ? methods.each { |m| @paths[m] = path } : (@paths[methods] = path)
-        nil
       end
 
       # This method replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the

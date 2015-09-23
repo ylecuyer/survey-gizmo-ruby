@@ -3,8 +3,6 @@ module SurveyGizmo; module API
   class Response
     include SurveyGizmo::Resource
 
-    # @macro [attach] virtus_attribute
-    #   @return [$2] the attribute +$1+ as a $2
     attribute :id,                   Integer
     attribute :survey_id,            Integer
     attribute :contact_id,           Integer
@@ -27,7 +25,6 @@ module SurveyGizmo; module API
       @survey ||= SurveyGizmo::API::Survey.first(id: survey_id)
     end
 
-    # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
       { id: self.id, survey_id: self.survey_id }
     end

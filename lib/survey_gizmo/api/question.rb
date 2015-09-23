@@ -3,8 +3,6 @@ module SurveyGizmo; module API
   class Question
     include SurveyGizmo::Resource
 
-    # @macro [attach] virtus_attribute
-    #   @return [$2]
     attribute :id,                 Integer
     attribute :title,              String
     attribute :type,               String
@@ -13,7 +11,7 @@ module SurveyGizmo; module API
     attribute :properties,         Hash
     attribute :after,              Integer
     attribute :survey_id,          Integer
-    attribute :page_id,            Integer, :default => 1
+    attribute :page_id,            Integer, default: 1
     attribute :sub_question_skus,  Array
     attribute :parent_question_id, Integer
 
@@ -39,6 +37,7 @@ module SurveyGizmo; module API
       @sub_questions ||= sub_question_skus.map { |subquestion_id| SurveyGizmo::API::Question.first(survey_id: survey_id, id: subquestion_id) }
                                           .each { |subquestion| subquestion.parent_question_id = id  }
     end
+
     # survey gizmo sends a hash back for :title
     # @private
     def title_with_multilingual=(val)

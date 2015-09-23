@@ -3,8 +3,6 @@ module SurveyGizmo; module API
   class Survey
     include SurveyGizmo::Resource
 
-    # @macro [attach] virtus_attribute
-    #   @return [$2]
     attribute :id,             Integer
     attribute :team,           Array
     attribute :type,           String
@@ -26,6 +24,10 @@ module SurveyGizmo; module API
     route '/survey/:id', via: [:get, :update, :delete]
     route '/survey',     via: :create
 
+    def to_param_options
+      { id: self.id }
+    end
+
     def pages
       @pages ||= SurveyGizmo::API::Page.all(survey_id: id)
     end
@@ -40,7 +42,7 @@ module SurveyGizmo; module API
     # Statistics array of arrays looks like:
     # [["Partial", 2], ["Disqualified", 28], ["Complete", 15]]
     def number_of_completed_responses
-      if statistics && !statistics.empty? && (completed_data = statistics.find {|a| a[0] == 'Complete'})
+      if statistics && !statistics.empty? && (completed_data = statistics.find { |a| a[0] == 'Complete' })
         completed_data[1]
       else
         0
@@ -51,15 +53,10 @@ module SurveyGizmo; module API
       filters = [{
         field: 'datesubmitted',
         operator: '>=',
-        value: time.in_time_zone("Eastern Time (US & Canada)").strftime('%Y-%d-%m %H:%M:%S')
+        value: time.in_time_zone("Eastern Time (US & Canada)").strftime('%Y-%m-%d %H:%M:%S')
       }]
       responses = SurveyGizmo::API::Response.all({ survey_id: self.id }, { page: 1, filters: filters })
       responses.size > 0
-    end
-
-    # @see SurveyGizmo::Resource#to_param_options
-    def to_param_options
-      { id: self.id }
     end
 
     # As of 2015-08-07, when you request data on multiple surveys from /survey, the team

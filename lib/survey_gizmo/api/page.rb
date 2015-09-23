@@ -3,8 +3,6 @@ module SurveyGizmo; module API
   class Page
     include SurveyGizmo::Resource
 
-    # @macro [attach] virtus_attribute
-    #   @return [$2]
     attribute :id,            Integer
     attribute :title,         Hash
     attribute :description,   String
@@ -25,14 +23,12 @@ module SurveyGizmo; module API
     end
 
     # survey gizmo sends a hash back for :title
-    # @private
     def title_with_multilingual=(val)
       self.title_without_multilingual = val.is_a?(Hash) ? val : { 'English' => val }
     end
 
     alias_method_chain :title=, :multilingual
 
-    # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
       { id: self.id, survey_id: self.survey_id }
     end
