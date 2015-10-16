@@ -183,13 +183,6 @@ module SurveyGizmo
       raise "Define #to_param_options in #{self.class.name}"
     end
 
-    # Any errors returned by Survey Gizmo
-    # @return [Array]
-    # DEPRECATED
-    def errors
-      @errors ||= []
-    end
-
     # @visibility private
     def inspect
       if ENV['GIZMO_DEBUG']
