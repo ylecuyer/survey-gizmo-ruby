@@ -16,41 +16,8 @@ module SurveyGizmo
       @descendants ||= Set.new
     end
 
-    # These are methods that every API resource has to access resources
-    # in Survey Gizmo
+    # These are methods that every API resource has to access resources in Survey Gizmo
     module ClassMethods
-
-      # Convert a [Hash] of filters into a query string
-      # @param [Hash] filters - simple pagination or other options at the top level, and surveygizmo "filters" at the :filters key
-      # @return [String]
-      #
-      # example input: { page: 2, filters: [{:field=>"istestdata", :operator=>"<>", :value=>1}] }
-      #
-      # The top level keys (e.g. page, resultsperpage) get simply encoded in the url, while the
-      # contents of the array of hashes passed at filters[:filters] gets turned into the format
-      # SurveyGizmo expects for its internal filtering, for example:
-      #
-      # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
-      def convert_filters_into_query_string(filters = nil)
-        return '' unless filters && filters.size > 0
-
-        output_filters = filters[:filters] || []
-        filter_hash = {}
-        output_filters.each_with_index do |filter,i|
-          filter_hash.merge!(
-            "filter[field][#{i}]".to_sym    => "#{filter[:field]}",
-            "filter[operator][#{i}]".to_sym => "#{filter[:operator]}",
-            "filter[value][#{i}]".to_sym    => "#{filter[:value]}",
-          )
-        end
-        simple_filters = filters.reject { |k,v| k == :filters }
-        filter_hash.merge!(simple_filters)
-
-        uri = Addressable::URI.new
-        uri.query_values = filter_hash
-        "?#{uri.query}"
-      end
-
       # Get a list of resources
       # @param [Hash] conditions
       # @param [Hash] filters
@@ -140,6 +107,37 @@ module SurveyGizmo
           raise(SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`") unless interpolation_hash[$1.to_sym]
           interpolation_hash[$1.to_sym]
         end
+      end
+
+      # Convert a [Hash] of filters into a query string
+      # @param [Hash] filters - simple pagination or other options at the top level, and surveygizmo "filters" at the :filters key
+      # @return [String]
+      #
+      # example input: { page: 2, filters: [{:field=>"istestdata", :operator=>"<>", :value=>1}] }
+      #
+      # The top level keys (e.g. page, resultsperpage) get simply encoded in the url, while the
+      # contents of the array of hashes passed at filters[:filters] gets turned into the format
+      # SurveyGizmo expects for its internal filtering, for example:
+      #
+      # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
+      def convert_filters_into_query_string(filters = nil)
+        return '' unless filters && filters.size > 0
+
+        output_filters = filters[:filters] || []
+        filter_hash = {}
+        output_filters.each_with_index do |filter,i|
+          filter_hash.merge!(
+            "filter[field][#{i}]".to_sym    => "#{filter[:field]}",
+            "filter[operator][#{i}]".to_sym => "#{filter[:operator]}",
+            "filter[value][#{i}]".to_sym    => "#{filter[:value]}",
+          )
+        end
+        simple_filters = filters.reject { |k,v| k == :filters }
+        filter_hash.merge!(simple_filters)
+
+        uri = Addressable::URI.new
+        uri.query_values = filter_hash
+        "?#{uri.query}"
       end
     end
 
