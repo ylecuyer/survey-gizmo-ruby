@@ -39,7 +39,7 @@ shared_examples_for 'an API object' do
 
     it "should return false if the request fails" do
       stub_request(:get, /#{@base}/).to_return(json_response(false, "something is wrong"))
-      described_class.first(first_params).should == nil
+      expect { described_class.first(first_params) }.to raise_error
     end
   end
 

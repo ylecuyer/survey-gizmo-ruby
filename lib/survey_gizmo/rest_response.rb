@@ -41,16 +41,17 @@ class RestResponse
     end
   end
 
-  def ok?
+  def check_validity
     if ENV['GIZMO_DEBUG']
       ap 'SG Response: '
       ap @parsed_response
     end
 
-    if @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'false' && @parsed_response['message'] && @parsed_response['code'] && @parsed_response['message'] =~ /service/i
-      raise Exception, "#{@parsed_response['message']}: #{@parsed_response['code']}"
+    if @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
+      true
+    else
+      fail "Bad response: #{self.pretty_inspect}"
     end
-    @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
   end
 
   # The parsed JSON data of the response

@@ -57,26 +57,23 @@ module SurveyGizmo
       # @return [Array] of objects of this class
       def all(conditions = {}, filters = nil)
         response = RestResponse.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
-        if response.ok?
-          _collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
+        response.check_validity
+        _collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
 
-          # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
-          # not often part of the SurveyGizmo returned data
-          conditions.keys.each do |k|
-            if conditions[k] && instance_methods.include?(k)
-              _collection.each { |c| c[k] ||= conditions[k] }
-            end
+        # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
+        # not often part of the SurveyGizmo returned data
+        conditions.keys.each do |k|
+          if conditions[k] && instance_methods.include?(k)
+            _collection.each { |c| c[k] ||= conditions[k] }
           end
-
-          # Sub questions are not pulled by default so we have to retrieve them
-          if self == SurveyGizmo::API::Question
-            _collection += _collection.map { |question| question.sub_questions }.flatten
-          end
-
-          _collection
-        else
-          []
         end
+
+        # Sub questions are not pulled by default so we have to retrieve them
+        if self == SurveyGizmo::API::Question
+          _collection += _collection.map { |question| question.sub_questions }.flatten
+        end
+
+        _collection
       end
 
       # Get the first resource
@@ -85,9 +82,10 @@ module SurveyGizmo
       # @return [Object, nil]
       def first(conditions = {}, filters = nil)
         response = RestResponse.new(SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters)))
+        response.check_validity
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo's returned data
-        response.ok? ? new(conditions.merge(response.data)) : nil
+        new(conditions.merge(response.data))
       end
 
       # Create a new resource
@@ -116,7 +114,7 @@ module SurveyGizmo
       # @param [Hash] conditions
       # @return [Boolean]
       def destroy(conditions)
-        RestResponse.new(SurveyGizmo.delete(handle_route(:delete, conditions))).ok?
+        RestResponse.new(SurveyGizmo.delete(handle_route(:delete, conditions))).check_validity
       end
 
       # Define the path where a resource is located
@@ -151,8 +149,8 @@ module SurveyGizmo
     def save
       if id
         # Then it's an update, because we already know the surveygizmo assigned id
-        handle_response(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
-        @latest_response.ok?
+        rest_response = RestResponse.new(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
+        rest_response.check_validity
       else
         create_record_in_surveygizmo
       end
@@ -162,21 +160,18 @@ module SurveyGizmo
     # @return [self, false]
     #   Returns the object, if saved. Otherwise returns false.
     def reload
-      handle_response(SurveyGizmo.get(handle_route(:get)))
-      if @latest_response.ok?
-        self.attributes = @latest_response['data']
-        self
-      else
-        false
-      end
+      rest_response = RestResponse.new(SurveyGizmo.get(handle_route(:get)))
+      rest_response.check_validity
+      self.attributes = rest_response.data
+      self
     end
 
     # Deleted the Resource from Survey Gizmo
     # @return [Boolean]
     def destroy
       if id
-        handle_response(SurveyGizmo.delete(handle_route(:delete)))
-        @latest_response.ok?
+        rest_response = RestResponse.new(SurveyGizmo.delete(handle_route(:delete)))
+        rest_response.check_validity
       else
         false
       end
@@ -190,6 +185,7 @@ module SurveyGizmo
 
     # Any errors returned by Survey Gizmo
     # @return [Array]
+    # DEPRECATED
     def errors
       @errors ||= []
     end
@@ -222,14 +218,10 @@ module SurveyGizmo
 
     # Returns itself if successfully saved, but with attributes added by SurveyGizmo
     def create_record_in_surveygizmo(attributes = {})
-      http = RestResponse.new(SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks))
-      handle_response(http)
-      if http.ok?
-        self.attributes = http.data
-        self
-      else
-        false
-      end
+      rest_response = RestResponse.new(SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks))
+      rest_response.check_validity
+      self.attributes = rest_response.data
+      self
     end
 
     protected
@@ -244,26 +236,11 @@ module SurveyGizmo
       self.class.handle_route(key, to_param_options)
     end
 
-    def handle_response(rest_response, &block)
-      @latest_response = rest_response
-      if @latest_response.ok?
-        self.errors.clear
-        true
-      else
-        errors << @latest_response.message
-        false
-      end
-    end
-
     def _copy(attributes = {})
-      http = RestResponse.new(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
-      handle_response(http) do
-        if http.ok?
-          self.attributes = http.data
-        else
-          false
-        end
-      end
+      rest_response = RestResponse.new(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
+      rest_response.check_validity
+      self.attributes = rest_response.data
+      self
     end
   end
 end

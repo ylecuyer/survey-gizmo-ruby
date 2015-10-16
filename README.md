@@ -6,6 +6,10 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ## Versions
 
+### Major Changes in 4.0
+
+* BREAKING CHANGE: There is no more error tracking.  If the API gives an error or bad response, an exception will be raised.
+
 ### Major Changes in 3.0
 
 * BREAKING CHANGE: Configuration is completely different
