@@ -6,11 +6,11 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ## Versions
 
-### Major Changes in 4.0
+### Major Changes in 4.x
 
 * BREAKING CHANGE: There is no more error tracking.  If the API gives an error or bad response, an exception will be raised.
 
-### Major Changes in 3.0
+### Major Changes in 3.x
 
 * BREAKING CHANGE: Configuration is completely different
 * Important Change: Defaults to using the v4 SurveyGizmo API endpoint to take advantage of various API bug fixes (notably team ownership is broken in v3)
