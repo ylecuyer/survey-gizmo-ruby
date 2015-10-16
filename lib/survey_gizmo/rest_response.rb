@@ -6,6 +6,12 @@ class RestResponse
   def initialize(rest_response)
     @raw_response = rest_response
     @parsed_response = rest_response.parsed_response
+    if ENV['GIZMO_DEBUG']
+      ap 'SG Response: '
+      ap @parsed_response
+    end
+
+    check_validity
     return unless data
 
     # Handle really crappy [] notation in SG API, so far just in SurveyResponse
@@ -42,11 +48,6 @@ class RestResponse
   end
 
   def check_validity
-    if ENV['GIZMO_DEBUG']
-      ap 'SG Response: '
-      ap @parsed_response
-    end
-
     if @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
       true
     else

@@ -57,7 +57,6 @@ module SurveyGizmo
       # @return [Array] of objects of this class
       def all(conditions = {}, filters = nil)
         response = RestResponse.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
-        response.check_validity
         _collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
 
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
@@ -82,7 +81,6 @@ module SurveyGizmo
       # @return [Object, nil]
       def first(conditions = {}, filters = nil)
         response = RestResponse.new(SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters)))
-        response.check_validity
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo's returned data
         new(conditions.merge(response.data))
@@ -114,7 +112,7 @@ module SurveyGizmo
       # @param [Hash] conditions
       # @return [Boolean]
       def destroy(conditions)
-        RestResponse.new(SurveyGizmo.delete(handle_route(:delete, conditions))).check_validity
+        RestResponse.new(SurveyGizmo.delete(handle_route(:delete, conditions))) ? true : false
       end
 
       # Define the path where a resource is located
@@ -149,8 +147,7 @@ module SurveyGizmo
     def save
       if id
         # Then it's an update, because we already know the surveygizmo assigned id
-        rest_response = RestResponse.new(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
-        rest_response.check_validity
+        RestResponse.new(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
       else
         create_record_in_surveygizmo
       end
@@ -161,7 +158,6 @@ module SurveyGizmo
     #   Returns the object, if saved. Otherwise returns false.
     def reload
       rest_response = RestResponse.new(SurveyGizmo.get(handle_route(:get)))
-      rest_response.check_validity
       self.attributes = rest_response.data
       self
     end
@@ -170,8 +166,7 @@ module SurveyGizmo
     # @return [Boolean]
     def destroy
       if id
-        rest_response = RestResponse.new(SurveyGizmo.delete(handle_route(:delete)))
-        rest_response.check_validity
+        RestResponse.new(SurveyGizmo.delete(handle_route(:delete)))
       else
         false
       end
@@ -212,7 +207,6 @@ module SurveyGizmo
     # Returns itself if successfully saved, but with attributes added by SurveyGizmo
     def create_record_in_surveygizmo(attributes = {})
       rest_response = RestResponse.new(SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks))
-      rest_response.check_validity
       self.attributes = rest_response.data
       self
     end
@@ -231,7 +225,6 @@ module SurveyGizmo
 
     def _copy(attributes = {})
       rest_response = RestResponse.new(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
-      rest_response.check_validity
       self.attributes = rest_response.data
       self
     end
