@@ -11,7 +11,7 @@ class RestResponse
       ap @parsed_response
     end
 
-    fail("Bad response: #{rest_response.inspect}") unless @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
+    fail "Bad response: #{rest_response.inspect}" unless @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
     return unless data
 
     # Handle really crappy [] notation in SG API, so far just in SurveyResponse

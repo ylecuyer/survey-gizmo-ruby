@@ -97,11 +97,10 @@ module SurveyGizmo
 
       # This method replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
       # values being passed in interpolation hash with the same keys.
-      # @api private
       def handle_route(key, interpolation_hash)
         path = @paths[key]
-        raise "No routes defined for `#{key}` in #{self.name}" unless path
-        raise "User/password hash not setup!" if SurveyGizmo.default_params.empty?
+        fail "No routes defined for `#{key}` in #{self.name}" unless path
+        fail "User/password hash not setup!" if SurveyGizmo.default_params.empty?
 
         path.gsub(/:(\w+)/) do |m|
           raise(SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`") unless interpolation_hash[$1.to_sym]
@@ -155,8 +154,7 @@ module SurveyGizmo
     # @return [self, false]
     #   Returns the object, if saved. Otherwise returns false.
     def reload
-      rest_response = RestResponse.new(SurveyGizmo.get(handle_route(:get)))
-      self.attributes = rest_response.data
+      self.attributes = RestResponse.new(SurveyGizmo.get(handle_route(:get))).data
       self
     end
 
