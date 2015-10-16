@@ -11,7 +11,7 @@ class RestResponse
       ap @parsed_response
     end
 
-    check_validity
+    fail "Bad response: #{@parsed_response.pretty_inspect}" unless @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
     return unless data
 
     # Handle really crappy [] notation in SG API, so far just in SurveyResponse
@@ -44,14 +44,6 @@ class RestResponse
 
         datum.delete(key)
       end
-    end
-  end
-
-  def check_validity
-    if @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
-      true
-    else
-      fail "Bad response: #{self.pretty_inspect}"
     end
   end
 
