@@ -37,7 +37,7 @@ require 'survey-gizmo-ruby'
 
 # Configure your credentials
 SurveyGizmo.configure do |config|
-  config.user = 'still_tippin@test.com'
+  config.user = 'still_tippin@woodgraingrip.com'
   config.password = 'it_takes_grindin_to_be_a_king'
 
   # api_version defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
@@ -60,21 +60,21 @@ questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
 # Or just retrieve all questions for all pages of this survey
 questions = survey.questions
 
-# Create a question for your survey
+# Create a question for your survey.  The returned object will be given an :id parameter by SG.
 question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
+# Update a question
 question.title = "Do you LOVE Ruby?"
-question.save # => question # (but now with the id assigned by SurveyGizmo as the :id property)
-
+question.save
 # Destroy a question
 question.destroy
 
 # Retrieving SurveyResponses for a given survey.
-# Note that because of both options being hashes, you need to enclose them both in
+# Note that because both options are hashes, you need to enclose them both in
 # braces to page successfully!
 responses = SurveyGizmo::API::Response.all({ survey_id: survey.id }, { page: 1 })
 
 # Retrieving page 2 of non test data SurveyResponses
-filters  = {page: 2, filters: [{ field: 'istestdata', operator: '<>', value: 1 }] }
+filters  = { page: 2, filters: [{ field: 'istestdata', operator: '<>', value: 1 }] }
 responses = SurveyGizmo::API::Response.all({ survey_id: survey_id }, filters)
 ```
 

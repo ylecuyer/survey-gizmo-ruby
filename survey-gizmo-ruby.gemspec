@@ -22,8 +22,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'i18n'
   gem.add_dependency 'virtus', '>= 1.0.0'
 
-  gem.add_development_dependency 'bluecloth'
-  gem.add_development_dependency 'net-http-spy'
   gem.add_development_dependency 'rspec', '~> 2.11.0'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'webmock'

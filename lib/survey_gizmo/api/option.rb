@@ -16,7 +16,6 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption/:id', via: [:get, :update, :delete]
 
     # survey gizmo sends a hash back for :title
-    # @private
     def title_with_multilingual=(val)
       self.title_without_multilingual = val.is_a?(Hash) ? val['English'] : val
     end
