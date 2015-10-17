@@ -1,4 +1,4 @@
-# This class normalizes the response returned by Survey Gizmo
+# This class normalizes the response returned by Survey Gizmo, including validation.
 class RestResponse
   attr_accessor :raw_response
   attr_accessor :parsed_response
@@ -6,6 +6,7 @@ class RestResponse
   def initialize(rest_response)
     @raw_response = rest_response
     @parsed_response = rest_response.parsed_response
+
     if ENV['GIZMO_DEBUG']
       ap 'SG Response: '
       ap @parsed_response
@@ -16,12 +17,9 @@ class RestResponse
 
     # Handle really crappy [] notation in SG API, so far just in SurveyResponse
     (data.is_a?(Array) ? data : [data]).each do |datum|
-
-      # SurveyGizmo returns date information in EST, but does not
-      # provide time zone information in their API responses.
-      #
-      # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
       unless datum['datesubmitted'].blank?
+        # SurveyGizmo returns date information in EST but does not provide time zone information.
+        # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
         datum['datesubmitted'] = datum['datesubmitted'] + ' EST'
       end
 

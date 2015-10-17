@@ -18,10 +18,7 @@ module SurveyGizmo
 
     # These are methods that every API resource can use to access resources in SurveyGizmo
     module ClassMethods
-      # Get a list of resources
-      # @param [Hash] conditions
-      # @param [Hash] filters
-      # @return [Array] of objects of this class
+      # Get an array of resources
       def all(conditions = {}, filters = nil)
         response = RestResponse.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
         _collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
@@ -34,7 +31,9 @@ module SurveyGizmo
           end
         end
 
-        # Sub questions are not pulled by default so we have to retrieve them
+        # Sub questions are not pulled by default so we have to retrieve them manually
+        # SurveyGizmo claims they will fix this bug and eventually all questions will be
+        # returned in one request.
         if self == SurveyGizmo::API::Question
           _collection += _collection.map { |question| question.sub_questions }.flatten
         end
@@ -42,10 +41,7 @@ module SurveyGizmo
         _collection
       end
 
-      # Get the first resource
-      # @param [Hash] conditions
-      # @param [Hash] filters
-      # @return [Object, nil]
+      # Retrieve a single resource.
       def first(conditions = {}, filters = nil)
         response = RestResponse.new(SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters)))
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
@@ -53,30 +49,19 @@ module SurveyGizmo
         new(conditions.merge(response.data))
       end
 
-      # Create a new resource
-      # @param [Hash] attributes
-      # @return [Resource]
-      #   The newly created Resource instance
+      # Create a new resource.  Returns the newly created Resource instance.
       def create(attributes = {})
         resource = new(attributes)
         resource.create_record_in_surveygizmo
         resource
       end
 
-      # Deleted the Resource from Survey Gizmo
-      # @param [Hash] conditions
-      # @return [Boolean]
+      # Delete resources
       def destroy(conditions)
-        RestResponse.new(SurveyGizmo.delete(handle_route(:delete, conditions))) ? true : false
+        RestResponse.new(SurveyGizmo.delete(handle_route(:delete, conditions)))
       end
 
       # Define the path where a resource is located
-      # @param [String] path
-      #   the path in Survey Gizmo for the resource
-      # @param [Hash] options
-      # @option options [Array] :via
-      #     which is `:get`, `:create`, `:update`, `:delete`, or `:any`
-      # @scope class
       def route(path, options)
         methods = options[:via]
         methods = [:get, :create, :update, :delete] if methods == :any
@@ -128,7 +113,7 @@ module SurveyGizmo
       end
     end
 
-    # Save the instance to Survey Gizmo
+    # Save the resource to SurveyGizmo
     def save
       if id
         # Then it's an update, because we already know the surveygizmo assigned id
@@ -138,22 +123,16 @@ module SurveyGizmo
       end
     end
 
-    # fetch resource from SurveyGizmo and reload the attributes
-    # @return [self, false]
-    #   Returns the object, if saved. Otherwise returns false.
+    # Repopulate the attributes based on what is on SurveyGizmo's servers
     def reload
       self.attributes = RestResponse.new(SurveyGizmo.get(handle_route(:get))).data
       self
     end
 
     # Delete the Resource from Survey Gizmo
-    # @return [Boolean]
     def destroy
-      if id
-        RestResponse.new(SurveyGizmo.delete(handle_route(:delete)))
-      else
-        fail "No id; can't delete #{self.inspect}"
-      end
+      fail "No id; can't delete #{self.inspect}!" unless id
+      RestResponse.new(SurveyGizmo.delete(handle_route(:delete)))
     end
 
     # Sets the hash that will be used to interpolate values in routes. It needs to be defined per model.
@@ -162,7 +141,13 @@ module SurveyGizmo
       fail "Define #to_param_options in #{self.class.name}"
     end
 
-    # @visibility private
+    # Returns itself if successfully saved, but with attributes added by SurveyGizmo
+    def create_record_in_surveygizmo(attributes = {})
+      rest_response = RestResponse.new(SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks))
+      self.attributes = rest_response.data
+      self
+    end
+
     def inspect
       if ENV['GIZMO_DEBUG']
         ap "CLASS: #{self.class}"
@@ -186,13 +171,6 @@ module SurveyGizmo
       end.compact
 
       "#<#{self.class.name}:#{self.object_id}>\n#{attribute_strings.join()}"
-    end
-
-    # Returns itself if successfully saved, but with attributes added by SurveyGizmo
-    def create_record_in_surveygizmo(attributes = {})
-      rest_response = RestResponse.new(SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks))
-      self.attributes = rest_response.data
-      self
     end
 
     protected

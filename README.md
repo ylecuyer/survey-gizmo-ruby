@@ -38,15 +38,18 @@ require 'survey-gizmo-ruby'
 # Configure your credentials
 SurveyGizmo.configure do |config|
   config.user = 'still_tippin@test.com'
-  config.password = 'ittakesgrindintobeaking'
+  config.password = 'it_takes_grindin_to_be_a_king'
 
   # api_version defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
   config.api_version = 'v4'
 end
 
+# Retrieve all your surveys
+surveys = SurveyGizmo::API::Survey.all
+
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)
-survey.title # => My Title
+survey.title # => "My Title"
 survey.pages # => [page1, page2,...]
 survey.number_of_completed_responses # => 355
 survey.server_has_new_results_since?(Time.now.utc - 2.days) # => true
@@ -62,9 +65,8 @@ question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do yo
 question.title = "Do you LOVE Ruby?"
 question.save # => question # (but now with the id assigned by SurveyGizmo as the :id property)
 
-  # Error handling
-  question.save # => false
-  question.errors # => ['There was an error']
+# Destroy a question
+question.destroy
 
 # Retrieving SurveyResponses for a given survey.
 # Note that because of both options being hashes, you need to enclose them both in
