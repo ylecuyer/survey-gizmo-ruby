@@ -56,7 +56,7 @@ shared_examples_for 'an API object' do
 
     it "cannot be destroyed if new" do
       @obj.id = nil
-      @obj.destroy.should be_false
+      expect { @obj.destroy }.to raise_error
     end
   end
 

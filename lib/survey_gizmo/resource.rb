@@ -16,7 +16,7 @@ module SurveyGizmo
       @descendants ||= Set.new
     end
 
-    # These are methods that every API resource has to access resources in Survey Gizmo
+    # These are methods that every API resource can use to access resources in SurveyGizmo
     module ClassMethods
       # Get a list of resources
       # @param [Hash] conditions
@@ -63,18 +63,6 @@ module SurveyGizmo
         resource
       end
 
-      # Copy a resource
-      # @param [Integer] id
-      # @param [Hash] attributes
-      # @return [Resource]
-      #   The newly created resource instance
-      def copy(attributes = {})
-        attributes[:copy] = true
-        resource = new(attributes)
-        resource.__send__(:_copy)
-        resource
-      end
-
       # Deleted the Resource from Survey Gizmo
       # @param [Hash] conditions
       # @return [Boolean]
@@ -115,7 +103,7 @@ module SurveyGizmo
       # example input: { page: 2, filters: [{:field=>"istestdata", :operator=>"<>", :value=>1}] }
       #
       # The top level keys (e.g. page, resultsperpage) get simply encoded in the url, while the
-      # contents of the array of hashes passed at filters[:filters] gets turned into the format
+      # contents of the array of hashes passed in the filters hash get turned into the format
       # SurveyGizmo expects for its internal filtering, for example:
       #
       # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
@@ -158,20 +146,20 @@ module SurveyGizmo
       self
     end
 
-    # Deleted the Resource from Survey Gizmo
+    # Delete the Resource from Survey Gizmo
     # @return [Boolean]
     def destroy
       if id
         RestResponse.new(SurveyGizmo.delete(handle_route(:delete)))
       else
-        false
+        fail "No id; can't delete #{self.inspect}"
       end
     end
 
     # Sets the hash that will be used to interpolate values in routes. It needs to be defined per model.
     # @return [Hash] a hash of the values needed in routing
     def to_param_options
-      raise "Define #to_param_options in #{self.class.name}"
+      fail "Define #to_param_options in #{self.class.name}"
     end
 
     # @visibility private
@@ -217,12 +205,6 @@ module SurveyGizmo
 
     def handle_route(key)
       self.class.handle_route(key, to_param_options)
-    end
-
-    def _copy(attributes = {})
-      rest_response = RestResponse.new(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
-      self.attributes = rest_response.data
-      self
     end
   end
 end

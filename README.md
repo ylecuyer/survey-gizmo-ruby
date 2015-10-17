@@ -9,6 +9,7 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 ### Major Changes in 4.x
 
 * BREAKING CHANGE: There is no more error tracking.  If the API gives an error or bad response, an exception will be raised.
+* BREAKING CHANGE: There is no more ```copy``` method
 
 ### Major Changes in 3.x
 
