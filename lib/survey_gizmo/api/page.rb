@@ -4,7 +4,7 @@ module SurveyGizmo; module API
     include SurveyGizmo::Resource
 
     attribute :id,            Integer
-    attribute :title,         String
+    attribute :title,         Hash
     attribute :description,   String
     attribute :properties,    Hash
     attribute :after,         Integer
