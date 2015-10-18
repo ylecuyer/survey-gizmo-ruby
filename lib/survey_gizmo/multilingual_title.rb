@@ -4,6 +4,7 @@
 module SurveyGizmo
   module MultilingualTitle
     extend ActiveSupport::Concern
+
     included do
       alias_method_chain :title=, :multilingual
     end
