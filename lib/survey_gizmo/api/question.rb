@@ -4,7 +4,7 @@ module SurveyGizmo; module API
     include SurveyGizmo::Resource
 
     attribute :id,                 Integer
-    attribute :title,              String
+    attribute :title,              Hash
     attribute :type,               String
     attribute :description,        String
     attribute :shortname,          String
@@ -16,6 +16,8 @@ module SurveyGizmo; module API
     attribute :parent_question_id, Integer
 
     alias_attribute :_subtype, :type
+
+    include SurveyGizmo::MultilingualTitle
 
     route '/survey/:survey_id/surveyquestion/:id', via: :get
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion', via: :create
@@ -37,13 +39,6 @@ module SurveyGizmo; module API
       @sub_questions ||= sub_question_skus.map { |subquestion_id| SurveyGizmo::API::Question.first(survey_id: survey_id, id: subquestion_id) }
                                           .each { |subquestion| subquestion.parent_question_id = id  }
     end
-
-    # survey gizmo sends a hash back for :title
-    def title_with_multilingual=(val)
-      self.title_without_multilingual = val.is_a?(Hash) ? val['English'] : val
-    end
-
-    alias_method_chain :title=, :multilingual
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options

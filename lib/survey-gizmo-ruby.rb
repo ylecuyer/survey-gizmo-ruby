@@ -12,6 +12,7 @@ require 'survey_gizmo/version'
 require 'survey_gizmo/survey_gizmo'
 require 'survey_gizmo/configuration'
 
+require 'survey_gizmo/multilingual_title'
 require 'survey_gizmo/resource'
 require 'survey_gizmo/rest_response'
 
