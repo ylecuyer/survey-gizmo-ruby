@@ -19,7 +19,6 @@ module SurveyGizmo; module API
 
     include SurveyGizmo::MultilingualTitle
 
-
     route '/survey/:survey_id/surveyquestion/:id', via: :get
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion', via: :create
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', via: [:update, :delete]

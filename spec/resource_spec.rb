@@ -135,7 +135,7 @@ describe 'Survey Gizmo Resource' do
   end
 
   describe SurveyGizmo::API::Page do
-    let(:create_attributes) { {:survey_id => 1234, :title => {'English' => 'Spec Page'}} }
+    let(:create_attributes) { {:survey_id => 1234, :title => 'Spec Page' } }
     let(:get_attributes)    { create_attributes.merge(:id => 1) }
     let(:update_attributes) { {:survey_id => 1234, :title => 'Updated'} }
     let(:first_params)      { {:id => 1, :survey_id => 1234 } }
