@@ -39,7 +39,7 @@ shared_examples_for 'an API object' do
 
     it "should return false if the request fails" do
       stub_request(:get, /#{@base}/).to_return(json_response(false, "something is wrong"))
-      described_class.first(first_params).should == nil
+      expect { described_class.first(first_params) }.to raise_error
     end
   end
 
@@ -56,7 +56,7 @@ shared_examples_for 'an API object' do
 
     it "cannot be destroyed if new" do
       @obj.id = nil
-      @obj.destroy.should be_false
+      expect { @obj.destroy }.to raise_error
     end
   end
 

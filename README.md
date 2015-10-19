@@ -6,7 +6,12 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ## Versions
 
-### Major Changes in 3.0
+### Major Changes in 4.x
+
+* BREAKING CHANGE: There is no more error tracking.  If the API gives an error or bad response, an exception will be raised.
+* BREAKING CHANGE: There is no more ```copy``` method
+
+### Major Changes in 3.x
 
 * BREAKING CHANGE: Configuration is completely different
 * Important Change: Defaults to using the v4 SurveyGizmo API endpoint to take advantage of various API bug fixes (notably team ownership is broken in v3)
@@ -32,16 +37,19 @@ require 'survey-gizmo-ruby'
 
 # Configure your credentials
 SurveyGizmo.configure do |config|
-  config.user = 'still_tippin@test.com'
-  config.password = 'ittakesgrindintobeaking'
+  config.user = 'still_tippin@woodgraingrip.com'
+  config.password = 'it_takes_grindin_to_be_a_king'
 
   # api_version defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
   config.api_version = 'v4'
 end
 
+# Retrieve all your surveys
+surveys = SurveyGizmo::API::Survey.all
+
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)
-survey.title # => My Title
+survey.title # => "My Title"
 survey.pages # => [page1, page2,...]
 survey.number_of_completed_responses # => 355
 survey.server_has_new_results_since?(Time.now.utc - 2.days) # => true
@@ -52,22 +60,21 @@ questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
 # Or just retrieve all questions for all pages of this survey
 questions = survey.questions
 
-# Create a question for your survey
+# Create a question for your survey.  The returned object will be given an :id parameter by SG.
 question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
+# Update a question
 question.title = "Do you LOVE Ruby?"
-question.save # => question # (but now with the id assigned by SurveyGizmo as the :id property)
-
-  # Error handling
-  question.save # => false
-  question.errors # => ['There was an error']
+question.save
+# Destroy a question
+question.destroy
 
 # Retrieving SurveyResponses for a given survey.
-# Note that because of both options being hashes, you need to enclose them both in
+# Note that because both options are hashes, you need to enclose them both in
 # braces to page successfully!
 responses = SurveyGizmo::API::Response.all({ survey_id: survey.id }, { page: 1 })
 
 # Retrieving page 2 of non test data SurveyResponses
-filters  = {page: 2, filters: [{ field: 'istestdata', operator: '<>', value: 1 }] }
+filters  = { page: 2, filters: [{ field: 'istestdata', operator: '<>', value: 1 }] }
 responses = SurveyGizmo::API::Response.all({ survey_id: survey_id }, filters)
 ```
 
@@ -127,9 +134,11 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 
 ## Desirable/Missing Features
 
+* Better foreign language support
+* Use Faraday instead of Httparty (partied too hard)
+* Better specs with VCR/Webmock would be nice.
 * There are several API objects that are available and not included in this gem.  AccountTeams, for instance, has some skeleton code but is untested.
 * OAuth authentication ability.
-* Better specs with VCR/Webmock would be nice.
 
 # Copyright
 

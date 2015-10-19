@@ -17,7 +17,6 @@ module SurveyGizmo; module API
     attribute :url,                  Hash       # READ-ONLY
     attribute :answers,              Hash       # READ-ONLY
 
-    # routing
     route '/survey/:survey_id/surveyresponse',     via: :create
     route '/survey/:survey_id/surveyresponse/:id', via: [:get, :update, :delete]
 
