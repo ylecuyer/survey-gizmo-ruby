@@ -2,9 +2,9 @@ module SurveyGizmo; module API
   # @see SurveyGizmo::Resource::ClassMethods
   class Question
     include SurveyGizmo::Resource
+    include SurveyGizmo::MultilingualTitle
 
     attribute :id,                 Integer
-    attribute :title,              Hash
     attribute :type,               String
     attribute :description,        String
     attribute :shortname,          String
@@ -16,8 +16,6 @@ module SurveyGizmo; module API
     attribute :parent_question_id, Integer
 
     alias_attribute :_subtype, :type
-
-    include SurveyGizmo::MultilingualTitle
 
     route '/survey/:survey_id/surveyquestion/:id', via: :get
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion', via: :create

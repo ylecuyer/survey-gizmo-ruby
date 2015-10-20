@@ -2,15 +2,13 @@ module SurveyGizmo; module API
   # @see SurveyGizmo::Resource::ClassMethods
   class Page
     include SurveyGizmo::Resource
+    include SurveyGizmo::MultilingualTitle
 
     attribute :id,            Integer
-    attribute :title,         Hash
     attribute :description,   String
     attribute :properties,    Hash
     attribute :after,         Integer
     attribute :survey_id,     Integer
-
-    include SurveyGizmo::MultilingualTitle
 
     # routing
     route '/survey/:survey_id/surveypage', via: :create
