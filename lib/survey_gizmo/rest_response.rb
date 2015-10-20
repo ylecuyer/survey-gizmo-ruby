@@ -1,4 +1,5 @@
 # This class normalizes the response returned by Survey Gizmo, including validation.
+
 class RestResponse
   attr_accessor :raw_response
   attr_accessor :parsed_response
@@ -8,7 +9,7 @@ class RestResponse
     @parsed_response = rest_response.parsed_response
 
     if ENV['GIZMO_DEBUG']
-      ap 'SG Response: '
+      ap 'Parsed SurveyGizmo Response:'
       ap @parsed_response
     end
 
