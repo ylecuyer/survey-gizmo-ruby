@@ -149,28 +149,14 @@ module SurveyGizmo
     end
 
     def inspect
-      if ENV['GIZMO_DEBUG']
-        ap "CLASS: #{self.class}"
-      end
-
       attribute_strings = self.class.attribute_set.map do |attrib|
-        if ENV['GIZMO_DEBUG']
-          ap attrib
-          ap attrib.name
-          ap self.send(attrib.name)
-          ap self.send(attrib.name).class
-        end
-
-        if self.send(attrib.name).class == Hash
-          value = self.send(attrib.name).inspect
-        else
-          value = self.send(attrib.name).to_s
-        end
+        value = self.send(attrib.name)
+        value = value.is_a?(Hash) ? value.inspect : value.to_s
 
         "  \"#{attrib.name}\" => \"#{value}\"\n" unless value.strip.blank?
       end.compact
 
-      "#<#{self.class.name}:#{self.object_id}>\n#{attribute_strings.join()}"
+      "#<#{self.class.name}:#{self.object_id}>\n#{attribute_strings.join}"
     end
 
     protected

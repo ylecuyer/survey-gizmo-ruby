@@ -1,11 +1,9 @@
-# Inclusion of this module must come AFTER the virtus call:
-#    attribute :title
-
 module SurveyGizmo
   module MultilingualTitle
     extend ActiveSupport::Concern
 
     included do
+      attribute :title, Hash
       alias_method_chain :title=, :multilingual
     end
 
