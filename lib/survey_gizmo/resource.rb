@@ -32,10 +32,7 @@ module SurveyGizmo
       # Set all_pages: true if you want the gem to page through all the available responses
       def all(conditions = {}, _deprecated_filters = {})
         fail ':all_pages and :page are mutually exclusive conditions' if conditions[:page] && conditions[:all_pages]
-        unless _deprecated_filters.empty?
-          $stderr.puts('Use of the 2nd hash parameter is deprecated.')
-          conditions.merge!(_deprecated_filters)
-        end
+        merge_params!(conditions, _deprecated_filters)
 
         all_pages = conditions.delete(:all_pages)
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
@@ -70,10 +67,7 @@ module SurveyGizmo
 
       # Retrieve a single resource.  See usage comment on .all
       def first(conditions, _deprecated_filters = {})
-        unless _deprecated_filters.empty?
-          $stderr.puts('Use of the 2nd hash parameter is deprecated.')
-          conditions.merge!(_deprecated_filters)
-        end
+        merge_params!(conditions, _deprecated_filters)
 
         response = RestResponse.new(SurveyGizmo.get(handle_route!(:get, conditions) + convert_filters_into_query_string(conditions)))
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
@@ -115,6 +109,8 @@ module SurveyGizmo
         end
       end
 
+      private
+
       # Convert a [Hash] of internal surveygizmo style filters into a query string
       # See: http://apihelp.surveygizmo.com/help/article/link/filters
       def convert_filters_into_query_string(filters = {})
@@ -132,6 +128,13 @@ module SurveyGizmo
         uri = Addressable::URI.new
         uri.query_values = params.merge(filters)
         "?#{uri.query}"
+      end
+
+      def merge_params!(conditions, _deprecated_filters)
+        unless _deprecated_filters.empty?
+          $stderr.puts('Use of the 2nd hash parameter is deprecated.')
+          conditions.merge!(_deprecated_filters)
+        end
       end
     end
 
