@@ -19,7 +19,8 @@ module SurveyGizmo
     # These are methods that every API resource can use to access resources in SurveyGizmo
     module ClassMethods
       # Get an array of resources
-      def all(conditions = {}, filters = nil)
+      def all(conditions = {}, filters = {})
+        filters[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless filters[:resultsperpage]
         response = RestResponse.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
         _collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
 
@@ -42,7 +43,7 @@ module SurveyGizmo
       end
 
       # Retrieve a single resource.
-      def first(conditions = {}, filters = nil)
+      def first(conditions = {}, filters = {})
         response = RestResponse.new(SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters)))
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo's returned data
@@ -92,7 +93,7 @@ module SurveyGizmo
       # SurveyGizmo expects for its internal filtering, for example:
       #
       # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
-      def convert_filters_into_query_string(filters = nil)
+      def convert_filters_into_query_string(filters = {})
         return '' unless filters && filters.size > 0
 
         output_filters = filters[:filters] || []
