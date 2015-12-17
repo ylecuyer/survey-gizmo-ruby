@@ -40,12 +40,17 @@ SurveyGizmo.configure do |config|
   config.user = 'still_tippin@woodgraingrip.com'
   config.password = 'it_takes_grindin_to_be_a_king'
 
-  # api_version defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
+  # Optional - Defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
   config.api_version = 'v4'
+
+  # Optional - Defaults to 50, maximum 500. Setting too high may cause SurveyGizmo to start throwing timeouts.
+  config.results_per_page = 100
 end
 
-# Retrieve all your surveys
+# Retrieve the first page of your surveys
 surveys = SurveyGizmo::API::Survey.all
+# Retrieve ALL your surveys (handle pagination for you)
+surveys = SurveyGizmo::API::Survey.all(all_pages: true)
 
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)
@@ -68,14 +73,16 @@ question.save
 # Destroy a question
 question.destroy
 
-# Retrieving SurveyResponses for a given survey.
-# Note that because both options are hashes, you need to enclose them both in
-# braces to page successfully!
-responses = SurveyGizmo::API::Response.all({ survey_id: survey.id }, { page: 1 })
-
-# Retrieving page 2 of non test data SurveyResponses
-filters  = { page: 2, filters: [{ field: 'istestdata', operator: '<>', value: 1 }] }
-responses = SurveyGizmo::API::Response.all({ survey_id: survey_id }, filters)
+# Retrieve 2nd page of SurveyResponses for a given survey.
+responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2)
+# Retrieve all responses for a given survey.
+responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
+# Retrieving page 3 of non test data SurveyResponses
+responses = SurveyGizmo::API::Response.all(
+  survey_id: 12345,
+  page: 3,
+  filters: [{ field: 'istestdata', operator: '<>', value: 1 }]
+)
 ```
 
 ## On API Timeouts
