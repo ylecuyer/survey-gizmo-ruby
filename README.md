@@ -44,8 +44,10 @@ SurveyGizmo.configure do |config|
   config.api_version = 'v4'
 end
 
-# Retrieve all your surveys
+# Retrieve the first page of your surveys
 surveys = SurveyGizmo::API::Survey.all
+# Retrieve ALL your surveys (handle pagination for you)
+surveys = SurveyGizmo::API::Survey.all(all_pages: true)
 
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)

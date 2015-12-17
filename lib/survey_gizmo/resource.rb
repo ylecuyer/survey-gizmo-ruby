@@ -19,15 +19,26 @@ module SurveyGizmo
     # These are methods that every API resource can use to access resources in SurveyGizmo
     module ClassMethods
       # Get an array of resources
-      def all(conditions = {}, filters = nil)
+      def all(conditions = {}, filters = {})
+        fail 'The :all_pages condition and the :page filter are mutually exclusive' if filters[:page] && conditions[:all_pages]
+
+        all_pages = conditions.delete(:all_pages)
+        filters[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless filters[:resultsperpage]
+
         response = RestResponse.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
-        _collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
+        collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
+
+        while all_pages && response.current_page < response.total_pages
+          paged_filter = convert_filters_into_query_string(filters.merge(page: response.current_page + 1))
+          response = RestResponse.new(SurveyGizmo.get(handle_route(:create, conditions) + paged_filter))
+          collection += response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
+        end
 
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo returned data
         conditions.keys.each do |k|
           if conditions[k] && instance_methods.include?(k)
-            _collection.each { |c| c[k] ||= conditions[k] }
+            collection.each { |c| c[k] ||= conditions[k] }
           end
         end
 
@@ -35,14 +46,14 @@ module SurveyGizmo
         # SurveyGizmo claims they will fix this bug and eventually all questions will be
         # returned in one request.
         if self == SurveyGizmo::API::Question
-          _collection += _collection.map { |question| question.sub_questions }.flatten
+          collection += collection.map { |question| question.sub_questions }.flatten
         end
 
-        _collection
+        collection
       end
 
       # Retrieve a single resource.
-      def first(conditions = {}, filters = nil)
+      def first(conditions = {}, filters = {})
         response = RestResponse.new(SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters)))
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo's returned data
@@ -92,7 +103,7 @@ module SurveyGizmo
       # SurveyGizmo expects for its internal filtering, for example:
       #
       # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
-      def convert_filters_into_query_string(filters = nil)
+      def convert_filters_into_query_string(filters = {})
         return '' unless filters && filters.size > 0
 
         output_filters = filters[:filters] || []
