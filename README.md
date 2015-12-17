@@ -46,6 +46,10 @@ SurveyGizmo.configure do |config|
 
   # api_version defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
   config.api_version = 'v4'
+
+  # Setting the results_per_page too high can cause SurveyGizmo to start throwing timeouts
+  # The SurveyGizmo default is 50.
+  config.results_per_page = 100
 end
 
 # Retrieve the first page of your surveys
