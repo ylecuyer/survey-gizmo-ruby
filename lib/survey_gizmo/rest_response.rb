@@ -48,12 +48,20 @@ class RestResponse
 
   # The parsed JSON data of the response
   def data
-    @_data ||= @parsed_response['data']
+    @parsed_response['data']
   end
 
   # The error message if there is one
   def message
-    @_message ||= @parsed_response['message']
+    @parsed_response['message']
+  end
+
+  def current_page
+    @parsed_response['page']
+  end
+
+  def total_pages
+    @parsed_response['total_pages']
   end
 
   private
