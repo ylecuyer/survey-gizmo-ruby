@@ -39,12 +39,12 @@ module SurveyGizmo
 
         request_route = handle_route!(:create, conditions)
         response = RestResponse.new(SurveyGizmo.get(request_route + convert_filters_into_query_string(conditions)))
-        collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
+        collection = response.data.map { |datum| datum.is_a?(Hash) ? new(datum) : datum }
 
         while all_pages && response.current_page < response.total_pages
           paged_filter = convert_filters_into_query_string(conditions.merge(page: response.current_page + 1))
           response = RestResponse.new(SurveyGizmo.get(request_route + paged_filter))
-          collection += response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
+          collection += response.data.map { |datum| datum.is_a?(Hash) ? new(datum) : datum }
         end
 
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
@@ -100,7 +100,7 @@ module SurveyGizmo
       # This method has the side effect of deleting REST path related keys from interpolation_hash!
       def handle_route!(key, interpolation_hash)
         path = @paths[key]
-        fail "No routes defined for `#{key}` in #{self.name}" unless path
+        fail "No routes defined for `#{key}` in #{name}" unless path
         fail "User/password hash not setup!" if SurveyGizmo.default_params.empty?
 
         path.gsub(/:(\w+)/) do |m|
@@ -118,7 +118,7 @@ module SurveyGizmo
 
         params = {}
         (filters.delete(:filters) || []).each_with_index do |filter, i|
-          fail 'Bad filter params!' unless [:field, :operator, :value].all? { |k| filter[k] }
+          fail "Bad filter params: #{filter}" unless filter.is_a?(Hash) && [:field, :operator, :value].all? { |k| filter[k] }
 
           params["filter[field][#{i}]".to_sym]    = "#{filter[:field]}"
           params["filter[operator][#{i}]".to_sym] = "#{filter[:operator]}"
@@ -142,7 +142,7 @@ module SurveyGizmo
     def save
       if id
         # Then it's an update, because we already know the surveygizmo assigned id
-        RestResponse.new(SurveyGizmo.post(handle_route(:update), query: self.attributes_without_blanks))
+        RestResponse.new(SurveyGizmo.post(handle_route(:update), query: attributes_without_blanks))
       else
         create_record_in_surveygizmo
       end
@@ -168,7 +168,7 @@ module SurveyGizmo
 
     # Returns itself if successfully saved, but with attributes added by SurveyGizmo
     def create_record_in_surveygizmo(attributes = {})
-      rest_response = RestResponse.new(SurveyGizmo.put(handle_route(:create), query: self.attributes_without_blanks))
+      rest_response = RestResponse.new(SurveyGizmo.put(handle_route(:create), query: attributes_without_blanks))
       self.attributes = rest_response.data
       self
     end
@@ -187,7 +187,7 @@ module SurveyGizmo
     protected
 
     def attributes_without_blanks
-      self.attributes.reject { |k,v| v.blank? }
+      attributes.reject { |k,v| v.blank? }
     end
 
     private
