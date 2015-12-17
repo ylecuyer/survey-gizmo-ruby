@@ -106,24 +106,22 @@ module SurveyGizmo
         end
       end
 
-      # Convert a [Hash] of filters into a query string
+      # Convert a [Hash] of internal surveygizmo style filters into a query string
+      # See: http://apihelp.surveygizmo.com/help/article/link/filters
       def convert_filters_into_query_string(filters = {})
         return '' unless filters && filters.size > 0
 
-        output_filters = filters[:filters] || []
-        filter_hash = {}
-        output_filters.each_with_index do |filter,i|
-          filter_hash.merge!(
-            "filter[field][#{i}]".to_sym    => "#{filter[:field]}",
-            "filter[operator][#{i}]".to_sym => "#{filter[:operator]}",
-            "filter[value][#{i}]".to_sym    => "#{filter[:value]}",
-          )
+        params = {}
+        (filters.delete(:filters) || []).each_with_index do |filter, i|
+          fail 'Bad filter params!' unless [:field, :operator, :value].all? { |k| filter[k] }
+
+          params["filter[field][#{i}]".to_sym]    = "#{filter[:field]}"
+          params["filter[operator][#{i}]".to_sym] = "#{filter[:operator]}"
+          params["filter[value][#{i}]".to_sym]    = "#{filter[:value]}"
         end
-        simple_filters = filters.reject { |k,v| k == :filters }
-        filter_hash.merge!(simple_filters)
 
         uri = Addressable::URI.new
-        uri.query_values = filter_hash
+        uri.query_values = params.merge(filters)
         "?#{uri.query}"
       end
     end
