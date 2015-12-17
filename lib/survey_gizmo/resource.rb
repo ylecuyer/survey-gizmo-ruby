@@ -32,9 +32,10 @@ module SurveyGizmo
       # Set all_pages: true if you want the gem to page through all the available responses
       def all(conditions = {}, _deprecated_filters = {})
         fail ':all_pages and :page are mutually exclusive conditions' if conditions[:page] && conditions[:all_pages]
-        merge_params!(conditions, _deprecated_filters)
 
+        conditions = merge_params(conditions, _deprecated_filters)
         all_pages = conditions.delete(:all_pages)
+        raw_conditions = conditions.dup
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
 
         request_route = handle_route!(:create, conditions)
@@ -49,9 +50,9 @@ module SurveyGizmo
 
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo returned data
-        conditions.keys.each do |k|
-          if conditions[k] && instance_methods.include?(k)
-            collection.each { |c| c[k] ||= conditions[k] }
+        raw_conditions.each do |k,v|
+          if v && instance_methods.include?(k)
+            collection.each { |c| c[k] ||= v }
           end
         end
 
@@ -67,12 +68,13 @@ module SurveyGizmo
 
       # Retrieve a single resource.  See usage comment on .all
       def first(conditions, _deprecated_filters = {})
-        merge_params!(conditions, _deprecated_filters)
+        conditions = merge_params(conditions, _deprecated_filters)
+        raw_conditions = conditions.dup
 
         response = RestResponse.new(SurveyGizmo.get(handle_route!(:get, conditions) + convert_filters_into_query_string(conditions)))
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo's returned data
-        new(conditions.merge(response.data))
+        new(raw_conditions.merge(response.data))
       end
 
       # Create a new resource.  Returns the newly created Resource instance.
@@ -130,11 +132,9 @@ module SurveyGizmo
         "?#{uri.query}"
       end
 
-      def merge_params!(conditions, _deprecated_filters)
-        unless _deprecated_filters.empty?
-          $stderr.puts('Use of the 2nd hash parameter is deprecated.')
-          conditions.merge!(_deprecated_filters)
-        end
+      def merge_params(conditions, _deprecated_filters)
+        $stderr.puts('Use of the 2nd hash parameter is deprecated.') unless _deprecated_filters.empty?
+        conditions.merge(_deprecated_filters || {})
       end
     end
 
