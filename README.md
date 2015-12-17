@@ -74,12 +74,16 @@ question.save
 # Destroy a question
 question.destroy
 
-# Retrieving SurveyResponses for a given survey.
-responses = SurveyGizmo::API::Response.all(survey_id: survey.id, page: 1)
-
-# Retrieving page 2 of non test data SurveyResponses
-conditions = { survey_id: survey_id, page: 2, filters: [{ field: 'istestdata', operator: '<>', value: 1 }] }
-responses = SurveyGizmo::API::Response.all(conditions)
+# Retrieve 2nd page of SurveyResponses for a given survey.
+responses = SurveyGizmo::API::Response.all(survey_id: survey.id, page: 2)
+# Retrieve all responses for a given survey.
+responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: survey.id)
+# Retrieving page 3 of non test data SurveyResponses
+responses = SurveyGizmo::API::Response.all(
+  survey_id: survey_id,
+  page: 3,
+  filters: [{ field: 'istestdata', operator: '<>', value: 1 }]
+)
 ```
 
 ## On API Timeouts
