@@ -40,11 +40,10 @@ SurveyGizmo.configure do |config|
   config.user = 'still_tippin@woodgraingrip.com'
   config.password = 'it_takes_grindin_to_be_a_king'
 
-  # api_version defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
+  # Optional - Defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
   config.api_version = 'v4'
 
-  # Setting the results_per_page too high can cause SurveyGizmo to start throwing timeouts
-  # The SurveyGizmo default is 50.
+  # Optional - Defaults to 50, maximum 500. Setting too high may cause SurveyGizmo to start throwing timeouts.
   config.results_per_page = 100
 end
 
@@ -75,12 +74,12 @@ question.save
 question.destroy
 
 # Retrieve 2nd page of SurveyResponses for a given survey.
-responses = SurveyGizmo::API::Response.all(survey_id: survey.id, page: 2)
+responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2)
 # Retrieve all responses for a given survey.
-responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: survey.id)
+responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
 # Retrieving page 3 of non test data SurveyResponses
 responses = SurveyGizmo::API::Response.all(
-  survey_id: survey_id,
+  survey_id: 12345,
   page: 3,
   filters: [{ field: 'istestdata', operator: '<>', value: 1 }]
 )
