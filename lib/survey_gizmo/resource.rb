@@ -19,18 +19,19 @@ module SurveyGizmo
     # These are methods that every API resource can use to access resources in SurveyGizmo
     module ClassMethods
       # Get an array of resources
-      def all(conditions = {}, filters = {})
-        fail 'The :all_pages condition and the :page filter are mutually exclusive' if filters[:page] && conditions[:all_pages]
+      def all(conditions = {})
+        fail ':all_pages and :page are mutually exclusive conditions' if conditions[:page] && conditions[:all_pages]
 
         all_pages = conditions.delete(:all_pages)
-        filters[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless filters[:resultsperpage]
+        conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
+        request_route = handle_route!(:create, conditions)
 
-        response = RestResponse.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
+        response = RestResponse.new(SurveyGizmo.get(request_route + convert_filters_into_query_string(conditions)))
         collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
 
         while all_pages && response.current_page < response.total_pages
-          paged_filter = convert_filters_into_query_string(filters.merge(page: response.current_page + 1))
-          response = RestResponse.new(SurveyGizmo.get(handle_route(:create, conditions) + paged_filter))
+          paged_filter = convert_filters_into_query_string(conditions.merge(page: response.current_page + 1))
+          response = RestResponse.new(SurveyGizmo.get(request_route + paged_filter))
           collection += response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
         end
 
@@ -53,8 +54,8 @@ module SurveyGizmo
       end
 
       # Retrieve a single resource.
-      def first(conditions = {}, filters = {})
-        response = RestResponse.new(SurveyGizmo.get(handle_route(:get, conditions) + convert_filters_into_query_string(filters)))
+      def first(conditions)
+        response = RestResponse.new(SurveyGizmo.get(handle_route!(:get, conditions) + convert_filters_into_query_string(conditions)))
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo's returned data
         new(conditions.merge(response.data))
@@ -69,7 +70,7 @@ module SurveyGizmo
 
       # Delete resources
       def destroy(conditions)
-        RestResponse.new(SurveyGizmo.delete(handle_route(:delete, conditions)))
+        RestResponse.new(SurveyGizmo.delete(handle_route!(:delete, conditions)))
       end
 
       # Define the path where a resource is located
@@ -81,14 +82,16 @@ module SurveyGizmo
 
       # This method replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
       # values being passed in interpolation hash with the same keys.
-      def handle_route(key, interpolation_hash)
+      #
+      # This method has the side effect of deleting REST path related keys from interpolation_hash!
+      def handle_route!(key, interpolation_hash)
         path = @paths[key]
         fail "No routes defined for `#{key}` in #{self.name}" unless path
         fail "User/password hash not setup!" if SurveyGizmo.default_params.empty?
 
         path.gsub(/:(\w+)/) do |m|
           raise(SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`") unless interpolation_hash[$1.to_sym]
-          interpolation_hash[$1.to_sym]
+          interpolation_hash.delete($1.to_sym)
         end
       end
 
@@ -179,7 +182,7 @@ module SurveyGizmo
     private
 
     def handle_route(key)
-      self.class.handle_route(key, to_param_options)
+      self.class.handle_route!(key, to_param_options)
     end
   end
 end

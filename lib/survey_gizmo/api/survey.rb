@@ -55,7 +55,7 @@ module SurveyGizmo; module API
         operator: '>=',
         value: time.in_time_zone('Eastern Time (US & Canada)').strftime('%Y-%m-%d %H:%M:%S')
       }]
-      responses = SurveyGizmo::API::Response.all({ survey_id: self.id }, { page: 1, filters: filters })
+      responses = SurveyGizmo::API::Response.all(survey_id: self.id, page: 1, filters: filters)
       responses.size > 0
     end
 

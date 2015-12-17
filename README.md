@@ -6,6 +6,10 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ## Versions
 
+### Major Changes in 5.x
+
+* BREAKING CHANGE: Method signatures for .all and .first have changed - now it's just one hash.
+
 ### Major Changes in 4.x
 
 * BREAKING CHANGE: There is no more error tracking.  If the API gives an error or bad response, an exception will be raised.
@@ -71,13 +75,11 @@ question.save
 question.destroy
 
 # Retrieving SurveyResponses for a given survey.
-# Note that because both options are hashes, you need to enclose them both in
-# braces to page successfully!
-responses = SurveyGizmo::API::Response.all({ survey_id: survey.id }, { page: 1 })
+responses = SurveyGizmo::API::Response.all(survey_id: survey.id, page: 1)
 
 # Retrieving page 2 of non test data SurveyResponses
-filters  = { page: 2, filters: [{ field: 'istestdata', operator: '<>', value: 1 }] }
-responses = SurveyGizmo::API::Response.all({ survey_id: survey_id }, filters)
+conditions = { survey_id: survey_id, page: 2, filters: [{ field: 'istestdata', operator: '<>', value: 1 }] }
+responses = SurveyGizmo::API::Response.all(conditions)
 ```
 
 ## On API Timeouts
