@@ -6,10 +6,6 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ## Versions
 
-### Major Changes in 5.x
-
-* BREAKING CHANGE: Method signatures for .all and .first have changed - now it's just one hash.
-
 ### Major Changes in 4.x
 
 * BREAKING CHANGE: There is no more error tracking.  If the API gives an error or bad response, an exception will be raised.

@@ -30,8 +30,12 @@ module SurveyGizmo
       # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       #
       # Set all_pages: true if you want the gem to page through all the available responses
-      def all(conditions = {})
+      def all(conditions = {}, _deprecated_filters = {})
         fail ':all_pages and :page are mutually exclusive conditions' if conditions[:page] && conditions[:all_pages]
+        unless _deprecated_filters.empty?
+          $stderr.puts('Use of the 2nd hash parameter is deprecated.')
+          conditions.merge!(_deprecated_filters)
+        end
 
         all_pages = conditions.delete(:all_pages)
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
@@ -65,7 +69,12 @@ module SurveyGizmo
       end
 
       # Retrieve a single resource.  See usage comment on .all
-      def first(conditions)
+      def first(conditions, _deprecated_filters = {})
+        unless _deprecated_filters.empty?
+          $stderr.puts('Use of the 2nd hash parameter is deprecated.')
+          conditions.merge!(_deprecated_filters)
+        end
+
         response = RestResponse.new(SurveyGizmo.get(handle_route!(:get, conditions) + convert_filters_into_query_string(conditions)))
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo's returned data
