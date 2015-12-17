@@ -17,10 +17,7 @@ class RestResponse
     return unless data
 
     # Handle really crappy [] notation in SG API, so far just in SurveyResponse
-    (data.is_a?(Array) ? data : [data]).each do |datum|
-      # Fix for when SG API returns [null] as data
-      next if dataum.is_a?(NilClass)
-      
+    Array(data).compact.each do |datum|
       unless datum['datesubmitted'].blank?
         # SurveyGizmo returns date information in EST but does not provide time zone information.
         # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
