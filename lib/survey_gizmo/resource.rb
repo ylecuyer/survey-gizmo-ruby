@@ -22,13 +22,13 @@ module SurveyGizmo
       def all(conditions = {}, filters = {})
         filters[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless filters[:resultsperpage]
         response = RestResponse.new(SurveyGizmo.get(handle_route(:create, conditions) + convert_filters_into_query_string(filters)))
-        _collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
+        collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
 
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo returned data
         conditions.keys.each do |k|
           if conditions[k] && instance_methods.include?(k)
-            _collection.each { |c| c[k] ||= conditions[k] }
+            collection.each { |c| c[k] ||= conditions[k] }
           end
         end
 
@@ -36,10 +36,23 @@ module SurveyGizmo
         # SurveyGizmo claims they will fix this bug and eventually all questions will be
         # returned in one request.
         if self == SurveyGizmo::API::Question
-          _collection += _collection.map { |question| question.sub_questions }.flatten
+          collection += collection.map { |question| question.sub_questions }.flatten
         end
 
-        _collection
+        collection
+      end
+
+      # Do the pagination for you
+      def everything(conditions = {}, filters = {})
+        page = 1
+        collection = []
+
+        while !(request_collection = all(conditions, filters.merge(page: page))).empty?
+          collection += request_collection
+          page += 1
+        end
+
+        collection
       end
 
       # Retrieve a single resource.
