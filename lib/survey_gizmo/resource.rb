@@ -18,14 +18,25 @@ module SurveyGizmo
 
     # These are methods that every API resource can use to access resources in SurveyGizmo
     module ClassMethods
-      # Get an array of resources
+      # Get an array of resources.
+      # @param [Hash] options - simple pagination or other options at the top level, and surveygizmo "filters" at the :filters key
+      #
+      # example: { page: 2, filters: [{ field: "istestdata", operator: "<>", value: 1 }] }
+      #
+      # The top level keys (e.g. page, resultsperpage) get simply encoded in the url, while the
+      # contents of the array of hashes passed at the :filters key get turned into the format
+      # SurveyGizmo expects for its internal filtering, for example:
+      #
+      # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
+      #
+      # Set all_pages: true if you want the gem to page through all the available responses
       def all(conditions = {})
         fail ':all_pages and :page are mutually exclusive conditions' if conditions[:page] && conditions[:all_pages]
 
         all_pages = conditions.delete(:all_pages)
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
-        request_route = handle_route!(:create, conditions)
 
+        request_route = handle_route!(:create, conditions)
         response = RestResponse.new(SurveyGizmo.get(request_route + convert_filters_into_query_string(conditions)))
         collection = response.data.map { |datum| datum.is_a?(Hash) ? self.new(datum) : datum }
 
@@ -53,7 +64,7 @@ module SurveyGizmo
         collection
       end
 
-      # Retrieve a single resource.
+      # Retrieve a single resource.  See usage comment on .all
       def first(conditions)
         response = RestResponse.new(SurveyGizmo.get(handle_route!(:get, conditions) + convert_filters_into_query_string(conditions)))
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
@@ -96,16 +107,6 @@ module SurveyGizmo
       end
 
       # Convert a [Hash] of filters into a query string
-      # @param [Hash] filters - simple pagination or other options at the top level, and surveygizmo "filters" at the :filters key
-      # @return [String]
-      #
-      # example input: { page: 2, filters: [{:field=>"istestdata", :operator=>"<>", :value=>1}] }
-      #
-      # The top level keys (e.g. page, resultsperpage) get simply encoded in the url, while the
-      # contents of the array of hashes passed in the filters hash get turned into the format
-      # SurveyGizmo expects for its internal filtering, for example:
-      #
-      # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       def convert_filters_into_query_string(filters = {})
         return '' unless filters && filters.size > 0
 
