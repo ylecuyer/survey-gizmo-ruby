@@ -29,7 +29,7 @@ module SurveyGizmo; module API
     end
 
     def pages
-      @pages ||= SurveyGizmo::API::Page.all(survey_id: id)
+      @pages ||= SurveyGizmo::API::Page.all(survey_id: id, all_responses: true)
     end
 
     # Sub question handling is in resource.rb.  It should probably be here instead but if it gets moved here
@@ -59,8 +59,8 @@ module SurveyGizmo; module API
       responses.size > 0
     end
 
-    # As of 2015-08-07, when you request data on multiple surveys from /survey, the team
-    # variable comes back as "0".  If you request one survey at a time from /survey/{id}, it works correctly.
+    # As of 2015-08-07, when you request data on multiple surveys from /survey, the team variable comes
+    # back as "0".  If you request one survey at a time from /survey/{id}, it is populated correctly.
     def teams
       @individual_survey ||= SurveyGizmo::API::Survey.first(id: self.id)
       @individual_survey.team
