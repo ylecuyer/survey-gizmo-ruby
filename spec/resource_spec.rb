@@ -36,16 +36,16 @@ describe 'Survey Gizmo Resource' do
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
 
-    context '#convert_filters_into_query_string' do
+    context '#filters_to_query_string' do
       let(:page)    { 2 }
       let(:filters) { { page: page, filters: [{ field: 'istestdata', operator: '<>', value: 1 }] } }
 
       it 'should generate the correct page request' do
-        expect(SurveyGizmoSpec::ResourceTest.send(:convert_filters_into_query_string, { page: page })).to eq("?page=#{page}")
+        expect(SurveyGizmoSpec::ResourceTest.send(:filters_to_query_string, { page: page })).to eq("?page=#{page}")
       end
 
       it 'should generate the correct filter fragment' do
-        expect(SurveyGizmoSpec::ResourceTest.send(:convert_filters_into_query_string, filters)).to eq("?filter%5Bfield%5D%5B0%5D=istestdata&filter%5Boperator%5D%5B0%5D=%3C%3E&filter%5Bvalue%5D%5B0%5D=1&page=#{page}")
+        expect(SurveyGizmoSpec::ResourceTest.send(:filters_to_query_string, filters)).to eq("?filter%5Bfield%5D%5B0%5D=istestdata&filter%5Boperator%5D%5B0%5D=%3C%3E&filter%5Bvalue%5D%5B0%5D=1&page=#{page}")
       end
     end
   end
