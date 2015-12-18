@@ -90,7 +90,7 @@ module SurveyGizmo
 
       # Define the path where a resource is located
       def route(path, methods)
-        Array(methods).each { |m| @paths[m] = path }
+        Array.wrap(methods).each { |m| @paths[m] = path }
       end
 
       # Replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
