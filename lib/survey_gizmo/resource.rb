@@ -115,8 +115,7 @@ module SurveyGizmo
         return '' unless params && params.size > 0
 
         url_params = {}
-        filters = params.delete(:filters) || []
-        filters = [filters] unless filters.is_a?(Array)
+        filters = Array.wrap(params.delete(:filters) || [])
 
         filters.each_with_index do |filter, i|
           fail "Bad filter params: #{filter}" unless filter.is_a?(Hash) && [:field, :operator, :value].all? { |k| filter[k] }
