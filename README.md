@@ -79,6 +79,7 @@ responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2)
 responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
 # Retrieving page 3 of completed, non test data SurveyResponses submitted within the past 3 days
 # See: http://apihelp.surveygizmo.com/help/article/link/filters for info on SurveyGizmo's filters
+# (A few default filters are preconfigured, like ONLY_COMPLETED)
 responses = SurveyGizmo::API::Response.all(
   survey_id: 12345,
   page: 3,
