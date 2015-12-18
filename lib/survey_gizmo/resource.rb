@@ -114,7 +114,6 @@ module SurveyGizmo
       private
 
       # Convert a [Hash] of params and internal surveygizmo style filters into a query string
-      # See: http://apihelp.surveygizmo.com/help/article/link/filters
       def filters_to_query_string(filters = {})
         return '' unless filters && filters.size > 0
 

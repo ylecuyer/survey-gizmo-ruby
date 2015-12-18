@@ -3,6 +3,10 @@ module SurveyGizmo; module API
   class Response
     include SurveyGizmo::Resource
 
+    # Filters
+    NO_TEST_DATA = { field: 'istestdata', operator: '<>', value: 1 }
+    ONLY_COMPLETED = { field: 'status', operator: '=', value: 'Complete' }
+
     attribute :id,                   Integer
     attribute :survey_id,            Integer
     attribute :contact_id,           Integer

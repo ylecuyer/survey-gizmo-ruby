@@ -77,11 +77,20 @@ question.destroy
 responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2)
 # Retrieve all responses for a given survey.
 responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
-# Retrieving page 3 of non test data SurveyResponses
+# Retrieving page 3 of completed, non test data SurveyResponses submitted within the past 3 days
+# See: http://apihelp.surveygizmo.com/help/article/link/filters for info on SurveyGizmo's filters
 responses = SurveyGizmo::API::Response.all(
   survey_id: 12345,
   page: 3,
-  filters: [{ field: 'istestdata', operator: '<>', value: 1 }]
+  filters: [
+    SurveyGizmo::API::Response::NO_TEST_DATA,
+    SurveyGizmo::API::Response::ONLY_COMPLETED,
+    {
+      field: 'datesubmitted',
+      operator: '>=',
+      value: (Time.now - 72.hours).in_time_zone('Eastern Time (US & Canada)').strftime('%Y-%m-%d %H:%M:%S')
+    }
+  ]
 )
 ```
 
