@@ -88,7 +88,7 @@ responses = SurveyGizmo::API::Response.all(
   filters: [
     SurveyGizmo::API::Response::NO_TEST_DATA,
     SurveyGizmo::API::Response::ONLY_COMPLETED,
-    SurveyGizmo::API::Response.submitted_since_filter(Time.now - 72.hours)
+    SurveyGizmo::API::Response.submitted_since_filter(Time.now - 72.hours),
     {
       field: 'contact_id',
       operator: '=',
