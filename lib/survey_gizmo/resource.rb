@@ -31,9 +31,9 @@ module SurveyGizmo
       #
       # Set all_pages: true if you want the gem to page through all the available responses
       def all(conditions = {}, _deprecated_filters = {})
+        conditions = merge_params(conditions, _deprecated_filters)
         fail ':all_pages and :page are mutually exclusive' if conditions[:page] && conditions[:all_pages]
 
-        conditions = merge_params(conditions, _deprecated_filters)
         all_pages = conditions.delete(:all_pages)
         properties = conditions.dup
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
