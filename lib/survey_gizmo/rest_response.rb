@@ -17,7 +17,7 @@ class RestResponse
     return unless data
 
     # Handle really crappy [] notation in SG API, so far just in SurveyResponse
-    Array(data).compact.each do |datum|
+    (data.is_a?(Array) ? data : [data]).compact.each do |datum|
       unless datum['datesubmitted'].blank?
         # SurveyGizmo returns date information in EST but does not provide time zone information.
         # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
