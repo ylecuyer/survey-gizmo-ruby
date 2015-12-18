@@ -4,16 +4,16 @@ class RestResponse
   attr_accessor :raw_response
   attr_accessor :parsed_response
 
-  def initialize(rest_response)
-    @raw_response = rest_response
-    @parsed_response = rest_response.parsed_response
+  def initialize(http_response)
+    @raw_response = http_response
+    @parsed_response = http_response.parsed_response
 
     if ENV['GIZMO_DEBUG']
       ap 'Parsed SurveyGizmo Response:'
       ap @parsed_response
     end
 
-    fail "Bad response: #{rest_response.inspect}" unless @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
+    fail "Bad response: #{http_response.inspect}" unless @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
     return unless data
 
     # Handle really crappy [] notation in SG API, so far just in SurveyResponse
@@ -48,12 +48,20 @@ class RestResponse
 
   # The parsed JSON data of the response
   def data
-    @_data ||= @parsed_response['data']
+    @parsed_response['data']
   end
 
   # The error message if there is one
   def message
-    @_message ||= @parsed_response['message']
+    @parsed_response['message']
+  end
+
+  def current_page
+    @parsed_response['page']
+  end
+
+  def total_pages
+    @parsed_response['total_pages']
   end
 
   private

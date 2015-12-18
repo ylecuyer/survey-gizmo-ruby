@@ -3,6 +3,18 @@ module SurveyGizmo; module API
   class Response
     include SurveyGizmo::Resource
 
+    # Filters
+    NO_TEST_DATA =   { field: 'istestdata', operator: '<>', value: 1 }
+    ONLY_COMPLETED = { field: 'status',     operator: '=',  value: 'Complete' }
+
+    def self.submitted_since_filter(time)
+      {
+        field: 'datesubmitted',
+        operator: '>=',
+        value: time.in_time_zone('Eastern Time (US & Canada)').strftime('%Y-%m-%d %H:%M:%S')
+      }
+    end
+
     attribute :id,                   Integer
     attribute :survey_id,            Integer
     attribute :contact_id,           Integer
@@ -21,7 +33,7 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveyresponse/:id', via: [:get, :update, :delete]
 
     def survey
-      @survey ||= SurveyGizmo::API::Survey.first(id: survey_id)
+      @survey ||= Survey.first(id: survey_id)
     end
 
     def to_param_options

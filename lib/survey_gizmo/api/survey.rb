@@ -25,18 +25,18 @@ module SurveyGizmo; module API
     route '/survey',     via: :create
 
     def to_param_options
-      { id: self.id }
+      { id: id }
     end
 
     def pages
-      @pages ||= SurveyGizmo::API::Page.all(survey_id: id)
+      @pages ||= Page.all(survey_id: id, all_pages: true)
     end
 
     # Sub question handling is in resource.rb.  It should probably be here instead but if it gets moved here
     # and people try to request all the questions for a specific page directly from a ::API::Question request,
     # sub questions will not be included!  So I left it there for least astonishment.
     def questions
-      @questions ||= pages.map { |p| SurveyGizmo::API::Question.all(survey_id: id, page_id: p.id) }.flatten
+      @questions ||= pages.map { |p| Question.all(survey_id: id, page_id: p.id, all_pages: true) }.flatten
     end
 
     # Statistics array of arrays looks like:
@@ -50,19 +50,13 @@ module SurveyGizmo; module API
     end
 
     def server_has_new_results_since?(time)
-      filters = [{
-        field: 'datesubmitted',
-        operator: '>=',
-        value: time.in_time_zone('Eastern Time (US & Canada)').strftime('%Y-%m-%d %H:%M:%S')
-      }]
-      responses = SurveyGizmo::API::Response.all({ survey_id: self.id }, { page: 1, filters: filters })
-      responses.size > 0
+      Response.all(survey_id: id, filters: [Response.submitted_since_filter(time)]).size > 0
     end
 
-    # As of 2015-08-07, when you request data on multiple surveys from /survey, the team
-    # variable comes back as "0".  If you request one survey at a time from /survey/{id}, it works correctly.
+    # As of 2015-12-18, when you request data on multiple surveys from /survey, the team variable comes
+    # back as "0".  If you request one survey at a time from /survey/{id}, it is populated correctly.
     def teams
-      @individual_survey ||= SurveyGizmo::API::Survey.first(id: self.id)
+      @individual_survey ||= Survey.first(id: id)
       @individual_survey.team
     end
 

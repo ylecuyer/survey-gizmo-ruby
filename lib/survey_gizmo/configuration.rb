@@ -14,13 +14,16 @@ module SurveyGizmo
   end
 
   class Configuration
+    DEFAULT_RESULTS_PER_PAGE = 50
     DEFAULT_API_VERSION = 'v4'
 
     attr_accessor :api_version
     attr_accessor :user
     attr_accessor :password
+    attr_accessor :results_per_page
 
     def initialize
+      @results_per_page = DEFAULT_RESULTS_PER_PAGE
       @api_version = DEFAULT_API_VERSION
     end
   end

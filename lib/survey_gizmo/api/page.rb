@@ -19,7 +19,7 @@ module SurveyGizmo; module API
     end
 
     def questions
-      @questions ||= SurveyGizmo::API::Question.all(survey_id: survey_id, page_id: id)
+      @questions ||= SurveyGizmo::API::Question.all(survey_id: survey_id, page_id: id, all_pages: true)
     end
 
     def to_param_options

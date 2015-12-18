@@ -22,19 +22,19 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', via: [:update, :delete]
 
     def survey
-      @survey ||= SurveyGizmo::API::Survey.first(id: survey_id)
+      @survey ||= Survey.first(id: survey_id)
     end
 
     def options
-      @options ||= SurveyGizmo::API::Option.all(survey_id: survey_id, page_id: page_id, question_id: id)
+      @options ||= Option.all(survey_id: survey_id, page_id: page_id, question_id: id, all_pages: true)
     end
 
     def parent_question
-      @parent_question ||= parent_question_id ? SurveyGizmo::API::Question.first(survey_id: survey_id, id: parent_question_id) : nil
+      @parent_question ||= parent_question_id ? Question.first(survey_id: survey_id, id: parent_question_id) : nil
     end
 
     def sub_questions
-      @sub_questions ||= sub_question_skus.map { |subquestion_id| SurveyGizmo::API::Question.first(survey_id: survey_id, id: subquestion_id) }
+      @sub_questions ||= sub_question_skus.map { |subquestion_id| Question.first(survey_id: survey_id, id: subquestion_id) }
                                           .each { |subquestion| subquestion.parent_question_id = id  }
     end
 
