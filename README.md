@@ -129,8 +129,8 @@ class SomeObject
   attribute :created_on,  DateTime
 
   # defing the paths used to retrieve/set info
-  route '/something/:id', via: [:get, :update, :delete]
-  route '/something',     via: :create
+  route '/something/:id', [:get, :update, :delete]
+  route '/something',     :create
 
   # this must be defined with the params that would be included in any route related
   # to an instance of SomeObject

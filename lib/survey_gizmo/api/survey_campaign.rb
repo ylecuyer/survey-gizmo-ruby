@@ -23,11 +23,11 @@ module SurveyGizmo; module API
     attribute :surveycampaign,  Integer
     attribute :copy,            Boolean
 
-    route '/survey/:survey_id/surveycampaign/:id', via: [:get, :update, :delete]
-    route '/survey/:survey_id/surveycampaign', via: :create
+    route '/survey/:survey_id/surveycampaign/:id', [:get, :update, :delete]
+    route '/survey/:survey_id/surveycampaign', :create
 
     def to_param_options
-      { id: self.id, survey_id: self.survey_id }
+      { id: id, survey_id: survey_id }
     end
   end
 end; end
