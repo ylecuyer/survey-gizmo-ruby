@@ -79,8 +79,8 @@ responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2)
 responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
 
 # Retrieving page 3 of completed, non test data SurveyResponses submitted within the past 3 days
-# for contact id 999.  (This example shows you how to use some of the gem's built in filters and
-# filtergenerators and also how to construct your own raw filter hash)
+# for contact id 999. This example shows you how to use some of the gem's built in filters and
+# filter generators as well as how to construct your own raw filter.
 # See: http://apihelp.surveygizmo.com/help/article/link/filters for more info on filters
 responses = SurveyGizmo::API::Response.all(
   survey_id: 12345,
