@@ -4,8 +4,8 @@ module SurveyGizmo; module API
     include SurveyGizmo::Resource
 
     # Filters
-    NO_TEST_DATA = { field: 'istestdata', operator: '<>', value: 1 }
-    ONLY_COMPLETED = { field: 'status', operator: '=', value: 'Complete' }
+    NO_TEST_DATA =   { field: 'istestdata', operator: '<>', value: 1 }
+    ONLY_COMPLETED = { field: 'status',     operator: '=',  value: 'Complete' }
 
     def self.submitted_since_filter(time)
       {
