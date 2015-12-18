@@ -21,7 +21,7 @@ module SurveyGizmo
       # Get an array of resources.
       # @param [Hash] options - simple URL params at the top level, and SurveyGizmo "filters" at the :filters key
       #
-      # example: { page: 2, filters: [{ field: "istestdata", operator: "<>", value: 1 }] }
+      # example: { page: 2, filters: { field: "istestdata", operator: "<>", value: 1 } }
       #
       # The top level keys (e.g. page, resultsperpage) get encoded in the url, while the
       # contents of the array of hashes passed at the :filters key get turned into the format
@@ -112,20 +112,23 @@ module SurveyGizmo
       private
 
       # Convert a [Hash] of params and internal surveygizmo style filters into a query string
-      def filters_to_query_string(filters = {})
-        return '' unless filters && filters.size > 0
+      def filters_to_query_string(params = {})
+        return '' unless params && params.size > 0
 
-        params = {}
-        (filters.delete(:filters) || []).each_with_index do |filter, i|
+        url_params = {}
+        filters = params.delete(:filters) || []
+        filters = [filters] unless filters.is_a?(Array)
+
+        filters.each_with_index do |filter, i|
           fail "Bad filter params: #{filter}" unless filter.is_a?(Hash) && [:field, :operator, :value].all? { |k| filter[k] }
 
-          params["filter[field][#{i}]".to_sym]    = "#{filter[:field]}"
-          params["filter[operator][#{i}]".to_sym] = "#{filter[:operator]}"
-          params["filter[value][#{i}]".to_sym]    = "#{filter[:value]}"
+          url_params["filter[field][#{i}]".to_sym]    = "#{filter[:field]}"
+          url_params["filter[operator][#{i}]".to_sym] = "#{filter[:operator]}"
+          url_params["filter[value][#{i}]".to_sym]    = "#{filter[:value]}"
         end
 
         uri = Addressable::URI.new
-        uri.query_values = params.merge(filters)
+        uri.query_values = url_params.merge(params)
         "?#{uri.query}"
       end
 
