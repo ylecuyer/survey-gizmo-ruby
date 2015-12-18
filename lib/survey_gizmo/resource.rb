@@ -52,7 +52,6 @@ module SurveyGizmo
         # not often part of the SurveyGizmo returned data
         properties.each do |k, v|
           next unless v && instance_methods.include?(k)
-          # better: next unless v && attribute_set.map(&:name).include?(k)
           collection.each { |c| c[k] ||= v }
         end
 
