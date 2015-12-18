@@ -77,7 +77,6 @@ question.destroy
 responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2)
 # Retrieve all responses for a given survey.
 responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
-
 # Retrieving page 3 of completed, non test data SurveyResponses submitted within the past 3 days
 # for contact id 999. This example shows you how to use some of the gem's built in filters and
 # filter generators as well as how to construct your own raw filter.
