@@ -17,9 +17,9 @@ module SurveyGizmo; module API
 
     alias_attribute :_subtype, :type
 
-    route '/survey/:survey_id/surveyquestion/:id', via: :get
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion', via: :create
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', via: [:update, :delete]
+    route '/survey/:survey_id/surveyquestion/:id', :get
+    route '/survey/:survey_id/surveypage/:page_id/surveyquestion', :create
+    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', [:update, :delete]
 
     def survey
       @survey ||= Survey.first(id: survey_id)
@@ -40,7 +40,7 @@ module SurveyGizmo; module API
 
     # @see SurveyGizmo::Resource#to_param_options
     def to_param_options
-      { id: self.id, survey_id: self.survey_id, page_id: self.page_id }
+      { id: id, survey_id: survey_id, page_id: page_id }
     end
   end
 end; end

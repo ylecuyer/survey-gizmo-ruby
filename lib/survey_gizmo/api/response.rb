@@ -29,15 +29,15 @@ module SurveyGizmo; module API
     attribute :url,                  Hash       # READ-ONLY
     attribute :answers,              Hash       # READ-ONLY
 
-    route '/survey/:survey_id/surveyresponse',     via: :create
-    route '/survey/:survey_id/surveyresponse/:id', via: [:get, :update, :delete]
+    route '/survey/:survey_id/surveyresponse',     :create
+    route '/survey/:survey_id/surveyresponse/:id', [:get, :update, :delete]
 
     def survey
       @survey ||= Survey.first(id: survey_id)
     end
 
     def to_param_options
-      { id: self.id, survey_id: self.survey_id }
+      { id: id, survey_id: survey_id }
     end
   end
 end; end

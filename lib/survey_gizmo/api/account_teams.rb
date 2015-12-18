@@ -13,11 +13,11 @@ module SurveyGizmo
       attribute :default_role,  String
       attribute :status,        String
 
-      route '/accountteams/:id', via: [:get, :update, :delete]
-      route '/accountteams',     via: :create
+      route '/accountteams/:id', [:get, :update, :delete]
+      route '/accountteams',     :create
 
       def to_param_options
-        { id: self.id }
+        { id: id }
       end
     end
   end

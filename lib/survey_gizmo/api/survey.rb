@@ -21,8 +21,8 @@ module SurveyGizmo; module API
     attribute :modified_on,    DateTime
     attribute :copy,           Boolean
 
-    route '/survey/:id', via: [:get, :update, :delete]
-    route '/survey',     via: :create
+    route '/survey/:id', [:get, :update, :delete]
+    route '/survey',     :create
 
     def to_param_options
       { id: id }
@@ -36,7 +36,7 @@ module SurveyGizmo; module API
     # and people try to request all the questions for a specific page directly from a ::API::Question request,
     # sub questions will not be included!  So I left it there for least astonishment.
     def questions
-      @questions ||= pages.map { |p| Question.all(survey_id: id, page_id: p.id, all_pages: true) }.flatten
+      @questions ||= pages.map { |p| p.questions }.flatten
     end
 
     # Statistics array of arrays looks like:
