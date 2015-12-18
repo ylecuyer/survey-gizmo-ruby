@@ -48,12 +48,12 @@ module SurveyGizmo
           collection += response.data.map { |datum| datum.is_a?(Hash) ? new(datum) : datum }
         end
 
-        # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
+        # Add in the properties from the request because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo returned data
-        properties.each do |k,v|
-          if v && instance_methods.include?(k)
-            collection.each { |c| c[k] ||= v }
-          end
+        properties.each do |k, v|
+          next unless v && instance_methods.include?(k)
+          # better: next unless v && attribute_set.map(&:name).include?(k)
+          collection.each { |c| c[k] ||= v }
         end
 
         # Sub questions are not pulled by default so we have to retrieve them manually
@@ -104,7 +104,7 @@ module SurveyGizmo
         fail "User/password hash not setup!" if SurveyGizmo.default_params.empty?
 
         path.gsub(/:(\w+)/) do |m|
-          raise(SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`") unless interpolation_hash[$1.to_sym]
+          raise SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`" unless interpolation_hash[$1.to_sym]
           interpolation_hash.delete($1.to_sym)
         end
       end
