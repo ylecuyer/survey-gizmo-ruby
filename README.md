@@ -59,6 +59,7 @@ survey.pages # => [page1, page2,...]
 survey.number_of_completed_responses # => 355
 survey.server_has_new_results_since?(Time.now.utc - 2.days) # => true
 survey.team_names # => ['Development', 'Test']
+survey.belongs_to?('Development') # => true
 
 # Retrieving Questions for a given survey.  Note that page_id is a required parameter.
 questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)

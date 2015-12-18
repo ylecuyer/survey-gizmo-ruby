@@ -33,7 +33,7 @@ module SurveyGizmo; module API
     route '/survey/:survey_id/surveyresponse/:id', via: [:get, :update, :delete]
 
     def survey
-      @survey ||= SurveyGizmo::API::Survey.first(id: survey_id)
+      @survey ||= Survey.first(id: survey_id)
     end
 
     def to_param_options

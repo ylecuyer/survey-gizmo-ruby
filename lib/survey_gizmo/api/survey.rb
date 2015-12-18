@@ -29,14 +29,14 @@ module SurveyGizmo; module API
     end
 
     def pages
-      @pages ||= SurveyGizmo::API::Page.all(survey_id: id, all_responses: true)
+      @pages ||= Page.all(survey_id: id, all_pages: true)
     end
 
     # Sub question handling is in resource.rb.  It should probably be here instead but if it gets moved here
     # and people try to request all the questions for a specific page directly from a ::API::Question request,
     # sub questions will not be included!  So I left it there for least astonishment.
     def questions
-      @questions ||= pages.map { |p| SurveyGizmo::API::Question.all(survey_id: id, page_id: p.id) }.flatten
+      @questions ||= pages.map { |p| Question.all(survey_id: id, page_id: p.id, all_pages: true) }.flatten
     end
 
     # Statistics array of arrays looks like:
@@ -56,7 +56,7 @@ module SurveyGizmo; module API
     # As of 2015-12-18, when you request data on multiple surveys from /survey, the team variable comes
     # back as "0".  If you request one survey at a time from /survey/{id}, it is populated correctly.
     def teams
-      @individual_survey ||= SurveyGizmo::API::Survey.first(id: id)
+      @individual_survey ||= Survey.first(id: id)
       @individual_survey.team
     end
 
