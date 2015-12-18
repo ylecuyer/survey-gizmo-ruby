@@ -26,7 +26,7 @@ module SurveyGizmo; module API
     end
 
     def options
-      @options ||= Option.all(survey_id: survey_id, page_id: page_id, question_id: id)
+      @options ||= Option.all(survey_id: survey_id, page_id: page_id, question_id: id, all_pages: true)
     end
 
     def parent_question
