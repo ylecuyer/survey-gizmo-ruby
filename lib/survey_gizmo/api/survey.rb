@@ -25,7 +25,7 @@ module SurveyGizmo; module API
     route '/survey',     via: :create
 
     def to_param_options
-      { id: self.id }
+      { id: id }
     end
 
     def pages
@@ -50,13 +50,13 @@ module SurveyGizmo; module API
     end
 
     def server_has_new_results_since?(time)
-      Response.all(survey_id: self.id, filters: Response.submitted_since_filter(time)).size > 0
+      Response.all(survey_id: id, filters: [Response.submitted_since_filter(time)]).size > 0
     end
 
     # As of 2015-08-07, when you request data on multiple surveys from /survey, the team variable comes
     # back as "0".  If you request one survey at a time from /survey/{id}, it is populated correctly.
     def teams
-      @individual_survey ||= SurveyGizmo::API::Survey.first(id: self.id)
+      @individual_survey ||= SurveyGizmo::API::Survey.first(id: id)
       @individual_survey.team
     end
 
