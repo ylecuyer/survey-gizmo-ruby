@@ -129,8 +129,8 @@ class SomeObject
   attribute :created_on,  DateTime
 
   # defing the paths used to retrieve/set info
-  route '/something/:id', via: [:get, :update, :delete]
-  route '/something',     via: :create
+  route '/something/:id', [:get, :update, :delete]
+  route '/something',     :create
 
   # this must be defined with the params that would be included in any route related
   # to an instance of SomeObject
@@ -154,11 +154,13 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 
 ## Desirable/Missing Features
 
+* Better specs with VCR/Webmock
+* :all_pages could yield results in a block for automated paging like rails find_in_batches
+* OAuth authentication
+* EU domain support
 * Better foreign language support
 * Use Faraday instead of Httparty (partied too hard)
-* Better specs with VCR/Webmock would be nice.
 * There are several API objects that are available and not included in this gem.  AccountTeams, for instance, has some skeleton code but is untested.
-* OAuth authentication ability.
 
 # Copyright
 

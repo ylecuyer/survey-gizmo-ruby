@@ -20,11 +20,11 @@ module SurveyGizmo; module API
     attribute :datecreated,       DateTime
     attribute :datemodified,      DateTime
 
-    route '/survey/:survey_id/surveycampaign/:campaign_id/emailmessage/:id', :via => [:get, :update, :delete]
-    route '/survey/:survey_id/surveycampaign/:campaign_id/emailmessage', :via => :create
+    route '/survey/:survey_id/surveycampaign/:campaign_id/emailmessage/:id', [:get, :update, :delete]
+    route '/survey/:survey_id/surveycampaign/:campaign_id/emailmessage', :create
 
     def to_param_options
-      { id: self.id, survey_id: self.survey_id, campaign_id: self.campaign_id }
+      { id: id, survey_id: survey_id, campaign_id: campaign_id }
     end
   end
 end; end

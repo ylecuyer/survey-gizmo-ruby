@@ -11,11 +11,11 @@ module SurveyGizmo; module API
     attribute :value,         String
     attribute :properties,    Hash
 
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption',     via: :create
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption/:id', via: [:get, :update, :delete]
+    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption',     :create
+    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption/:id', [:get, :update, :delete]
 
     def to_param_options
-      { id: self.id, survey_id: self.survey_id, page_id: self.page_id, question_id: self.question_id }
+      { id: id, survey_id: survey_id, page_id: page_id, question_id: question_id }
     end
   end
 end; end
