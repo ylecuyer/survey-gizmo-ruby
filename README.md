@@ -76,8 +76,6 @@ question.destroy
 
 # Retrieve 2nd page of SurveyResponses for a given survey.
 responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2)
-# Retrieve all responses for a given survey.
-responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
 # Retrieving page 3 of completed, non test data SurveyResponses submitted within the past 3 days
 # for contact id 999. This example shows you how to use some of the gem's built in filters and
 # filter generators as well as how to construct your own raw filter.
@@ -96,6 +94,13 @@ responses = SurveyGizmo::API::Response.all(
     }
   ]
 )
+# Retrieve all responses for a given survey.
+# Note that this may not be a good idea for surveys with very large numbers of responses!
+responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
+# If you want the gem to handle paging for you, use the :all_pages option and process your pages in a block
+SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345) do |responses|
+  responses.each { |r| process_response(r) }
+end
 
 # Parse the wacky answer hash format into a more usable format.
 # Note that answers with keys but no values will be stripped out - this might not be the right approach

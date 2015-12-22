@@ -39,20 +39,26 @@ module SurveyGizmo
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
 
         request_route = handle_route!(:create, conditions)
-        response = RestResponse.new(SurveyGizmo.get(request_route + filters_to_query_string(conditions)))
-        collection = response.data.map { |datum| datum.is_a?(Hash) ? new(datum) : datum }
+        collection = []
+        response = nil
 
-        while all_pages && response.current_page < response.total_pages
-          paged_filter = filters_to_query_string(conditions.merge(page: response.current_page + 1))
+        while !response || (all_pages && response.current_page < response.total_pages)
+          paged_filter = filters_to_query_string(conditions.merge(page: response ? response.current_page + 1 : 1))
           response = RestResponse.new(SurveyGizmo.get(request_route + paged_filter))
-          collection += response.data.map { |datum| datum.is_a?(Hash) ? new(datum) : datum }
-        end
+          _collection = response.data.map { |datum| datum.is_a?(Hash) ? new(datum) : datum }
 
-        # Add in the properties from the request because many of the important ones (like survey_id) are
-        # not often part of the SurveyGizmo returned data
-        properties.each do |k, v|
-          next unless v && instance_methods.include?(k)
-          collection.each { |c| c[k] ||= v }
+          # Add in the properties from the request because many of the important ones (like survey_id) are
+          # not often part of the SurveyGizmo returned data
+          properties.each do |k, v|
+            next unless v && instance_methods.include?(k)
+            _collection.each { |c| c[k] ||= v }
+          end
+
+          if block_given?
+            yield(_collection)
+          else
+            collection += _collection
+          end
         end
 
         # Sub questions are not pulled by default so we have to retrieve them manually
