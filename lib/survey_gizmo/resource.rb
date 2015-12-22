@@ -44,7 +44,9 @@ module SurveyGizmo
 
         while !response || (all_pages && response.current_page < response.total_pages)
           paged_filter = filters_to_query_string(conditions.merge(page: response ? response.current_page + 1 : 1))
-          response = RestResponse.new(SurveyGizmo.get(request_route + paged_filter))
+          Pester.surveygizmo.retry do
+            response = RestResponse.new(SurveyGizmo.get(request_route + paged_filter))
+          end
           _collection = response.data.map { |datum| datum.is_a?(Hash) ? new(datum) : datum }
 
           # Add in the properties from the request because many of the important ones (like survey_id) are
@@ -71,8 +73,11 @@ module SurveyGizmo
       def first(conditions, _deprecated_filters = {})
         conditions = merge_params(conditions, _deprecated_filters)
         properties = conditions.dup
+        response = nil
 
-        response = RestResponse.new(SurveyGizmo.get(handle_route!(:get, conditions) + filters_to_query_string(conditions)))
+        Pester.surveygizmo.retry do
+          response = RestResponse.new(SurveyGizmo.get(handle_route!(:get, conditions) + filters_to_query_string(conditions)))
+        end
         # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
         # not often part of the SurveyGizmo's returned data
         new(properties.merge(response.data))

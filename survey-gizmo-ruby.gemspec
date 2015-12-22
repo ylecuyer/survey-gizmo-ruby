@@ -20,6 +20,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'awesome_print'
   gem.add_dependency 'httparty'
   gem.add_dependency 'i18n'
+  gem.add_dependency 'pester', '>= 1.0.0'
   gem.add_dependency 'virtus', '>= 1.0.0'
 
   gem.add_development_dependency 'rspec', '~> 2.11.0'

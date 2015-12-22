@@ -9,6 +9,8 @@ require 'active_support/time_with_zone'
 require 'awesome_print'
 require 'digest/md5'
 require 'httparty'
+require 'logger'
+require 'pester'
 require 'virtus'
 
 require 'survey_gizmo/version'
