@@ -180,11 +180,10 @@ describe 'Survey Gizmo Resource' do
       end
 
       it 'should parse the answers and remove extraneous answers' do
-        r = described_class.new(answers: answers)
-        expect(r.parsed_answers).to eq([
+        expect(described_class.new(answers: answers).parsed_answers).to eq([
           { question_id: 3, option_id: 10021, answer: "Some other text field answer" },
           { question_id: 5, answer: "VERY important" },
-          { question_id: 8, answer: false},
+          { question_id: 8, answer: false },
           { question_id: 9, option_id: 10002, answer: "16"}
         ])
       end
