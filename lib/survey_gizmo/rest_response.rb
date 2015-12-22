@@ -1,8 +1,6 @@
 # This class normalizes the response returned by Survey Gizmo, including validation.
 
 module SurveyGizmo
-  class RateLimitExceededError < StandardError; end
-
   class RestResponse
     attr_accessor :raw_response
     attr_accessor :parsed_response
@@ -18,7 +16,7 @@ module SurveyGizmo
         ap @parsed_response
       end
 
-      fail "Bad response: #{http_response.inspect}" unless @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
+      fail BadResponseError, http_response.inspect unless ok?
       return unless data
 
       # Handle really crappy [] notation in SG API, so far just in SurveyResponse
@@ -70,6 +68,10 @@ module SurveyGizmo
     end
 
     private
+
+    def ok?
+      @parsed_response['result_ok'] && @parsed_response['result_ok'].to_s.downcase == 'true'
+    end
 
     def cleanup_attribute_name(attr)
       attr.downcase.gsub(/[^[:alnum:]]+/, '_')
