@@ -37,11 +37,44 @@ module SurveyGizmo; module API
     end
 
     def parsed_answers
-      @parsed_answers ||= answers.map { |k,v| Answer.parse_answer(k,v) }.compact
+      answers.select { |k,v| v.is_a?(FalseClass) || v }.select do |k,v|
+        if k =~ /\[question\((\d+)\),\s*option\((\d+)\)\]/
+          # Strip out "Other" answers that don't actually have the "other" text
+          !answers.keys.any? { |key| key =~ /\[question\((\d+)\),\s*option\("(#{$2})-other"\)\]/ }
+        else
+          true
+        end
+      end.map { |k,v| parse_answer(k, v) }
     end
 
     def to_param_options
       { id: id, survey_id: survey_id }
+    end
+
+    private
+
+    def parse_answer(key, value)
+      case key
+      when /\[question\((\d+)\),\s*option\((\d+)\)\]/
+        {
+          question_id: $1.to_i,
+          option_id: $2.to_i,
+          answer: value
+        }
+      when /\[question\((\d+)\),\s*option\("(\d+)-other"\)\]/
+        {
+          question_id: $1.to_i,
+          option_id: $2.to_i,
+          answer: value
+        }
+      when /\[question\((\d+)\)\]/
+        {
+          question_id: $1.to_i,
+          answer: value
+        }
+      else
+        fail "Didn't recognize pattern for #{key} => #{value}"
+      end
     end
   end
 end; end

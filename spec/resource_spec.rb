@@ -165,6 +165,24 @@ describe 'Survey Gizmo Resource' do
 
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
+
+    context 'answers' do
+      let(:answers) do
+        {
+          "[question(3), option(\"10021-other\")]" => "Some other text field answer",
+          "[question(3), option(10021)]" => "Other (required)",
+          "[question(5)]" => "VERY important"
+        }
+      end
+
+      it 'should parse the answers and remove extraneous "other" answers' do
+        r = described_class.new(answers: answers)
+        expect(r.parsed_answers).to eq([
+          { question_id: 3, option_id: 10021, answer: "Some other text field answer" },
+          { question_id: 5, answer: "VERY important" }
+        ])
+      end
+    end
   end
 
   describe SurveyGizmo::API::AccountTeams do
