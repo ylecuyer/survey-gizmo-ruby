@@ -97,8 +97,10 @@ responses = SurveyGizmo::API::Response.all(
   ]
 )
 
-# Parse the wacky answer hash format into a more usable format
-answers = responses.last.parsed_answers => [{ question_id: 1, option_id: 5, answer: 'Some text' }]
+# Parse the wacky answer hash format into a more usable format.
+# Note that answers with keys but no values will be stripped out - this might not be the right approach
+# for the more obscure question types!
+responses.last.parsed_answers => # [{ question_id: 1, option_id: 5, answer: 'text' }]
 ```
 
 ## On API Timeouts
