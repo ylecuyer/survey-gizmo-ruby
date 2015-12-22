@@ -69,6 +69,12 @@ module SurveyGizmo; module API
           option_id: $2.to_i,
           answer: value
         }
+      when /\[question\((\d+)\),\s*question_pipe\("(.*)"\)\]/
+        {
+          question_id: $1.to_i,
+          question_pipe: $2,
+          answer: value
+        }
       when /\[question\((\d+)\)\]/
         {
           question_id: $1.to_i,

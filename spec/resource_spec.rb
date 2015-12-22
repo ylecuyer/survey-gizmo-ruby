@@ -175,7 +175,8 @@ describe 'Survey Gizmo Resource' do
           "[question(6)]" => nil,
           "[question(7), option(10001)]" => nil,
           "[question(8)]" => false,
-          "[question(9), option(10002)]" => '16'
+          "[question(9), option(10002)]" => '16',
+          "[question(10), question_pipe(\"Que aplicación\")]" => "5 = Extremely important"
         }
       end
 
@@ -184,7 +185,8 @@ describe 'Survey Gizmo Resource' do
           { question_id: 3, option_id: 10021, answer: "Some other text field answer" },
           { question_id: 5, answer: "VERY important" },
           { question_id: 8, answer: false },
-          { question_id: 9, option_id: 10002, answer: "16"}
+          { question_id: 9, option_id: 10002, answer: "16"},
+          { question_id: 10, question_pipe: "Que aplicación", answer: "5 = Extremely important" }
         ])
       end
     end
