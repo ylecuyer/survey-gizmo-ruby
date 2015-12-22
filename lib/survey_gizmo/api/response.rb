@@ -75,7 +75,7 @@ module SurveyGizmo; module API
           answer: value
         }
       else
-        fail "Didn't recognize pattern for #{key} => #{value}"
+        fail "Didn't recognize pattern for #{key} => #{value} - you may have to parse your answers manually."
       end
     end
   end
