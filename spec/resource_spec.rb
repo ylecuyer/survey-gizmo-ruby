@@ -174,7 +174,8 @@ describe 'Survey Gizmo Resource' do
           "[question(5)]" => "VERY important",
           "[question(6)]" => nil,
           "[question(7), option(10001)]" => nil,
-          "[question(8)]" => false
+          "[question(8)]" => false,
+          "[question(9), option(10002)]" => '16'
         }
       end
 
@@ -183,7 +184,8 @@ describe 'Survey Gizmo Resource' do
         expect(r.parsed_answers).to eq([
           { question_id: 3, option_id: 10021, answer: "Some other text field answer" },
           { question_id: 5, answer: "VERY important" },
-          { question_id: 8, answer: false}
+          { question_id: 8, answer: false},
+          { question_id: 9, option_id: 10002, answer: "16"}
         ])
       end
     end
