@@ -61,24 +61,24 @@ module SurveyGizmo; module API
         {
           question_id: $1.to_i,
           option_id: $2.to_i,
-          answer: value
+          answer_text: value
         }
       when /\[question\((\d+)\),\s*option\("(\d+)-other"\)\]/
         {
           question_id: $1.to_i,
           option_id: $2.to_i,
-          answer: value
+          answer_text: value
         }
       when /\[question\((\d+)\),\s*question_pipe\("(.*)"\)\]/
         {
           question_id: $1.to_i,
           question_pipe: $2,
-          answer: value
+          answer_text: value
         }
       when /\[question\((\d+)\)\]/
         {
           question_id: $1.to_i,
-          answer: value
+          answer_text: value
         }
       else
         fail "Didn't recognize pattern for #{key} => #{value} - you may have to parse your answers manually."
