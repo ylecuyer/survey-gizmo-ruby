@@ -1,8 +1,7 @@
 # This class normalizes the response returned by Survey Gizmo, including validation.
 
 module SurveyGizmo
-  class RateLimitExceededError < StandardError
-  end
+  class RateLimitExceededError < StandardError; end
 
   class RestResponse
     attr_accessor :raw_response
