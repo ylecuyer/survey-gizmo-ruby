@@ -15,7 +15,6 @@ RSpec.configure do |config|
     SurveyGizmo.configure do |config|
       config.user = 'test@test.com'
       config.password = 'password'
-      config.retry_everything = true
     end
 
     Pester.configure do |config|
