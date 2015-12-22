@@ -37,10 +37,12 @@ module SurveyGizmo; module API
     end
 
     def parsed_answers
-      answers.select { |k,v| v.is_a?(FalseClass) || v }.select do |k,v|
+      answers.select do |k,v|
+        next false unless v.is_a?(FalseClass) || v
+
         if k =~ /\[question\((\d+)\),\s*option\((\d+)\)\]/
           # Strip out "Other" answers that don't actually have the "other" text
-          !answers.keys.any? { |key| key =~ /\[question\((\d+)\),\s*option\("(#{$2})-other"\)\]/ }
+          !answers.keys.any? { |key| key =~ /\[question\((#{$1})\),\s*option\("(#{$2})-other"\)\]/ }
         else
           true
         end

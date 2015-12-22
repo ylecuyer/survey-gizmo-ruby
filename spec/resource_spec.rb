@@ -171,15 +171,19 @@ describe 'Survey Gizmo Resource' do
         {
           "[question(3), option(\"10021-other\")]" => "Some other text field answer",
           "[question(3), option(10021)]" => "Other (required)",
-          "[question(5)]" => "VERY important"
+          "[question(5)]" => "VERY important",
+          "[question(6)]" => nil,
+          "[question(7), option(10001)]" => nil,
+          "[question(8)]" => false
         }
       end
 
-      it 'should parse the answers and remove extraneous "other" answers' do
+      it 'should parse the answers and remove extraneous answers' do
         r = described_class.new(answers: answers)
         expect(r.parsed_answers).to eq([
           { question_id: 3, option_id: 10021, answer: "Some other text field answer" },
-          { question_id: 5, answer: "VERY important" }
+          { question_id: 5, answer: "VERY important" },
+          { question_id: 8, answer: false}
         ])
       end
     end
