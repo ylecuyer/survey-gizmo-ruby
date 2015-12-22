@@ -96,6 +96,9 @@ responses = SurveyGizmo::API::Response.all(
     }
   ]
 )
+
+# Parse the wacky answer hash format into something usable
+answers = responses.map { |r| r.parsed_answers }
 ```
 
 ## On API Timeouts
