@@ -54,18 +54,14 @@ module SurveyGizmo
             _collection.each { |c| c[k] ||= v }
           end
 
-          if block_given?
-            yield(_collection)
-          else
-            collection += _collection
+          # Sub questions are not pulled by default so we have to retrieve them manually
+          # SurveyGizmo claims they will fix this bug and eventually all questions will be
+          # returned in one request.
+          if self == SurveyGizmo::API::Question
+            _collection += _collection.map { |question| question.sub_questions }.flatten
           end
-        end
 
-        # Sub questions are not pulled by default so we have to retrieve them manually
-        # SurveyGizmo claims they will fix this bug and eventually all questions will be
-        # returned in one request.
-        if self == SurveyGizmo::API::Question
-          collection += collection.map { |question| question.sub_questions }.flatten
+          block_given? ? yield(_collection) : collection += _collection
         end
 
         collection

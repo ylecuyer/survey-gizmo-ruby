@@ -107,7 +107,8 @@ describe 'Survey Gizmo Resource' do
 
     context 'with subquestions' do
       let(:parent_id) { 33 }
-      let(:question_with_subquestions) { described_class.new(id: parent_id, survey_id: 1234, sub_question_skus: [1, 2]) }
+      let(:skus) { [544, 322] }
+      let(:question_with_subquestions) { described_class.new(id: parent_id, survey_id: 1234, sub_question_skus: skus) }
 
       it 'should have 2 subquestions and they should have the right parent question' do
         stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
@@ -115,6 +116,7 @@ describe 'Survey Gizmo Resource' do
 
         question_with_subquestions.sub_questions.first.parent_question
         a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{parent_id}/).should have_been_made
+        skus.each { |sku| a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{sku}/).should have_been_made }
       end
     end
   end

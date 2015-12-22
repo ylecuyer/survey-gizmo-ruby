@@ -34,8 +34,11 @@ module SurveyGizmo; module API
     end
 
     def sub_questions
-      @sub_questions ||= sub_question_skus.map { |subquestion_id| Question.first(survey_id: survey_id, id: subquestion_id) }
-                                          .each { |subquestion| subquestion.parent_question_id = id  }
+      @sub_questions ||= sub_question_skus.map do |subquestion_id|
+        subquestion = Question.first(survey_id: survey_id, id: subquestion_id)
+        subquestion.parent_question_id = id
+        subquestion
+      end
     end
 
     # @see SurveyGizmo::Resource#to_param_options
