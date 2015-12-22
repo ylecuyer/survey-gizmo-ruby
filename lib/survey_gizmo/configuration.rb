@@ -11,7 +11,8 @@ module SurveyGizmo
       c.environments[:surveygizmo] = {
         max_attempts: configuration.retries + 1,
         delay_interval: configuration.retry_interval,
-        on_retry: Pester::Behaviors::Sleep::Constant
+        on_retry: Pester::Behaviors::Sleep::Constant,
+        retry_error_classes: SurveyGizmo::RateLimitExceededError
       }
     end
     SurveyGizmo.setup
