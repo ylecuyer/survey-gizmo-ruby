@@ -36,6 +36,10 @@ module SurveyGizmo; module API
       @survey ||= Survey.first(id: survey_id)
     end
 
+    def parsed_answers
+      @parsed_answers ||= answers.map { |k,v| Answer.parse_answer(k,v) }.compact
+    end
+
     def to_param_options
       { id: id, survey_id: survey_id }
     end
