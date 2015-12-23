@@ -21,6 +21,7 @@ require 'survey_gizmo/resource'
 require 'survey_gizmo/rest_response'
 
 require 'survey_gizmo/api/account_teams'
+require 'survey_gizmo/api/answer'
 require 'survey_gizmo/api/contact'
 require 'survey_gizmo/api/email_message'
 require 'survey_gizmo/api/option'

@@ -111,10 +111,9 @@ SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345) do |responses|
 end
 
 # Parse the wacky answer hash format into a more usable format.
-# Note that answers with keys but no values will be stripped out - this might not be the right approach
-# for the more obscure question types!
+# Note that answers with keys but no values will not be returned
 # See http://apihelp.surveygizmo.com/help/article/link/surveyresponse-per-question for more info on answers
-responses.last.parsed_answers => # [{ question_id: 1, option_id: 5, answer_text: 'text' }]
+responses.last.parsed_answers => # [#<SurveyGizmo::API::Answer:0x007fcadb4988f8 @survey_id=12345, @question_id=1, @answer_text='text'>]
 ```
 
 ## On API Timeouts
