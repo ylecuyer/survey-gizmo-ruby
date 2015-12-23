@@ -7,6 +7,7 @@ module SurveyGizmo
 
     def initialize(http_response)
       fail RateLimitExceededError if http_response.code == 429
+      fail "Bad response code #{code} in #{http_response.inspect}" unless http_response.code == 200
 
       @raw_response = http_response
       @parsed_response = http_response.parsed_response
