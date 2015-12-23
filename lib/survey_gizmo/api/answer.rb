@@ -5,14 +5,16 @@ module SurveyGizmo
       attr_accessor :raw_value
 
       attr_accessor :survey_id
+      attr_accessor :response_id
       attr_accessor :question_id
       attr_accessor :option_id
       attr_accessor :answer_text
       attr_accessor :other_text
       attr_accessor :question_pipe
 
-      def initialize(survey_id, key, value)
+      def initialize(survey_id, response_id, key, value)
         @survey_id = survey_id
+        @response_id = response_id
         @raw_key = key
         @raw_value = value
         @answer_text = value
@@ -37,10 +39,17 @@ module SurveyGizmo
         @option_id = @option_id.to_i if @option_id
       end
 
+      # Strips out the answer_text when there is a valid option_id
       def to_hash
-        base = { question_id: @question_id, option_id: @option_id, question_pipe: @question_pipe, survey_id: @survey_id }
-        @other_text ? base[:other_text] = @other_text : base[:answer_text] = @answer_text
-        base.reject { |k,v| v.nil? }
+        {
+          response_id: @response_id,
+          question_id: @question_id,
+          option_id: @option_id,
+          question_pipe: @question_pipe,
+          survey_id: @survey_id,
+          other_text: @other_text,
+          answer_text: @option_id || @other_text ? nil : @answer_text
+        }.reject { |k,v| v.nil? }
       end
     end
   end

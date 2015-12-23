@@ -46,7 +46,7 @@ module SurveyGizmo; module API
         else
           true
         end
-      end.map { |k,v| Answer.new(survey_id, k, v) }
+      end.map { |k,v| Answer.new(survey_id, id, k, v) }
     end
 
     def to_param_options

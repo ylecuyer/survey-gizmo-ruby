@@ -187,7 +187,7 @@ describe 'Survey Gizmo Resource' do
           { survey_id: 1, question_id: 3, option_id: 10021, other_text: "Some other text field answer" },
           { survey_id: 1, question_id: 5, answer_text: "VERY important" },
           { survey_id: 1, question_id: 8, answer_text: false },
-          { survey_id: 1, question_id: 9, option_id: 10002, answer_text: "16"},
+          { survey_id: 1, question_id: 9, option_id: 10002 },
           { survey_id: 1, question_id: 10, question_pipe: "Que aplicación", answer_text: "5 = Extremely important" }
         ])
       end
