@@ -6,7 +6,9 @@ module SurveyGizmo
 
   format :json
 
-  URLError = Class.new(RuntimeError)
+  class URLError < RuntimeError; end
+  class RateLimitExceededError < RuntimeError; end
+  class BadResponseError < RuntimeError; end
 
   def self.setup
     base_uri "https://restapi.surveygizmo.com/#{SurveyGizmo.configuration.api_version}"

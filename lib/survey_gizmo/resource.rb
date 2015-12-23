@@ -37,29 +37,24 @@ module SurveyGizmo
         all_pages = conditions.delete(:all_pages)
         properties = conditions.dup
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
-
         request_route = handle_route!(:create, conditions)
-        response = RestResponse.new(SurveyGizmo.get(request_route + filters_to_query_string(conditions)))
-        collection = response.data.map { |datum| datum.is_a?(Hash) ? new(datum) : datum }
 
-        while all_pages && response.current_page < response.total_pages
-          paged_filter = filters_to_query_string(conditions.merge(page: response.current_page + 1))
+        collection = []
+        response = nil
+
+        while !response || (all_pages && response.current_page < response.total_pages)
+          paged_filter = filters_to_query_string(conditions.merge(page: response ? response.current_page + 1 : 1))
           response = RestResponse.new(SurveyGizmo.get(request_route + paged_filter))
-          collection += response.data.map { |datum| datum.is_a?(Hash) ? new(datum) : datum }
-        end
+          _collection = response.data.map { |datum| datum.is_a?(Hash) ? new(properties.merge(datum)) : datum }
 
-        # Add in the properties from the request because many of the important ones (like survey_id) are
-        # not often part of the SurveyGizmo returned data
-        properties.each do |k, v|
-          next unless v && instance_methods.include?(k)
-          collection.each { |c| c[k] ||= v }
-        end
+          # Sub questions are not pulled by default so we have to retrieve them manually
+          # SurveyGizmo claims they will fix this bug and eventually all questions will be
+          # returned in one request.
+          if self == SurveyGizmo::API::Question
+            _collection += _collection.map { |question| question.sub_questions }.flatten
+          end
 
-        # Sub questions are not pulled by default so we have to retrieve them manually
-        # SurveyGizmo claims they will fix this bug and eventually all questions will be
-        # returned in one request.
-        if self == SurveyGizmo::API::Question
-          collection += collection.map { |question| question.sub_questions }.flatten
+          block_given? ? yield(_collection) : collection += _collection
         end
 
         collection
@@ -69,10 +64,9 @@ module SurveyGizmo
       def first(conditions, _deprecated_filters = {})
         conditions = merge_params(conditions, _deprecated_filters)
         properties = conditions.dup
-
         response = RestResponse.new(SurveyGizmo.get(handle_route!(:get, conditions) + filters_to_query_string(conditions)))
-        # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
-        # not often part of the SurveyGizmo's returned data
+
+        # Add in properties from the conditions hash because many important ones (like survey_id) are not returned
         new(properties.merge(response.data))
       end
 

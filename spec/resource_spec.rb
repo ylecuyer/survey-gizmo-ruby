@@ -107,7 +107,8 @@ describe 'Survey Gizmo Resource' do
 
     context 'with subquestions' do
       let(:parent_id) { 33 }
-      let(:question_with_subquestions) { described_class.new(id: parent_id, survey_id: 1234, sub_question_skus: [1, 2]) }
+      let(:skus) { [544, 322] }
+      let(:question_with_subquestions) { described_class.new(id: parent_id, survey_id: 1234, sub_question_skus: skus) }
 
       it 'should have 2 subquestions and they should have the right parent question' do
         stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
@@ -115,6 +116,7 @@ describe 'Survey Gizmo Resource' do
 
         question_with_subquestions.sub_questions.first.parent_question
         a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{parent_id}/).should have_been_made
+        skus.each { |sku| a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{sku}/).should have_been_made }
       end
     end
   end
@@ -165,6 +167,31 @@ describe 'Survey Gizmo Resource' do
 
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
+
+    context 'answers' do
+      let(:answers) do
+        {
+          "[question(3), option(\"10021-other\")]" => "Some other text field answer",
+          "[question(3), option(10021)]" => "Other (required)",
+          "[question(5)]" => "VERY important",
+          "[question(6)]" => nil,
+          "[question(7), option(10001)]" => nil,
+          "[question(8)]" => false,
+          "[question(9), option(10002)]" => '16',
+          "[question(10), question_pipe(\"Que aplicación\")]" => "5 = Extremely important"
+        }
+      end
+
+      it 'should parse the answers and remove extraneous answers' do
+        expect(described_class.new(answers: answers).parsed_answers).to eq([
+          { question_id: 3, option_id: 10021, answer_text: "Some other text field answer" },
+          { question_id: 5, answer_text: "VERY important" },
+          { question_id: 8, answer_text: false },
+          { question_id: 9, option_id: 10002, answer_text: "16"},
+          { question_id: 10, question_pipe: "Que aplicación", answer_text: "5 = Extremely important" }
+        ])
+      end
+    end
   end
 
   describe SurveyGizmo::API::AccountTeams do
