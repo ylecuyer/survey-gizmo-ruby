@@ -34,7 +34,11 @@ module SurveyGizmo; module API
     end
 
     def sub_questions
-      @sub_questions ||= sub_question_skus.map { |subquestion_shortname, subquestion_id| Question.first(survey_id: survey_id, id: subquestion_id) }
+      # As of 2015-12-23, the sub_question_skus attribute can either contain an array of integers if no shortname (alias)
+      # was set for any question, or an array of [String, Integer] with the String corresponding to the subquestion
+      # shortname and the integer corresponding to the subquestion id if at least one shortname was set.
+      sub_question_skus_array = sub_question_skus.map { |sub_question_sku| sub_question_sku.is_a?(Array) ? sub_question_sku[1] : sub_question_sku }
+      @sub_questions ||= sub_question_skus_array.map { |subquestion_id| Question.first(survey_id: survey_id, id: subquestion_id) }
                                           .each { |subquestion| subquestion.parent_question_id = id  }
     end
 
