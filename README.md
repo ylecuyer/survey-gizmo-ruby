@@ -106,8 +106,8 @@ responses = SurveyGizmo::API::Response.all(
 # Note that this may not be a good idea for surveys with very large numbers of responses!
 responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
 # If you want the gem to handle paging for you, use the :all_pages option and process your pages in a block
-SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345) do |responses|
-  responses.each { |r| process_response(r) }
+SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345) do |page_of_responses|
+  page_of_responses.each { |r| process_response(r) }
 end
 
 # Parse the wacky answer hash format into a more usable format.
