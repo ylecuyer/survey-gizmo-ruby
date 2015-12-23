@@ -38,7 +38,7 @@ module SurveyGizmo; module API
 
     def parsed_answers
       answers.select do |k,v|
-        next false unless v.is_a?(FalseClass) || v
+        next false unless v.is_a?(FalseClass) || v.present?
 
         if k =~ /\[question\((\d+)\),\s*option\((\d+)\)\]/
           # Strip out "Other" answers that don't actually have the "other" text

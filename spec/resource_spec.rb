@@ -178,7 +178,8 @@ describe 'Survey Gizmo Resource' do
           "[question(7), option(10001)]" => nil,
           "[question(8)]" => false,
           "[question(9), option(10002)]" => '16',
-          "[question(10), question_pipe(\"Que aplicación\")]" => "5 = Extremely important"
+          "[question(10), question_pipe(\"Que aplicación\")]" => "5 = Extremely important",
+          "[question(11), option(10001)]" => ""
         }
       end
 

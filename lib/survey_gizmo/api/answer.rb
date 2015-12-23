@@ -22,6 +22,7 @@ module SurveyGizmo
         case key
         when /\[question\((\d+)\),\s*option\((\d+|"\d+-other")\)\]/
           @question_id, @option_id = $1, $2
+
           if @option_id =~ /other/
             @option_id.delete!('-other"')
             @other_text = value
@@ -36,7 +37,13 @@ module SurveyGizmo
         end
 
         @question_id = @question_id.to_i
-        @option_id = @option_id.to_i if @option_id
+        if @option_id
+          if @option_id.to_i == 0 && @option_id != '0'
+            fail "Bad option_id #{@option_id}!"
+          else
+            @option_id = @option_id.to_i
+          end
+        end
       end
 
       # Strips out the answer_text when there is a valid option_id
