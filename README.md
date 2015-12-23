@@ -51,8 +51,8 @@ SurveyGizmo.configure do |config|
   # retry_interval is in seconds.
   config.retries = 1
   config.retry_interval = 60
-  # You can also instruct the gem to retry on ANY exception.  Defaults to false.
-  config.retry_all = true
+  # You can also instruct the gem to retry on ANY exception.  Defaults to false.  Use with caution.
+  config.retry_everything = true
 end
 
 # Retrieve the first page of your surveys
