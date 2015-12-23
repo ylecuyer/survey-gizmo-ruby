@@ -28,10 +28,10 @@ module SurveyGizmo
             @other_text = value
           end
         when /\[question\((\d+)\),\s*question_pipe\("(.*)"\)\]/
-          @question_id = $1.to_i
+          @question_id = $1
           @question_pipe = $2
         when /\[question\((\d+)\)\]/
-          @question_id = $1.to_i
+          @question_id = $1
         else
           fail "Didn't recognize pattern for #{key} => #{value} - you may have to parse your answers manually."
         end
