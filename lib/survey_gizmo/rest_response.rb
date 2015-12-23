@@ -61,11 +61,11 @@ module SurveyGizmo
     end
 
     def current_page
-      @parsed_response['page']
+      @parsed_response['page'].to_i
     end
 
     def total_pages
-      @parsed_response['total_pages']
+      @parsed_response['total_pages'].to_i
     end
 
     private
