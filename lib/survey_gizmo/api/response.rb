@@ -38,7 +38,7 @@ module SurveyGizmo; module API
 
     def parsed_answers
       answers.select do |k,v|
-        next false unless v.is_a?(FalseClass) || v
+        next false unless v.is_a?(FalseClass) || v.present?
 
         if k =~ /\[question\((\d+)\),\s*option\((\d+)\)\]/
           # Strip out "Other" answers that don't actually have the "other" text
@@ -46,43 +46,11 @@ module SurveyGizmo; module API
         else
           true
         end
-      end.map { |k,v| parse_answer(k, v) }
+      end.map { |k,v| Answer.new(survey_id, id, k, v) }
     end
 
     def to_param_options
       { id: id, survey_id: survey_id }
-    end
-
-    private
-
-    def parse_answer(key, value)
-      case key
-      when /\[question\((\d+)\),\s*option\((\d+)\)\]/
-        {
-          question_id: $1.to_i,
-          option_id: $2.to_i,
-          answer_text: value
-        }
-      when /\[question\((\d+)\),\s*option\("(\d+)-other"\)\]/
-        {
-          question_id: $1.to_i,
-          option_id: $2.to_i,
-          answer_text: value
-        }
-      when /\[question\((\d+)\),\s*question_pipe\("(.*)"\)\]/
-        {
-          question_id: $1.to_i,
-          question_pipe: $2,
-          answer_text: value
-        }
-      when /\[question\((\d+)\)\]/
-        {
-          question_id: $1.to_i,
-          answer_text: value
-        }
-      else
-        fail "Didn't recognize pattern for #{key} => #{value} - you may have to parse your answers manually."
-      end
     end
   end
 end; end

@@ -45,6 +45,14 @@ SurveyGizmo.configure do |config|
 
   # Optional - Defaults to 50, maximum 500. Setting too high may cause SurveyGizmo to start throwing timeouts.
   config.results_per_page = 100
+
+  # Optional - These configure the Pester gem to retry when SG suffers a timeout or the rate limit is exceeded.
+  # The default number of retries is 0 (AKA don't retry)
+  # retry_interval is in seconds.
+  config.retries = 1
+  config.retry_interval = 60
+  # You can also instruct the gem to retry on ANY exception.  Defaults to false.  Use with caution.
+  config.retry_everything = true
 end
 
 # Retrieve the first page of your surveys
@@ -103,10 +111,9 @@ SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345) do |responses|
 end
 
 # Parse the wacky answer hash format into a more usable format.
-# Note that answers with keys but no values will be stripped out - this might not be the right approach
-# for the more obscure question types!
+# Note that answers with keys but no values will not be returned
 # See http://apihelp.surveygizmo.com/help/article/link/surveyresponse-per-question for more info on answers
-responses.last.parsed_answers => # [{ question_id: 1, option_id: 5, answer: 'text' }]
+responses.last.parsed_answers => # [#<SurveyGizmo::API::Answer:0x007fcadb4988f8 @survey_id=12345, @question_id=1, @answer_text='text'>]
 ```
 
 ## On API Timeouts
@@ -139,7 +146,7 @@ class SomeObject
   attribute :type,        String
   attribute :created_on,  DateTime
 
-  # defing the paths used to retrieve/set info
+  # define the paths used to retrieve/set info
   route '/something/:id', [:get, :update, :delete]
   route '/something',     :create
 

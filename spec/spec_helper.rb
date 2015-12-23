@@ -16,5 +16,9 @@ RSpec.configure do |config|
       config.user = 'test@test.com'
       config.password = 'password'
     end
+
+    Pester.configure do |config|
+      config.logger = ::Logger.new(nil)
+    end
   end
 end
