@@ -46,11 +46,13 @@ SurveyGizmo.configure do |config|
   # Optional - Defaults to 50, maximum 500. Setting too high may cause SurveyGizmo to start throwing timeouts.
   config.results_per_page = 100
 
-  # Optional - These configure the Pester gem to retry when SG suffers a timeout or other error.
+  # Optional - These configure the Pester gem to retry when SG suffers a timeout or the rate limit is exceeded.
   # The default number of retries is 0 (AKA don't retry)
   # retry_interval is in seconds.
   config.retries = 1
-  configu.retry_interval = 60
+  config.retry_interval = 60
+  # You can also instruct the gem to retry on ANY exception.  Defaults to false.
+  config.retry_all = true
 end
 
 # Retrieve the first page of your surveys
@@ -145,7 +147,7 @@ class SomeObject
   attribute :type,        String
   attribute :created_on,  DateTime
 
-  # defing the paths used to retrieve/set info
+  # define the paths used to retrieve/set info
   route '/something/:id', [:get, :update, :delete]
   route '/something',     :create
 
