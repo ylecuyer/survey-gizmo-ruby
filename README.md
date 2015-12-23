@@ -45,6 +45,14 @@ SurveyGizmo.configure do |config|
 
   # Optional - Defaults to 50, maximum 500. Setting too high may cause SurveyGizmo to start throwing timeouts.
   config.results_per_page = 100
+
+  # Optional - These configure the Pester gem to retry when SG suffers a timeout or the rate limit is exceeded.
+  # The default number of retries is 0 (AKA don't retry)
+  # retry_interval is in seconds.
+  config.retries = 1
+  config.retry_interval = 60
+  # You can also instruct the gem to retry on ANY exception.  Defaults to false.  Use with caution.
+  config.retry_everything = true
 end
 
 # Retrieve the first page of your surveys
@@ -76,8 +84,6 @@ question.destroy
 
 # Retrieve 2nd page of SurveyResponses for a given survey.
 responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2)
-# Retrieve all responses for a given survey.
-responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
 # Retrieving page 3 of completed, non test data SurveyResponses submitted within the past 3 days
 # for contact id 999. This example shows you how to use some of the gem's built in filters and
 # filter generators as well as how to construct your own raw filter.
@@ -96,6 +102,18 @@ responses = SurveyGizmo::API::Response.all(
     }
   ]
 )
+# Retrieve all responses for a given survey.
+# Note that this may not be a good idea for surveys with very large numbers of responses!
+responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
+# If you want the gem to handle paging for you, use the :all_pages option and process your pages in a block
+SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345) do |responses|
+  responses.each { |r| process_response(r) }
+end
+
+# Parse the wacky answer hash format into a more usable format.
+# Note that answers with keys but no values will not be returned
+# See http://apihelp.surveygizmo.com/help/article/link/surveyresponse-per-question for more info on answers
+responses.last.parsed_answers => # [#<SurveyGizmo::API::Answer:0x007fcadb4988f8 @survey_id=12345, @question_id=1, @answer_text='text'>]
 ```
 
 ## On API Timeouts
@@ -128,7 +146,7 @@ class SomeObject
   attribute :type,        String
   attribute :created_on,  DateTime
 
-  # defing the paths used to retrieve/set info
+  # define the paths used to retrieve/set info
   route '/something/:id', [:get, :update, :delete]
   route '/something',     :create
 

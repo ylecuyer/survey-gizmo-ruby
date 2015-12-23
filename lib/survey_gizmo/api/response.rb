@@ -36,6 +36,19 @@ module SurveyGizmo; module API
       @survey ||= Survey.first(id: survey_id)
     end
 
+    def parsed_answers
+      answers.select do |k,v|
+        next false unless v.is_a?(FalseClass) || v.present?
+
+        if k =~ /\[question\((\d+)\),\s*option\((\d+)\)\]/
+          # Strip out "Other" answers that don't actually have the "other" text
+          !answers.keys.any? { |key| key =~ /\[question\((#{$1})\),\s*option\("(#{$2})-other"\)\]/ }
+        else
+          true
+        end
+      end.map { |k,v| Answer.new(survey_id, id, k, v) }
+    end
+
     def to_param_options
       { id: id, survey_id: survey_id }
     end
