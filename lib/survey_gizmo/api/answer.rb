@@ -38,11 +38,8 @@ module SurveyGizmo
 
         @question_id = @question_id.to_i
         if @option_id
-          if @option_id.to_i == 0 && @option_id != '0'
-            fail "Bad option_id #{@option_id}!"
-          else
-            @option_id = @option_id.to_i
-          end
+          fail "Bad option_id #{@option_id}!" if @option_id.to_i == 0 && @option_id != '0'
+          @option_id = @option_id.to_i
         end
       end
 
