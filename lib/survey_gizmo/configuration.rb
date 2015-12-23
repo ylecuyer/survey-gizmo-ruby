@@ -13,11 +13,11 @@ module SurveyGizmo
     ]
 
     Pester.configure do |c|
-      c.logger = @logger
       c.environments[:survey_gizmo_ruby] = {
         max_attempts: configuration.retries + 1,
         delay_interval: configuration.retry_interval,
-        on_retry: Pester::Behaviors::Sleep::Constant
+        on_retry: Pester::Behaviors::Sleep::Constant,
+        logger: @logger
       }
 
       if configuration.retry_everything
