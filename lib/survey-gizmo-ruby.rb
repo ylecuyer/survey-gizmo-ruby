@@ -16,7 +16,6 @@ require 'pester'
 require 'virtus'
 
 require 'survey_gizmo/version'
-require 'survey_gizmo/survey_gizmo'
 require 'survey_gizmo/configuration'
 require 'survey_gizmo/connection'
 require 'survey_gizmo/multilingual_title'
@@ -33,3 +32,9 @@ require 'survey_gizmo/api/question'
 require 'survey_gizmo/api/response'
 require 'survey_gizmo/api/survey'
 require 'survey_gizmo/api/survey_campaign'
+
+module SurveyGizmo
+  class URLError < RuntimeError; end
+  class RateLimitExceededError < RuntimeError; end
+  class BadResponseError < RuntimeError; end
+end
