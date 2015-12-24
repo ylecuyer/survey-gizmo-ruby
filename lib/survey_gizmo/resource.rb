@@ -103,7 +103,7 @@ module SurveyGizmo
         return '' unless params && params.size > 0
 
         url_params = {}
-        Array.wrap(params.delete(:filters) || []).each_with_index do |filter, i|
+        Array.wrap(params.delete(:filters)).each_with_index do |filter, i|
           fail "Bad filter params: #{filter}" unless filter.is_a?(Hash) && [:field, :operator, :value].all? { |k| filter[k] }
 
           url_params["filter[field][#{i}]".to_sym]    = "#{filter[:field]}"
