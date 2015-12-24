@@ -31,11 +31,9 @@ module SurveyGizmo
       # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       #
       # Set all_pages: true if you want the gem to page through all the available responses
-      def all(conditions = {}, _deprecated_filters = {})
-        conditions = merge_params(conditions, _deprecated_filters)
+      def all(conditions = {})
         fail ':all_pages and :page are mutually exclusive' if conditions[:page] && conditions[:all_pages]
         $stderr.puts('WARNING: Only retrieving first page of results!') if conditions[:page].nil? && conditions[:all_pages].nil?
-
         all_pages = conditions.delete(:all_pages)
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
         response = nil
@@ -60,8 +58,7 @@ module SurveyGizmo
       end
 
       # Retrieve a single resource.  See usage comment on .all
-      def first(conditions, _deprecated_filters = {})
-        conditions = merge_params(conditions, _deprecated_filters)
+      def first(conditions = {})
         response = Pester.survey_gizmo_ruby.retry do
           RestResponse.new(SurveyGizmo.get(create_route(:get, conditions)))
         end
@@ -123,11 +120,6 @@ module SurveyGizmo
         uri = Addressable::URI.new
         uri.query_values = url_params.merge(params)
         "?#{uri.query}"
-      end
-
-      def merge_params(conditions, _deprecated_filters)
-        $stderr.puts('Use of the 2nd hash parameter is deprecated.') unless _deprecated_filters.empty?
-        conditions.merge(_deprecated_filters || {})
       end
     end
 
