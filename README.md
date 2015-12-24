@@ -115,8 +115,8 @@ survey.responses.each { |response| do_something_with(response) }
 # Or just get one page responses
 survey.responses(page: 5).each { |response| do_something_with(response) }
 # Use filters to limit results - this example will iterate over page 3 of completed, non test data
-# SurveyResponses submitted within the past 3 days for contact 999.
-# It demonstrates how to use some of the gem's built in filters/generators as well as how to construct a filter.
+# SurveyResponses submitted within the past 3 days for contact 999. It demonstrates how to use some of the gem's
+# built in filters/generators as well as how to construct a filter.
 # See: http://apihelp.surveygizmo.com/help/article/link/filters for more info on filters
 filters = [
   SurveyGizmo::API::Response::NO_TEST_DATA,
@@ -130,7 +130,7 @@ filters = [
 ]
 survey.responses(page: 3, filters: filters).each { |response| do_stuff_with(response) }
 
-# Parse the wacky answer hash format into a more usable format. Answers with keys but no values will not be returned
+# Parse the answer hash into a more usable format. Answers with keys but empty values will not be returned.
 # "Other" text for some questions is parsed to @other_text; all other answers to @answer_text
 # Custom table question answers have the @question_pipe string parsed out to an attribute.
 # See http://apihelp.surveygizmo.com/help/article/link/surveyresponse-per-question for more info on answers
@@ -209,4 +209,3 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 
 Copyright (c) 2012 RipTheJacker. See LICENSE.txt for
 further details.
-
