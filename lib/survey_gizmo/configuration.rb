@@ -17,7 +17,7 @@ module SurveyGizmo
         max_attempts: configuration.retries + 1,
         delay_interval: configuration.retry_interval,
         on_retry: Pester::Behaviors::Sleep::Constant,
-        logger: @logger
+        logger: configuration.logger
       }
 
       if configuration.retry_everything
@@ -26,6 +26,7 @@ module SurveyGizmo
         c.environments[:survey_gizmo_ruby][:retry_error_classes] = retryables
       end
     end
+
     SurveyGizmo.setup
   end
 

@@ -18,7 +18,7 @@ RSpec.configure do |config|
     end
 
     Pester.configure do |config|
-      config.logger = ::Logger.new(nil)
+      config.environments[:survey_gizmo_ruby][:logger] = ::Logger.new(nil)
     end
   end
 end

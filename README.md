@@ -71,9 +71,7 @@ If you want to get really fancy with retry strategies and which exceptions to re
 
 `SurveyGizmo::API::Klass.first` returns a single instance of the resource.
 
-`SurveyGizmo::API::Klass.all` returns an `Enumerator` you can use to loop through your results/questions/surveys etc.  Pagination will be handled for you/it will actually iterate through ALL your results if you pass `all_pages: true`.
-
-Watch out that `SurveyGizmo::API::Klass.all` without `:all_pages` does NOT iterate over all your results - just the first page.
+`SurveyGizmo::API::Klass.all` returns an `Enumerator` you can use to loop through your results/questions/surveys etc.  It will actually iterate through ALL your results (pagination will be handled for you) if you pass `all_pages: true`.
 
 ### Examples
 
