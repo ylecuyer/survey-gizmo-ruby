@@ -90,8 +90,8 @@ shared_examples_for 'an API object' do
   end
 
   context '#all' do
-    before(:all) do
-      @array = [
+    let(:data) do
+      [
         {:id => 1, :title => 'resource 1'},
         {:id => 2, :title => 'resource 2'},
         {:id => 3, :title => 'resource 3'}
@@ -99,28 +99,13 @@ shared_examples_for 'an API object' do
     end
 
     it "should make a get request" do
-      stub_request(:get, /#{@base}/).to_return(json_response(true, []))
-      described_class.all(get_attributes.merge(page: 1)).to_a
+      stub_request(:get, /#{@base}/).to_return(json_response(true, data))
+      iterator = described_class.all(get_attributes.merge(page: 1))
+      iterator.should be_instance_of(Enumerator)
+      collection = iterator.to_a
       a_request(:get, /#{@base}#{uri_paths[:create]}/).should have_been_made
-    end
-
-    it "should create a collection using the class" do
-      stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
-      collection = described_class.all(get_attributes.merge(page: 1))
-      collection.should be_instance_of(Enumerator)
-    end
-
-    it "should return instances of the class" do
-      stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
-      collection = described_class.all(get_attributes.merge(page: 1))
       collection.first.should be_instance_of(described_class)
-    end
-
-    it "should include all elements" do
-      stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
-      collection = described_class.all(get_attributes.merge(page: 1)).to_a
       collection.length.should == 3
     end
   end
-
 end
