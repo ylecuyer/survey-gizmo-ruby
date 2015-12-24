@@ -53,8 +53,7 @@ module SurveyGizmo
       attr.downcase.gsub(/[^[:alnum:]]+/, '_')
                    .gsub(/(url|variable|standard|shown)/, '')
                    .gsub(/_+/, '_')
-                   .gsub(/^_/, '')
-                   .gsub(/_$/, '')
+                   .gsub(/^_|_$/, '')
     end
 
     def self.find_attribute_parent(attr)

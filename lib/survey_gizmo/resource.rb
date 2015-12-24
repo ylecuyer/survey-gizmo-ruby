@@ -42,6 +42,7 @@ module SurveyGizmo
         Enumerator.new do |yielder|
           while !response || (all_pages && response['page'] < response['total_pages'])
             conditions[:page] = response ? response['page'] + 1 : 1
+            SurveyGizmo.configuration.logger.debug("Fetching #{name} page #{conditions[:page]}#{response ? "/#{response['total_pages']}" : ''}...")
             response = Connection.get(create_route(:create, conditions)).body
             collection = response['data'].map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
 
@@ -84,7 +85,6 @@ module SurveyGizmo
         end
 
         fail "No route defined for #{method} on #{name}" unless route
-        fail "Not configured" unless SurveyGizmo.configuration
 
         url_params = params.dup
         rest_path = route.gsub(/:(\w+)/) do |m|
@@ -101,8 +101,9 @@ module SurveyGizmo
       # # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       def filters_to_query_string(params = {})
         return '' unless params && params.size > 0
-
+        params = params.dup
         url_params = {}
+
         Array.wrap(params.delete(:filters)).each_with_index do |filter, i|
           fail "Bad filter params: #{filter}" unless filter.is_a?(Hash) && [:field, :operator, :value].all? { |k| filter[k] }
 
@@ -122,8 +123,7 @@ module SurveyGizmo
     # Returns itself if successfully saved, but with attributes (like id) added by SurveyGizmo
     def save
       method, path = id ? [:post, :update] : [:put, :create]
-      rest_response = Connection.send(method, create_route(path), attributes_without_blanks)
-      self.attributes = rest_response.body['data']
+      self.attributes = Connection.send(method, create_route(path), attributes_without_blanks).body['data']
       self
     end
 
@@ -143,7 +143,6 @@ module SurveyGizmo
       attribute_strings = self.class.attribute_set.map do |attrib|
         value = self.send(attrib.name)
         value = value.is_a?(Hash) ? value.inspect : value.to_s
-
         "  \"#{attrib.name}\" => \"#{value}\"\n" unless value.strip.blank?
       end.compact
 

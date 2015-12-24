@@ -1,6 +1,5 @@
 # SurveyGizmo has a bad habit of returning titles in different formats when one is
-# requesting all surveys vs. an individual survey.
-
+# requesting via .all vs .first
 module SurveyGizmo
   module MultilingualTitle
     extend ActiveSupport::Concern

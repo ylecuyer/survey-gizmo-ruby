@@ -18,7 +18,7 @@ module SurveyGizmo; module API
     alias_attribute :_subtype, :type
 
     @route = {
-      get: '/survey/:survey_id/surveyquestion/:id',
+      get:    '/survey/:survey_id/surveyquestion/:id',
       create: '/survey/:survey_id/surveypage/:page_id/surveyquestion',
       update: '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id'
     }
