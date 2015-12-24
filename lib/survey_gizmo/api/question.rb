@@ -4,11 +4,6 @@ module SurveyGizmo; module API
     include SurveyGizmo::Resource
     include SurveyGizmo::MultilingualTitle
 
-    # Filters
-    NO_INSTRUCTIONS = { field: 'type', operator: '<>', value: 'instructions'}
-    NO_LOGIC        = { field: 'type', operator: '<>', value: 'logic'}
-    NO_REDIRECT     = { field: 'type', operator: '<>', value: 'urlredirect'}
-
     attribute :id,                 Integer
     attribute :type,               String
     attribute :description,        String
