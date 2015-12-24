@@ -69,11 +69,11 @@ If you want to get really fancy with retry strategies and which exceptions to re
 
 ### Retrieving Data
 
-`Klass.first` returns a single instance of the resource.
+`SurveyGizmo::API::Klass.first` returns a single instance of the resource.
 
-`Klass.all` returns an `Enumerator` you can use to loop through your results/questions/surveys etc.  Pagination will be handled for you/it will actually iterate through ALL your results if you pass `all_pages: true`.
+`SurveyGizmo::API::Klass.all` returns an `Enumerator` you can use to loop through your results/questions/surveys etc.  Pagination will be handled for you/it will actually iterate through ALL your results if you pass `all_pages: true`.
 
-Watch out that `Klass.all` without `:all_pages` does NOT iterate over all your results - just the first page.
+Watch out that `SurveyGizmo::API::Klass.all` without `:all_pages` does NOT iterate over all your results - just the first page.
 
 ### Examples
 
@@ -100,8 +100,6 @@ survey.belongs_to?('Development') # => true
 
 # Retrieve all questions for all pages of this survey
 questions = survey.questions
-# Or retrieve questions manually one survey page at a time
-questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
 
 # Create a question for your survey.  The returned object will be given an :id parameter by SG.
 question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
@@ -111,11 +109,13 @@ question.save
 # Destroy a question
 question.destroy
 
-# Retrieve 2nd page of SurveyResponses for a given survey.
-SurveyGizmo::API::Response.all(survey_id: 12345, page: 2).each { |response| do_stuff_with(response) }
-# Retrieving page 3 of completed, non test data SurveyResponses submitted within the past 3 days
-# for contact id 999. This example shows you how to use some of the gem's built in filters and
-# filter generators as well as how to construct your own raw filter.
+# Iterate over all your Responses
+SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
+  do_something_with(r)
+end
+# Iterate over page 3 of completed, non test data SurveyResponses submitted within the past 3 days for contact 999
+# This example shows you how to use some of the gem's built in filters and filter generators as well as how to
+# construct your own raw filter.
 # See: http://apihelp.surveygizmo.com/help/article/link/filters for more info on filters
 SurveyGizmo::API::Response.all(
   survey_id: 12345,
@@ -131,15 +131,12 @@ SurveyGizmo::API::Response.all(
     }
   ]
 ).each { |response| do_stuff_with(response) }
-# If you want the gem to handle paging for you, use the :all_pages option and process stuff in a block
-SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
-  do_something_with(r)
-end
 
-# Parse the wacky answer hash format into a more usable format.
-# Note that answers with keys but no values will not be returned
+# Parse the wacky answer hash format into a more usable format. Answers with keys but no values will not be returned
+# "Other" text for some questions is parsed to @other_text; all other answers to @answer_text
 # See http://apihelp.surveygizmo.com/help/article/link/surveyresponse-per-question for more info on answers
-response.parsed_answers => # [#<SurveyGizmo::API::Answer:0x007fcadb4988f8 @survey_id=12345, @question_id=1, @answer_text='text'>]
+response.parsed_answers => # [#<SurveyGizmo::API::Answer @survey_id=12345, @question_id=1, @answer_text='text'>]
+
 # Retrieve all answers from all responses
 SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
   r.parsed_answers.each do |answer|
