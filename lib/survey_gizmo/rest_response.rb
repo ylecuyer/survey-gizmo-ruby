@@ -12,7 +12,7 @@ module SurveyGizmo
       @raw_response = http_response
       @parsed_response = http_response.parsed_response
 
-      if ENV['GIZMO_DEBUG']
+      if SurveyGizmo::Connection.instance.api_debug?
         ap 'Parsed SurveyGizmo Response:'
         ap @parsed_response
       end

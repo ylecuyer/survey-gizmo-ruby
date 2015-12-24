@@ -26,12 +26,11 @@ module SurveyGizmo
         c.environments[:survey_gizmo_ruby][:retry_error_classes] = retryables
       end
     end
-
-    SurveyGizmo.setup
   end
 
   def self.reset!
     self.configuration = Configuration.new
+#    Connection.instance.reset!
   end
 
   class Configuration

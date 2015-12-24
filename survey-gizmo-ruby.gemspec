@@ -16,8 +16,10 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 1.9'
 
   gem.add_dependency 'activesupport', '>= 3.0'
-  gem.add_dependency 'addressable'
-  gem.add_dependency 'awesome_print'
+  gem.add_dependency 'addressable', '~> 2'
+  gem.add_dependency 'awesome_print', '~> 1'
+  gem.add_dependency 'faraday', '~> 0.9'
+  gem.add_dependency 'faraday_middleware'
   gem.add_dependency 'httparty'
   gem.add_dependency 'i18n'
   gem.add_dependency 'pester', '>= 1.0.0'
