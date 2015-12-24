@@ -10,7 +10,7 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 * **BREAKING CHANGE**: `.all` returns Enumerators, not arrays.  This may or may not break your code.
 * FEATURE: `.all` will automatically paginate responses for you with the `:all_pages` option and some built in methods like `survey.responses`.
-# FEATURE: Built in retries - one retry with a 60 second backoff is the default but can be configured.
+* FEATURE: Built in retries - one retry with a 60 second backoff is the default but can be configured.
 * FEATURE: `.parsed_answers` method on Response class and Answer class parse the sort of wild and wooly way of representing survey responses.
 
 ### Major Changes in 4.x
