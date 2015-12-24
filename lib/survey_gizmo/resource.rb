@@ -34,12 +34,10 @@ module SurveyGizmo
       def all(conditions = {}, _deprecated_filters = {})
         conditions = merge_params(conditions, _deprecated_filters)
         fail ':all_pages and :page are mutually exclusive' if conditions[:page] && conditions[:all_pages]
-        fail 'Block only makes sense with :all_pages' if block_given? && !conditions[:all_pages]
         $stderr.puts('WARNING: Only retrieving first page of results!') if conditions[:page].nil? && conditions[:all_pages].nil?
 
         all_pages = conditions.delete(:all_pages)
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
-        collection = []
         response = nil
 
         Enumerator.new do |yielder|
@@ -48,14 +46,15 @@ module SurveyGizmo
             response = Pester.survey_gizmo_ruby.retry do
               RestResponse.new(SurveyGizmo.get(create_route(:create, conditions)))
             end
-            _collection = response.data.map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
+            collection = response.data.map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
 
             # Sub questions are not pulled by default so we have to retrieve them manually.  SurveyGizmo
             # claims they will fix this bug and eventually all questions will be returned in one request.
             if self == SurveyGizmo::API::Question
-              _collection += _collection.map { |question| question.sub_questions }.flatten
+              collection += collection.map { |question| question.sub_questions }.flatten
             end
-            _collection.each { |e| yielder.yield(e) }
+
+            collection.each { |e| yielder.yield(e) }
           end
         end
       end

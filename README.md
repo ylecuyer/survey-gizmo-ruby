@@ -65,10 +65,13 @@ end
 SurveyGizmo::API::Survey.all(all_pages: true).each do |survey|
   do_something_with(survey)
 end
-# Retrieve ALL your surveys (handle pagination for you)
-surveys = SurveyGizmo::API::Survey.all(all_pages: true).to_a
 # Retrieve the 1st page of your surveys
-surveys = SurveyGizmo::API::Survey.all(page: 1).to_a
+SurveyGizmo::API::Survey.all(page: 1).each do do |survey|
+  do_something_with(survey)
+end
+# Note that because you get an Enumerator, you have to call .to_a or some other enumerable method
+# to cause data to actually be retrieved
+surveys = SurveyGizmo::API::Survey.all(all_pages: true).to_a
 
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)
@@ -93,12 +96,12 @@ question.save
 question.destroy
 
 # Retrieve 2nd page of SurveyResponses for a given survey.
-responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2).to_a
+SurveyGizmo::API::Response.all(survey_id: 12345, page: 2).each { |response| do_stuff_with(response) }
 # Retrieving page 3 of completed, non test data SurveyResponses submitted within the past 3 days
 # for contact id 999. This example shows you how to use some of the gem's built in filters and
 # filter generators as well as how to construct your own raw filter.
 # See: http://apihelp.surveygizmo.com/help/article/link/filters for more info on filters
-responses = SurveyGizmo::API::Response.all(
+SurveyGizmo::API::Response.all(
   survey_id: 12345,
   page: 3,
   filters: [
@@ -111,10 +114,8 @@ responses = SurveyGizmo::API::Response.all(
       value: 999
     }
   ]
-).to_a
-# Retrieve all responses for a given survey.
-responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).to_a
-# If you want the gem to handle paging for you, use the :all_pages option and process your pages in a block
+).each { |response| do_stuff_with(response) }
+# If you want the gem to handle paging for you, use the :all_pages option and process stuff in a block
 SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
   do_something_with(r)
 end
