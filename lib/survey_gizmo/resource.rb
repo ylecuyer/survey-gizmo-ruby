@@ -2,6 +2,8 @@ require 'set'
 require 'addressable/uri'
 
 module SurveyGizmo
+  class URLError < RuntimeError; end
+
   module Resource
     extend ActiveSupport::Concern
 
