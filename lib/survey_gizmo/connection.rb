@@ -1,14 +1,19 @@
+require 'active_support/core_ext/module/delegation'
+
 module SurveyGizmo
   class RateLimitExceededError < RuntimeError; end
   class BadResponseError < RuntimeError; end
 
   class Connection
     include Singleton
-    extend Forwardable
 
     TIMEOUT_SECONDS = 300
 
-    def_delegators :connection, :get, :put, :delete, :post
+    class << self
+      delegate :put, :get, :delete, :post, to: :instance
+    end
+    delegate :put, :get, :delete, :post, to: :connection
+#    def_delegators :connection, :get, :put, :delete, :post
 
     def reset!
       @connection = nil

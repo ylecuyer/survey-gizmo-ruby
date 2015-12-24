@@ -42,7 +42,7 @@ module SurveyGizmo
         Enumerator.new do |yielder|
           while !response || (all_pages && response.current_page < response.total_pages)
             conditions[:page] = response ? response.current_page + 1 : 1
-            response = RestResponse.new(Connection.instance.get(create_route(:create, conditions)))
+            response = RestResponse.new(Connection.get(create_route(:create, conditions)))
             collection = response.data.map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
 
             # Sub questions are not pulled by default so we have to retrieve them manually.  SurveyGizmo
@@ -58,8 +58,7 @@ module SurveyGizmo
 
       # Retrieve a single resource.  See usage comment on .all
       def first(conditions = {})
-        response = RestResponse.new(Connection.instance.get(create_route(:get, conditions)))
-        new(conditions.merge(response.data))
+        new(conditions.merge(RestResponse.new(Connection.instance.get(create_route(:get, conditions))).data))
       end
 
       # Create a new resource.  Returns the newly created Resource instance.
