@@ -8,11 +8,12 @@ module SurveyGizmo
       attr_accessor :response_id
       attr_accessor :question_id
       attr_accessor :option_id
+      attr_accessor :submitted_at
       attr_accessor :answer_text
       attr_accessor :other_text
       attr_accessor :question_pipe
 
-      def initialize(survey_id, response_id, key, value)
+      def initialize(survey_id, response_id, submitted_at, key, value)
         @survey_id = survey_id
         @response_id = response_id
         @raw_key = key

@@ -100,14 +100,14 @@ shared_examples_for 'an API object' do
 
     it "should make a get request" do
       stub_request(:get, /#{@base}/).to_return(json_response(true, []))
-      described_class.all(get_attributes)
+      described_class.all(get_attributes).to_a
       a_request(:get, /#{@base}#{uri_paths[:create]}/).should have_been_made
     end
 
     it "should create a collection using the class" do
       stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
       collection = described_class.all(get_attributes)
-      collection.should be_instance_of(Array)
+      collection.should be_instance_of(Enumerator)
     end
 
     it "should return instances of the class" do
@@ -118,7 +118,7 @@ shared_examples_for 'an API object' do
 
     it "should include all elements" do
       stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
-      collection = described_class.all(get_attributes)
+      collection = described_class.all(get_attributes).to_a
       collection.length.should == 3
     end
   end

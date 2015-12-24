@@ -6,6 +6,12 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ## Versions
 
+### Major Changes in 5.x
+
+* BREAKING CHANGE: `.all` returns Enumerators, not arrays.  This may or may not break your code.
+* Feature: `.all` will automatically paginate responses for you with the `:all_pages` option (and it will also handle retries if you configure it)
+* Feature: `.parsed_answers` method on Response class and Answer class parse the sort of wild and wooly way of representing survey responses.
+
 ### Major Changes in 4.x
 
 * BREAKING CHANGE: There is no more error tracking.  If the API gives an error or bad response, an exception will be raised.
@@ -30,7 +36,7 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 gem 'survey-gizmo-ruby'
 ```
 
-## Basic Usage
+## Configuration
 
 ```ruby
 require 'survey-gizmo-ruby'
@@ -48,17 +54,40 @@ SurveyGizmo.configure do |config|
 
   # Optional - These configure the Pester gem to retry when SG suffers a timeout or the rate limit is exceeded.
   # The default number of retries is 0 (AKA don't retry)
-  # retry_interval is in seconds.
   config.retries = 1
+  # retry_interval is in seconds.
   config.retry_interval = 60
   # You can also instruct the gem to retry on ANY exception.  Defaults to false.  Use with caution.
   config.retry_everything = true
 end
+```
 
-# Retrieve the first page of your surveys
-surveys = SurveyGizmo::API::Survey.all
-# Retrieve ALL your surveys (handle pagination for you)
-surveys = SurveyGizmo::API::Survey.all(all_pages: true)
+If you want to get really fancy with retry strategies and which exceptions to retry on you can configure the [Pester gem](https://github.com/lumoslabs/pester) directly.  SurveyGizmo API calls execute in Pester's `survey_gizmo_ruby` environment, so anything you configure there will apply to your requests. Just take care that you add additional `Pester` configuration AFTER you configure this gem.
+
+
+## Usage
+
+### Retrieving Data
+
+`SurveyGizmo::API::Klass.first` returns a single instance of the resource.
+
+`SurveyGizmo::API::Klass.all` returns an `Enumerator` you can use to loop through your results/questions/surveys etc.  Pagination will be handled for you/it will actually iterate through ALL your results if you pass `all_pages: true`.
+
+Watch out that `SurveyGizmo::API::Klass.all` without `:all_pages` does NOT iterate over all your results - just the first page.
+
+### Examples
+
+```ruby
+# Iterate over your all surveys directly with the iterator
+SurveyGizmo::API::Survey.all(all_pages: true).each do |survey|
+  do_something_with(survey)
+end
+# Iterate over the 1st page of your surveys
+SurveyGizmo::API::Survey.all(page: 1).each { |survey| do_something_with(survey) }
+# Because .all returns an Enumerator, you have to call .to_a or some other enumerable method
+# to cause data to actually be retrieved
+surveys = SurveyGizmo::API::Survey.all(all_pages: true)      # => #<Enumerator: #<Enumerator::Generator:0x007fac8dc1e6e8>:each>
+surveys = SurveyGizmo::API::Survey.all(all_pages: true).to_a # => [Survey, Survey, Survey, ...]
 
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)
@@ -69,10 +98,10 @@ survey.server_has_new_results_since?(Time.now.utc - 2.days) # => true
 survey.team_names # => ['Development', 'Test']
 survey.belongs_to?('Development') # => true
 
-# Retrieving Questions for a given survey.  Note that page_id is a required parameter.
-questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
-# Or just retrieve all questions for all pages of this survey
+# Retrieve all questions for all pages of this survey
 questions = survey.questions
+# Strip out instruction, urlredirect, and logic "questions"
+questions = survey.actual_questions
 
 # Create a question for your survey.  The returned object will be given an :id parameter by SG.
 question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
@@ -82,13 +111,15 @@ question.save
 # Destroy a question
 question.destroy
 
-# Retrieve 2nd page of SurveyResponses for a given survey.
-responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2)
-# Retrieving page 3 of completed, non test data SurveyResponses submitted within the past 3 days
-# for contact id 999. This example shows you how to use some of the gem's built in filters and
-# filter generators as well as how to construct your own raw filter.
+# Iterate over all your Responses
+SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
+  do_something_with(r)
+end
+# Iterate over page 3 of completed, non test data SurveyResponses submitted within the past 3 days for contact 999
+# This example shows you how to use some of the gem's built in filters and filter generators as well as how to
+# construct your own raw filter.
 # See: http://apihelp.surveygizmo.com/help/article/link/filters for more info on filters
-responses = SurveyGizmo::API::Response.all(
+SurveyGizmo::API::Response.all(
   survey_id: 12345,
   page: 3,
   filters: [
@@ -101,24 +132,21 @@ responses = SurveyGizmo::API::Response.all(
       value: 999
     }
   ]
-)
-# Retrieve all responses for a given survey.
-# Note that this may not be a good idea for surveys with very large numbers of responses!
-responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
-# If you want the gem to handle paging for you, use the :all_pages option and process your pages in a block
-SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345) do |page_of_responses|
-  page_of_responses.each { |r| process_response(r) }
-end
+).each { |response| do_stuff_with(response) }
 
-# Parse the wacky answer hash format into a more usable format.
-# Note that answers with keys but no values will not be returned
+# Parse the wacky answer hash format into a more usable format. Answers with keys but no values will not be returned
+# "Other" text for some questions is parsed to @other_text; all other answers to @answer_text
+# Custom table question answers have the @question_pipe string parsed out to an attribute.
 # See http://apihelp.surveygizmo.com/help/article/link/surveyresponse-per-question for more info on answers
-responses.last.parsed_answers => # [#<SurveyGizmo::API::Answer:0x007fcadb4988f8 @survey_id=12345, @question_id=1, @answer_text='text'>]
+response.parsed_answers => # [#<SurveyGizmo::API::Answer @survey_id=12345, @question_id=1, @answer_text='text'>]
+
+# Retrieve all answers from all responses, write rows to your database
+SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
+  r.parsed_answers.each do |answer|
+     MyLocalSurveyGizmoResponseModel.create(answer.to_hash)
+  end
+end
 ```
-
-## On API Timeouts
-
-API timeouts are a regular occurrence with the SurveyGizmo API.  At Lumos Labs we use our own [Pester gem](https://github.com/lumoslabs/pester) to manage retry strategies.  It might work for you.
 
 ## Debugging
 
@@ -173,7 +201,6 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 ## Desirable/Missing Features
 
 * Better specs with VCR/Webmock
-* :all_pages could yield results in a block for automated paging like rails find_in_batches
 * OAuth authentication
 * EU domain support
 * Better foreign language support

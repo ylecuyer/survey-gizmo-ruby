@@ -29,7 +29,7 @@ module SurveyGizmo; module API
     end
 
     def pages
-      @pages ||= Page.all(survey_id: id, all_pages: true)
+      @pages ||= Page.all(survey_id: id, all_pages: true).to_a
     end
 
     # Sub question handling is in resource.rb.  It should probably be here instead but if it gets moved here
@@ -37,6 +37,10 @@ module SurveyGizmo; module API
     # sub questions will not be included!  So I left it there for least astonishment.
     def questions
       @questions ||= pages.map { |p| p.questions }.flatten
+    end
+
+    def actual_questions
+      questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic)$/ }
     end
 
     # Statistics array of arrays looks like:
@@ -50,7 +54,7 @@ module SurveyGizmo; module API
     end
 
     def server_has_new_results_since?(time)
-      Response.all(survey_id: id, filters: Response.submitted_since_filter(time)).size > 0
+      Response.all(survey_id: id, page: 1, filters: Response.submitted_since_filter(time)).to_a.size > 0
     end
 
     # As of 2015-12-18, when you request data on multiple surveys from /survey, the team variable comes

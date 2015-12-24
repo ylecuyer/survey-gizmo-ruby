@@ -4,6 +4,11 @@ module SurveyGizmo; module API
     include SurveyGizmo::Resource
     include SurveyGizmo::MultilingualTitle
 
+    # Filters
+    NO_INSTRUCTIONS = { field: 'type', operator: '<>', value: 'instructions'}
+    NO_LOGIC        = { field: 'type', operator: '<>', value: 'logic'}
+    NO_REDIRECT     = { field: 'type', operator: '<>', value: 'urlredirect'}
+
     attribute :id,                 Integer
     attribute :type,               String
     attribute :description,        String
@@ -26,7 +31,7 @@ module SurveyGizmo; module API
     end
 
     def options
-      @options ||= Option.all(survey_id: survey_id, page_id: page_id, question_id: id, all_pages: true)
+      @options ||= Option.all(survey_id: survey_id, page_id: page_id, question_id: id, all_pages: true).to_a
     end
 
     def parent_question
