@@ -10,7 +10,7 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 * BREAKING CHANGE: `.all` returns Enumerators, not arrays.  This may or may not break your code.
 * Feature: .all will automatically paginate responses for you with the :all_pages option (and it will also handle retries if you configure it)
-* Feature: Answer class to parse SurveyGizmo's sort of wild and wooly way of representing survey responses
+* Feature: `.parsed_answers` method on Response class and Answer class parse the sort of wild and wooly way of representing survey responses.
 
 ### Major Changes in 4.x
 
