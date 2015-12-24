@@ -51,7 +51,7 @@ module SurveyGizmo
     def initialize
       @results_per_page = DEFAULT_RESULTS_PER_PAGE
       @api_version = DEFAULT_API_VERSION
-      @retries = 0
+      @retries = 1
       @retry_interval = 60
       @retry_everything = false
       @logger = ::Logger.new(STDOUT)
