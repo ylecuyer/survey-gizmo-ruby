@@ -62,7 +62,7 @@ SurveyGizmo.configure do |config|
 end
 ```
 
-If you want to get really fancy with retry strategies and which exceptions to retry on, you can configure the [Pester gem](https://github.com/lumoslabs/pester) directly to manage retry strategies.  This gem executes in the `survey_gizmo_ruby` environment so anything you configure there will apply to your requests; just take care that you add additional `Pester` configuration AFTER you configure this gem.
+If you want to get really fancy with retry strategies and which exceptions to retry on you can configure the [Pester gem](https://github.com/lumoslabs/pester) directly.  SurveyGizmo API calls execute in Pester's `survey_gizmo_ruby` environment, so anything you configure there will apply to your requests. Just take care that you add additional `Pester` configuration AFTER you configure this gem.
 
 
 ## Usage
@@ -134,13 +134,14 @@ SurveyGizmo::API::Response.all(
 
 # Parse the wacky answer hash format into a more usable format. Answers with keys but no values will not be returned
 # "Other" text for some questions is parsed to @other_text; all other answers to @answer_text
+# Custom table question answers have the @question_pipe string parsed out to an attribute.
 # See http://apihelp.surveygizmo.com/help/article/link/surveyresponse-per-question for more info on answers
 response.parsed_answers => # [#<SurveyGizmo::API::Answer @survey_id=12345, @question_id=1, @answer_text='text'>]
 
-# Retrieve all answers from all responses
+# Retrieve all answers from all responses, write rows to your database
 SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
   r.parsed_answers.each do |answer|
-     do_something_with(answer)
+     MyLocalSurveyGizmoResponseModel.create(answer.to_hash)
   end
 end
 ```
