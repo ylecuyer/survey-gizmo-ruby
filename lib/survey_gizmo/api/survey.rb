@@ -54,7 +54,7 @@ module SurveyGizmo; module API
     end
 
     def server_has_new_results_since?(time)
-      Response.all(survey_id: id, page: 1, filters: Response.submitted_since_filter(time)).to_a.size > 0
+      Response.all(survey_id: id, page: 1, resultsperpage: 1, filters: Response.submitted_since_filter(time)).to_a.size > 0
     end
 
     # As of 2015-12-18, when you request data on multiple surveys from /survey, the team variable comes
