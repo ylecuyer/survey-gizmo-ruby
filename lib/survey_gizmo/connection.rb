@@ -15,7 +15,6 @@ module SurveyGizmo
     end
 
     def get(route, query = {})
-      puts "getting #{route}"
       Pester.survey_gizmo_ruby.retry { connection.get(route, query.merge(authentication_params)) }
     end
 
@@ -25,6 +24,10 @@ module SurveyGizmo
 
     def delete(route)
       Pester.survey_gizmo_ruby.retry { connection.delete(route, authentication_params) }
+    end
+
+    def api_debug?
+      ENV['GIZMO_DEBUG'].to_s =~ /^(true|t|yes|y|1)$/i
     end
 
     private
@@ -43,10 +46,6 @@ module SurveyGizmo
 
         connection.adapter Faraday.default_adapter
       end
-    end
-
-    def api_debug?
-      ENV['GIZMO_DEBUG'].to_s =~ /^(true|t|yes|y|1)$/i
     end
 
     def authentication_params

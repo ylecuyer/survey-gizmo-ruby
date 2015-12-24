@@ -40,9 +40,7 @@ module SurveyGizmo
         Enumerator.new do |yielder|
           while !response || (all_pages && response.current_page < response.total_pages)
             conditions[:page] = response ? response.current_page + 1 : 1
-            response = Pester.survey_gizmo_ruby.retry do
-              RestResponse.new(Connection.instance.get(create_route(:create, conditions)))
-            end
+            response = RestResponse.new(Connection.instance.get(create_route(:create, conditions)))
             collection = response.data.map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
 
             # Sub questions are not pulled by default so we have to retrieve them manually.  SurveyGizmo
@@ -58,7 +56,7 @@ module SurveyGizmo
 
       # Retrieve a single resource.  See usage comment on .all
       def first(conditions = {})
-        response = Pester.survey_gizmo_ruby.retry { RestResponse.new(Connection.instance.get(create_route(:get, conditions))) }
+        response = RestResponse.new(Connection.instance.get(create_route(:get, conditions)))
         new(conditions.merge(response.data))
       end
 
@@ -69,7 +67,7 @@ module SurveyGizmo
 
       # Delete resources
       def destroy(conditions)
-        Pester.survey_gizmo_ruby.retry { RestResponse.new(Connection.instance.delete(create_route(:delete, conditions))) }
+        RestResponse.new(Connection.instance.delete(create_route(:delete, conditions)))
       end
 
       private
@@ -87,7 +85,7 @@ module SurveyGizmo
           url_params.delete($1.to_sym)
         end
 
-        "#{SurveyGizmo.configuration.api_version}/" + rest_path + filters_to_query_string(url_params)
+        SurveyGizmo.configuration.api_version + rest_path + filters_to_query_string(url_params)
       end
 
       # Define the path where a resource is located
@@ -125,23 +123,21 @@ module SurveyGizmo
     # Returns itself if successfully saved, but with attributes (like id) added by SurveyGizmo
     def save
       method, path = id ? [:post, :update] : [:put, :create]
-      rest_response = Pester.survey_gizmo_ruby.retry do
-        RestResponse.new(Connection.instance.send(method, create_route(path), query: attributes_without_blanks))
-      end
+      rest_response = RestResponse.new(Connection.instance.send(method, create_route(path), query: attributes_without_blanks))
       self.attributes = rest_response.data
       self
     end
 
     # Repopulate the attributes based on what is on SurveyGizmo's servers
     def reload
-      self.attributes = Pester.survey_gizmo_ruby.retry { RestResponse.new(Connection.instance.get(create_route(:get))) }.data
+      self.attributes = RestResponse.new(Connection.instance.get(create_route(:get))).data
       self
     end
 
     # Delete the Resource from Survey Gizmo
     def destroy
       fail "No id; can't delete #{self.inspect}!" unless id
-      Pester.survey_gizmo_ruby.retry { RestResponse.new(Connection.instance.delete(create_route(:delete))) }
+      RestResponse.new(Connection.instance.delete(create_route(:delete)))
     end
 
     def inspect

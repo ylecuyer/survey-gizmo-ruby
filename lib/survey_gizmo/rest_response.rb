@@ -6,11 +6,11 @@ module SurveyGizmo
     attr_accessor :parsed_response
 
     def initialize(http_response)
-      fail RateLimitExceededError if http_response.code == 429
-      fail "Bad response code #{http_response.code} in #{http_response.inspect}" unless http_response.code == 200
+      fail RateLimitExceededError if http_response.status == 429
+      fail "Bad response code #{http_response.status} in #{http_response.inspect}" unless http_response.status == 200
 
       @raw_response = http_response
-      @parsed_response = http_response.parsed_response
+      @parsed_response = http_response.body
 
       if SurveyGizmo::Connection.instance.api_debug?
         ap 'Parsed SurveyGizmo Response:'
