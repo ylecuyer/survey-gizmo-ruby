@@ -19,6 +19,6 @@ describe SurveyGizmo::Configuration do
       config.password = 'fourfourz'
     end
 
-    expect(SurveyGizmo::Connection.instance.send(:connection).params).to eq({ 'user:md5'=>'slimthug:836fd7e2961a094c01cb7ba78bac6a06' })
+    expect(SurveyGizmo::Connection.send(:connection).params).to eq({ 'user:md5'=>'slimthug:836fd7e2961a094c01cb7ba78bac6a06' })
   end
 end

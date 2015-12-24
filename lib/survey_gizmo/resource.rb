@@ -58,7 +58,7 @@ module SurveyGizmo
 
       # Retrieve a single resource.  See usage comment on .all
       def first(conditions = {})
-        new(conditions.merge(RestResponse.new(Connection.instance.get(create_route(:get, conditions))).data))
+        new(conditions.merge(RestResponse.new(Connection.get(create_route(:get, conditions))).data))
       end
 
       # Create a new resource.  Returns the newly created Resource instance.
@@ -68,7 +68,7 @@ module SurveyGizmo
 
       # Delete resources
       def destroy(conditions)
-        Connection.instance.delete(create_route(:delete, conditions))
+        Connection.delete(create_route(:delete, conditions))
       end
 
       private
@@ -125,21 +125,21 @@ module SurveyGizmo
     # Returns itself if successfully saved, but with attributes (like id) added by SurveyGizmo
     def save
       method, path = id ? [:post, :update] : [:put, :create]
-      rest_response = RestResponse.new(Connection.instance.send(method, create_route(path), attributes_without_blanks))
+      rest_response = RestResponse.new(Connection.send(method, create_route(path), attributes_without_blanks))
       self.attributes = rest_response.data
       self
     end
 
     # Repopulate the attributes based on what is on SurveyGizmo's servers
     def reload
-      self.attributes = RestResponse.new(Connection.instance.get(create_route(:get))).data
+      self.attributes = RestResponse.new(Connection.get(create_route(:get))).data
       self
     end
 
     # Delete the Resource from Survey Gizmo
     def destroy
       fail "No id; can't delete #{self.inspect}!" unless id
-      Connection.instance.delete(create_route(:delete))
+      Connection.delete(create_route(:delete))
     end
 
     def inspect

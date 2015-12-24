@@ -31,7 +31,7 @@ module SurveyGizmo
 
   def self.reset!
     self.configuration = Configuration.new
-    Connection.instance.reset!
+    Connection.reset!
   end
 
   class Configuration

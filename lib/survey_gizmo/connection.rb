@@ -5,23 +5,19 @@ module SurveyGizmo
   class BadResponseError < RuntimeError; end
 
   class Connection
-    include Singleton
-
     TIMEOUT_SECONDS = 300
 
     class << self
-      delegate :put, :get, :delete, :post, to: :instance
+      delegate :put, :get, :delete, :post, to: :connection
     end
-    delegate :put, :get, :delete, :post, to: :connection
-#    def_delegators :connection, :get, :put, :delete, :post
 
-    def reset!
+    def self.reset!
       @connection = nil
     end
 
     private
 
-    def connection
+    def self.connection
       fail 'Not configured' unless SurveyGizmo.configuration
 
       options = {
