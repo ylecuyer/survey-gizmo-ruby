@@ -60,8 +60,12 @@ SurveyGizmo.configure do |config|
   # You can also instruct the gem to retry on ANY exception.  Defaults to false.  Use with caution.
   config.retry_everything = true
 end
+```
 
-## Basic Usage
+If you want to get really fancy with retry strategies and which exceptions to retry on, you can configure the [Pester gem](https://github.com/lumoslabs/pester) directly to manage retry strategies.  This gem executes in the `survey_gizmo_ruby` environment so anything you configure there will apply to your requests; just take care that you add additional `Pester` configuration AFTER you configure this gem.
+
+
+## Usage
 
 ### Retrieving Data
 
@@ -143,10 +147,6 @@ SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |respo
   end
 end
 ```
-
-## On API Timeouts
-
-API timeouts are a regular occurrence with the SurveyGizmo API.  At Lumos Labs we use our own [Pester gem](https://github.com/lumoslabs/pester) to manage retry strategies.  It might work for you.
 
 ## Debugging
 
