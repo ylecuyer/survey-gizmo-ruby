@@ -78,10 +78,7 @@ module SurveyGizmo
         RestResponse.new(SurveyGizmo.delete(create_route(:delete, conditions)))
       end
 
-      # Define the path where a resource is located
-      def route(path, methods)
-        Array.wrap(methods).each { |m| @paths[m] = path }
-      end
+      private
 
       # Replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
       # values being passed in the params hash with the same keys.
@@ -99,7 +96,10 @@ module SurveyGizmo
         rest_path + filters_to_query_string(url_params)
       end
 
-      private
+      # Define the path where a resource is located
+      def route(path, methods)
+        Array.wrap(methods).each { |m| @paths[m] = path }
+      end
 
       # Convert a [Hash] of params and internal surveygizmo style filters into a query string
       def filters_to_query_string(params = {})
@@ -177,7 +177,7 @@ module SurveyGizmo
     private
 
     def create_route(key)
-      self.class.create_route(key, to_param_options)
+      self.class.send(:create_route, key, to_param_options)
     end
   end
 end
