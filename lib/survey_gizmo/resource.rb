@@ -4,7 +4,6 @@ require 'addressable/uri'
 module SurveyGizmo
   module Resource
     extend ActiveSupport::Concern
-    include Enumerable
 
     included do
       include Virtus.model
