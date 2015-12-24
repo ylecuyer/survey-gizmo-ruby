@@ -123,7 +123,7 @@ module SurveyGizmo
     # Returns itself if successfully saved, but with attributes (like id) added by SurveyGizmo
     def save
       method, path = id ? [:post, :update] : [:put, :create]
-      rest_response = RestResponse.new(Connection.instance.send(method, create_route(path), query: attributes_without_blanks))
+      rest_response = RestResponse.new(Connection.instance.send(method, create_route(path), attributes_without_blanks))
       self.attributes = rest_response.data
       self
     end

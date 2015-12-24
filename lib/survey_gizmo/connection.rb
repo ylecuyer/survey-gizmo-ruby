@@ -3,7 +3,9 @@ module SurveyGizmo
     include Singleton
     extend Forwardable
 
-    def_delegators :connection, :get, :put, :delete
+    TIMEOUT_SECONDS = 300
+
+    def_delegators :connection, :get, :put, :delete, :post
 
     class PesterMiddleware < Faraday::Middleware
       Faraday::Response.register_middleware(pester: self)
@@ -17,28 +19,24 @@ module SurveyGizmo
       @connection = nil
     end
 
-    def post(route, payload)
-      Pester.survey_gizmo_ruby.retry do
-        connection.post(route) do |request|
-          request.body = { data: payload }.to_json
-        end
-      end
-    end
-
     def api_debug?
       ENV['GIZMO_DEBUG'].to_s =~ /^(true|t|yes|y|1)$/i
     end
 
     private
 
-    def api_route(route)
-    end
-
     def connection
       fail 'Not configured' unless SurveyGizmo.configuration
+      options = {
+        url: "https://restapi.surveygizmo.com",
+        params: { 'user:md5' => "#{SurveyGizmo.configuration.user}:#{Digest::MD5.hexdigest(SurveyGizmo.configuration.password)}" },
+        request: {
+          timeout: TIMEOUT_SECONDS,
+          open_timeout: TIMEOUT_SECONDS
+        }
+      }
 
-      auth_params = { 'user:md5' => "#{SurveyGizmo.configuration.user}:#{Digest::MD5.hexdigest(SurveyGizmo.configuration.password)}" }
-      @connection ||= Faraday.new(url: "https://restapi.surveygizmo.com", params: auth_params) do |connection|
+      @connection ||= Faraday.new(options) do |connection|
         connection.request :url_encoded
 
         connection.response :pester
