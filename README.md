@@ -9,7 +9,7 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 ### Major Changes in 5.x
 
 * BREAKING CHANGE: `.all` returns Enumerators, not arrays.  This may or may not break your code.
-* Feature: .all will automatically paginate responses for you with the :all_pages option (and it will also handle retries if you configure it)
+* Feature: `.all` will automatically paginate responses for you with the `:all_pages` option (and it will also handle retries if you configure it)
 * Feature: `.parsed_answers` method on Response class and Answer class parse the sort of wild and wooly way of representing survey responses.
 
 ### Major Changes in 4.x
@@ -36,13 +36,7 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 gem 'survey-gizmo-ruby'
 ```
 
-## Basic Usage
-
-When retrieving data from SurveyGizmo, `Klass.all` returns an `Enumerator` you can use to loop through your results/questions/surveys etc.  Pagination will be handled for you/it will actually iterate through ALL your results if you pass `all_pages: true`.
-
-Watch out that `Klass.all` without `:all_pages` does NOT iterate over all your results - just the first page.
-
-`Klass.first` returns a single instance of the resource.
+## Configuration
 
 ```ruby
 require 'survey-gizmo-ruby'
@@ -67,6 +61,19 @@ SurveyGizmo.configure do |config|
   config.retry_everything = true
 end
 
+## Basic Usage
+
+### Retrieving Data
+
+`Klass.first` returns a single instance of the resource.
+
+`Klass.all` returns an `Enumerator` you can use to loop through your results/questions/surveys etc.  Pagination will be handled for you/it will actually iterate through ALL your results if you pass `all_pages: true`.
+
+Watch out that `Klass.all` without `:all_pages` does NOT iterate over all your results - just the first page.
+
+### Examples
+
+```ruby
 # Iterate over your all surveys directly with the iterator
 SurveyGizmo::API::Survey.all(all_pages: true).each do |survey|
   do_something_with(survey)
@@ -194,7 +201,6 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 ## Desirable/Missing Features
 
 * Better specs with VCR/Webmock
-* :all_pages could yield results in a block for automated paging like rails find_in_batches
 * OAuth authentication
 * EU domain support
 * Better foreign language support
