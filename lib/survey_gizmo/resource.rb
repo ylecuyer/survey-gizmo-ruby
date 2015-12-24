@@ -35,6 +35,7 @@ module SurveyGizmo
         conditions = merge_params(conditions, _deprecated_filters)
         fail ':all_pages and :page are mutually exclusive' if conditions[:page] && conditions[:all_pages]
         fail 'Block only makes sense with :all_pages' if block_given? && !conditions[:all_pages]
+        $stderr.puts('WARNING: Only retrieving first page of results!') if conditions[:page].nil? && conditions[:all_pages].nil?
 
         all_pages = conditions.delete(:all_pages)
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]

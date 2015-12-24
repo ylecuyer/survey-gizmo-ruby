@@ -32,6 +32,12 @@ gem 'survey-gizmo-ruby'
 
 ## Basic Usage
 
+When retrieving data from SurveyGizmo, `Klass.all` returns an `Enumerator` you can use to loop through your results/questions/surveys etc.  Pagination will be handled for you/it will actually iterate through ALL your results if you pass `all_pages: true`.
+
+Watch out that `Klass.all` without `:all_pages` does NOT iterate over all your results - just the first page.
+
+`Klass.first` returns a single instance of the resource.
+
 ```ruby
 require 'survey-gizmo-ruby'
 
@@ -55,10 +61,14 @@ SurveyGizmo.configure do |config|
   config.retry_everything = true
 end
 
-# Retrieve the first page of your surveys
-surveys = SurveyGizmo::API::Survey.all
+# Iterate over your surveys directly with the iterator
+SurveyGizmo::API::Survey.all(all_pages: true).each do |survey|
+  do_something_with(survey)
+end
 # Retrieve ALL your surveys (handle pagination for you)
-surveys = SurveyGizmo::API::Survey.all(all_pages: true)
+surveys = SurveyGizmo::API::Survey.all(all_pages: true).to_a
+# Retrieve the 1st page of your surveys
+surveys = SurveyGizmo::API::Survey.all(page: 1).to_a
 
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)
@@ -69,10 +79,10 @@ survey.server_has_new_results_since?(Time.now.utc - 2.days) # => true
 survey.team_names # => ['Development', 'Test']
 survey.belongs_to?('Development') # => true
 
-# Retrieving Questions for a given survey.  Note that page_id is a required parameter.
-questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
-# Or just retrieve all questions for all pages of this survey
+# Retrieve all questions for all pages of this survey
 questions = survey.questions
+# Or retrieve questions manually one survey page at a time
+questions = SurveyGizmo::API::Question.all(survey_id: survey.id, page_id: 1)
 
 # Create a question for your survey.  The returned object will be given an :id parameter by SG.
 question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
@@ -83,7 +93,7 @@ question.save
 question.destroy
 
 # Retrieve 2nd page of SurveyResponses for a given survey.
-responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2)
+responses = SurveyGizmo::API::Response.all(survey_id: 12345, page: 2).to_a
 # Retrieving page 3 of completed, non test data SurveyResponses submitted within the past 3 days
 # for contact id 999. This example shows you how to use some of the gem's built in filters and
 # filter generators as well as how to construct your own raw filter.
@@ -101,19 +111,24 @@ responses = SurveyGizmo::API::Response.all(
       value: 999
     }
   ]
-)
+).to_a
 # Retrieve all responses for a given survey.
-# Note that this may not be a good idea for surveys with very large numbers of responses!
-responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345)
+responses = SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).to_a
 # If you want the gem to handle paging for you, use the :all_pages option and process your pages in a block
-SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345) do |page_of_responses|
-  page_of_responses.each { |r| process_response(r) }
+SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
+  do_something_with(r)
 end
 
 # Parse the wacky answer hash format into a more usable format.
 # Note that answers with keys but no values will not be returned
 # See http://apihelp.surveygizmo.com/help/article/link/surveyresponse-per-question for more info on answers
-responses.last.parsed_answers => # [#<SurveyGizmo::API::Answer:0x007fcadb4988f8 @survey_id=12345, @question_id=1, @answer_text='text'>]
+response.parsed_answers => # [#<SurveyGizmo::API::Answer:0x007fcadb4988f8 @survey_id=12345, @question_id=1, @answer_text='text'>]
+# Retrieve all answers from all responses
+SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
+  r.parsed_answers.each do |answer|
+     do_something_with(answer)
+  end
+end
 ```
 
 ## On API Timeouts
