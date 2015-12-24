@@ -29,7 +29,7 @@ module SurveyGizmo; module API
     end
 
     def pages
-      @pages ||= Page.all(survey_id: id, all_pages: true)
+      @pages ||= Page.all(survey_id: id, all_pages: true).to_a
     end
 
     # Sub question handling is in resource.rb.  It should probably be here instead but if it gets moved here

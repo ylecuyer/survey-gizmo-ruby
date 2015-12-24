@@ -18,97 +18,84 @@ module SurveyGizmo
 
     # These are methods that every API resource can use to access resources in SurveyGizmo
     module ClassMethods
-      # Get an array of resources.
-      # @param [Hash] options - simple URL params at the top level, and SurveyGizmo "filters" at the :filters key
+      # Get an enumerator of resources.
+      # @param [Hash] conditions - simple URL params at the top level, and SurveyGizmo "filters" at the :filters key
+      #
+      # Set all_pages: true if you want the gem to page through all the available responses
       #
       # example: { page: 2, filters: { field: "istestdata", operator: "<>", value: 1 } }
       #
-      # The top level keys (e.g. page, resultsperpage) get encoded in the url, while the
+      # The top level keys (e.g. :page, :resultsperpage) get encoded in the url, while the
       # contents of the array of hashes passed at the :filters key get turned into the format
       # SurveyGizmo expects for its internal filtering, for example:
       #
       # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       #
-      # Set all_pages: true if you want the gem to page through all the available responses
-      def all(conditions = {}, _deprecated_filters = {})
-        conditions = merge_params(conditions, _deprecated_filters)
+      # Properties from the conditions hash (e.g. survey_id) will be added to the returned objects
+      def all(conditions = {})
         fail ':all_pages and :page are mutually exclusive' if conditions[:page] && conditions[:all_pages]
-
+        $stderr.puts('WARNING: Only retrieving first page of results!') if conditions[:page].nil? && conditions[:all_pages].nil?
         all_pages = conditions.delete(:all_pages)
-        properties = conditions.dup
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
+        response = nil
 
-        request_route = handle_route!(:create, conditions)
-        response = RestResponse.new(SurveyGizmo.get(request_route + filters_to_query_string(conditions)))
-        collection = response.data.map { |datum| datum.is_a?(Hash) ? new(datum) : datum }
+        Enumerator.new do |yielder|
+          while !response || (all_pages && response.current_page < response.total_pages)
+            conditions[:page] = response ? response.current_page + 1 : 1
+            response = Pester.survey_gizmo_ruby.retry do
+              RestResponse.new(SurveyGizmo.get(create_route(:create, conditions)))
+            end
+            collection = response.data.map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
 
-        while all_pages && response.current_page < response.total_pages
-          paged_filter = filters_to_query_string(conditions.merge(page: response.current_page + 1))
-          response = RestResponse.new(SurveyGizmo.get(request_route + paged_filter))
-          collection += response.data.map { |datum| datum.is_a?(Hash) ? new(datum) : datum }
+            # Sub questions are not pulled by default so we have to retrieve them manually.  SurveyGizmo
+            # claims they will fix this bug and eventually all questions will be returned in one request.
+            if self == SurveyGizmo::API::Question
+              collection += collection.flat_map { |question| question.sub_questions }
+            end
+
+            collection.each { |e| yielder.yield(e) }
+          end
         end
-
-        # Add in the properties from the request because many of the important ones (like survey_id) are
-        # not often part of the SurveyGizmo returned data
-        properties.each do |k, v|
-          next unless v && instance_methods.include?(k)
-          collection.each { |c| c[k] ||= v }
-        end
-
-        # Sub questions are not pulled by default so we have to retrieve them manually
-        # SurveyGizmo claims they will fix this bug and eventually all questions will be
-        # returned in one request.
-        if self == SurveyGizmo::API::Question
-          collection += collection.map { |question| question.sub_questions }.flatten
-        end
-
-        collection
       end
 
       # Retrieve a single resource.  See usage comment on .all
-      def first(conditions, _deprecated_filters = {})
-        conditions = merge_params(conditions, _deprecated_filters)
-        properties = conditions.dup
-
-        response = RestResponse.new(SurveyGizmo.get(handle_route!(:get, conditions) + filters_to_query_string(conditions)))
-        # Add in the properties from the conditions hash because many of the important ones (like survey_id) are
-        # not often part of the SurveyGizmo's returned data
-        new(properties.merge(response.data))
+      def first(conditions = {})
+        response = Pester.survey_gizmo_ruby.retry { RestResponse.new(SurveyGizmo.get(create_route(:get, conditions))) }
+        new(conditions.merge(response.data))
       end
 
       # Create a new resource.  Returns the newly created Resource instance.
       def create(attributes = {})
-        resource = new(attributes)
-        resource.create_record_in_surveygizmo
-        resource
+        new(attributes).create_record_in_surveygizmo
       end
 
       # Delete resources
       def destroy(conditions)
-        RestResponse.new(SurveyGizmo.delete(handle_route!(:delete, conditions)))
+        Pester.survey_gizmo_ruby.retry { RestResponse.new(SurveyGizmo.delete(create_route(:delete, conditions))) }
+      end
+
+      private
+
+      # Replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
+      # values being passed in the params hash with the same keys.
+      def create_route(key, params)
+        path = @paths[key]
+        fail "No routes defined for `#{key}` in #{name}" unless path
+        fail "User/password hash not setup!" if SurveyGizmo.default_params.empty?
+
+        url_params = params.dup
+        rest_path = path.gsub(/:(\w+)/) do |m|
+          fail SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`" unless url_params[$1.to_sym]
+          url_params.delete($1.to_sym)
+        end
+
+        rest_path + filters_to_query_string(url_params)
       end
 
       # Define the path where a resource is located
       def route(path, methods)
         Array.wrap(methods).each { |m| @paths[m] = path }
       end
-
-      # Replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
-      # values being passed in interpolation hash with the same keys.
-      #
-      # This method has the SIDE EFFECT of deleting REST path related keys from interpolation_hash!
-      def handle_route!(key, interpolation_hash)
-        path = @paths[key]
-        fail "No routes defined for `#{key}` in #{name}" unless path
-        fail "User/password hash not setup!" if SurveyGizmo.default_params.empty?
-
-        path.gsub(/:(\w+)/) do |m|
-          raise SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`" unless interpolation_hash[$1.to_sym]
-          interpolation_hash.delete($1.to_sym)
-        end
-      end
-
-      private
 
       # Convert a [Hash] of params and internal surveygizmo style filters into a query string
       def filters_to_query_string(params = {})
@@ -129,18 +116,15 @@ module SurveyGizmo
         uri.query_values = url_params.merge(params)
         "?#{uri.query}"
       end
-
-      def merge_params(conditions, _deprecated_filters)
-        $stderr.puts('Use of the 2nd hash parameter is deprecated.') unless _deprecated_filters.empty?
-        conditions.merge(_deprecated_filters || {})
-      end
     end
 
     # Save the resource to SurveyGizmo
     def save
+      # If we have an id, it's an update, because we already know the surveygizmo assigned id
       if id
-        # Then it's an update, because we already know the surveygizmo assigned id
-        RestResponse.new(SurveyGizmo.post(handle_route(:update), query: attributes_without_blanks))
+        Pester.survey_gizmo_ruby.retry do
+          RestResponse.new(SurveyGizmo.post(create_route(:update), query: attributes_without_blanks))
+        end
       else
         create_record_in_surveygizmo
       end
@@ -148,14 +132,14 @@ module SurveyGizmo
 
     # Repopulate the attributes based on what is on SurveyGizmo's servers
     def reload
-      self.attributes = RestResponse.new(SurveyGizmo.get(handle_route(:get))).data
+      self.attributes = Pester.survey_gizmo_ruby.retry { RestResponse.new(SurveyGizmo.get(create_route(:get))) }.data
       self
     end
 
     # Delete the Resource from Survey Gizmo
     def destroy
       fail "No id; can't delete #{self.inspect}!" unless id
-      RestResponse.new(SurveyGizmo.delete(handle_route(:delete)))
+      Pester.survey_gizmo_ruby.retry { RestResponse.new(SurveyGizmo.delete(create_route(:delete))) }
     end
 
     # Sets the hash that will be used to interpolate values in routes. It needs to be defined per model.
@@ -166,7 +150,9 @@ module SurveyGizmo
 
     # Returns itself if successfully saved, but with attributes added by SurveyGizmo
     def create_record_in_surveygizmo(attributes = {})
-      rest_response = RestResponse.new(SurveyGizmo.put(handle_route(:create), query: attributes_without_blanks))
+      rest_response = Pester.survey_gizmo_ruby.retry do
+        RestResponse.new(SurveyGizmo.put(create_route(:create), query: attributes_without_blanks))
+      end
       self.attributes = rest_response.data
       self
     end
@@ -190,8 +176,8 @@ module SurveyGizmo
 
     private
 
-    def handle_route(key)
-      self.class.handle_route!(key, to_param_options)
+    def create_route(key)
+      self.class.send(:create_route, key, to_param_options)
     end
   end
 end

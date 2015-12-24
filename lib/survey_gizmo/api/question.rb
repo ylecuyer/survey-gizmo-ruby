@@ -26,7 +26,7 @@ module SurveyGizmo; module API
     end
 
     def options
-      @options ||= Option.all(survey_id: survey_id, page_id: page_id, question_id: id, all_pages: true)
+      @options ||= Option.all(survey_id: survey_id, page_id: page_id, question_id: id, all_pages: true).to_a
     end
 
     def parent_question
@@ -34,8 +34,15 @@ module SurveyGizmo; module API
     end
 
     def sub_questions
-      @sub_questions ||= sub_question_skus.map { |subquestion_id| Question.first(survey_id: survey_id, id: subquestion_id) }
-                                          .each { |subquestion| subquestion.parent_question_id = id  }
+      @sub_questions ||= sub_question_skus.map do |sku|
+        # As of 2015-12-23, the sub_question_skus attribute can either contain an array of integers if no shortname (alias)
+        # was set for any question, or an array of [String, Integer] with the String corresponding to the subquestion
+        # shortname and the integer corresponding to the subquestion id if at least one shortname was set.
+        sku = sku[1] if sku.is_a?(Array)
+        subquestion = Question.first(survey_id: survey_id, id: sku)
+        subquestion.parent_question_id = id
+        subquestion
+      end
     end
 
     # @see SurveyGizmo::Resource#to_param_options
