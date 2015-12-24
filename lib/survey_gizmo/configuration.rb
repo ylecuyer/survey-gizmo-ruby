@@ -42,6 +42,7 @@ module SurveyGizmo
     attr_accessor :password
 
     attr_accessor :logger
+    attr_accessor :api_debug
     attr_accessor :results_per_page
     attr_accessor :retries
     attr_accessor :retry_interval
@@ -54,6 +55,7 @@ module SurveyGizmo
       @retry_interval = 60
       @retry_everything = false
       @logger = ::Logger.new(STDOUT)
+      @api_debug = ENV['GIZMO_DEBUG'].to_s =~ /^(true|t|yes|y|1)$/i
     end
   end
 end
