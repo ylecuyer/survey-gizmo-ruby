@@ -40,10 +40,10 @@ module SurveyGizmo
         response = nil
 
         Enumerator.new do |yielder|
-          while !response || (all_pages && response.current_page < response.total_pages)
-            conditions[:page] = response ? response.current_page + 1 : 1
-            response = Connection.get(create_route(:create, conditions))
-            collection = response.body['data'].map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
+          while !response || (all_pages && response['page'] < response['total_pages'])
+            conditions[:page] = response ? response['page'] + 1 : 1
+            response = Connection.get(create_route(:create, conditions)).body
+            collection = response['data'].map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
 
             # Sub questions are not pulled by default so we have to retrieve them manually.  SurveyGizmo
             # claims they will fix this bug and eventually all questions will be returned in one request.
@@ -129,8 +129,6 @@ module SurveyGizmo
 
     # Repopulate the attributes based on what is on SurveyGizmo's servers
     def reload
-      response = Connection.get(create_route(:get))
-      ap response
       self.attributes = Connection.get(create_route(:get)).body['data']
       self
     end

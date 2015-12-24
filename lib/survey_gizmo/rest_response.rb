@@ -4,15 +4,23 @@ module FaradayMiddleware
   class ParseSurveyGizmo < ResponseMiddleware
     Faraday::Response.register_middleware(surveygizmo_data: self)
 
+    def parse_response?(env)
+      true
+    end
+
     define_parser do |body|
+      ['total_count', 'page', 'total_pages', 'results_per_page'].each do
+        |n| body[n] = body[n].to_i if body[n]
+      end
+
       return unless body['data']
 
       # Handle really crappy [] notation in SG API, so far just in SurveyResponse
       Array.wrap(body['data']).compact.each do |datum|
-        unless datum['datesubmitted'].blank?
-          # SurveyGizmo returns date information in EST but does not provide time zone information.
-          # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
-          datum['datesubmitted'] = datum['datesubmitted'] + ' EST'
+        # SurveyGizmo returns date information in EST but does not provide time zone information.
+        # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
+        ['datesubmitted', 'created_on', 'modified_on'].each do |date_key|
+          datum[date_key] = datum[date_key] + ' EST' unless datum[date_key].blank?
         end
 
         datum.keys.grep(/^\[/).each do |key|
@@ -35,11 +43,13 @@ module FaradayMiddleware
           datum.delete(key)
         end
       end
+
+      body
     end
 
     private
 
-    def cleanup_attribute_name(attr)
+    def self.cleanup_attribute_name(attr)
       attr.downcase.gsub(/[^[:alnum:]]+/, '_')
                    .gsub(/(url|variable|standard|shown)/, '')
                    .gsub(/_+/, '_')
@@ -47,7 +57,7 @@ module FaradayMiddleware
                    .gsub(/_$/, '')
     end
 
-    def find_attribute_parent(attr)
+    def self.find_attribute_parent(attr)
       case attr.downcase
       when /url/
         'url'
@@ -60,40 +70,6 @@ module FaradayMiddleware
       when /question/
         'answers'
       end
-    end
-  end
-end
-
-# This class normalizes the data returned by Survey Gizmo
-module SurveyGizmo
-  class RestData
-    attr_accessor :raw_response
-    attr_accessor :parsed_response
-
-    def initialize(http_response)
-      @raw_response = http_response
-      @parsed_response = http_response.body
-
-      return unless data
-
-    end
-
-    # The parsed JSON data of the response
-    def data
-      @parsed_response['data']
-    end
-
-    # The error message if there is one
-    def message
-      @parsed_response['message']
-    end
-
-    def current_page
-      @parsed_response['page'].to_i
-    end
-
-    def total_pages
-      @parsed_response['total_pages'].to_i
     end
   end
 end
