@@ -9,7 +9,8 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 ### Major Changes in 5.x
 
 * BREAKING CHANGE: `.all` returns Enumerators, not arrays.  This may or may not break your code.
-* Feature: `.all` will automatically paginate responses for you with the `:all_pages` option (and it will also handle retries if you configure it)
+* Feature: `.all` will automatically paginate responses for you with the `:all_pages` option and some built in methods like `survey.responses`.
+# Feature: Built in retries - one retry with a 60 second backoff is the default but can be configured.
 * Feature: `.parsed_answers` method on Response class and Answer class parse the sort of wild and wooly way of representing survey responses.
 
 ### Major Changes in 4.x
@@ -110,38 +111,37 @@ question.save
 question.destroy
 
 # Iterate over all your Responses
-SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
-  do_something_with(r)
-end
-# Iterate over page 3 of completed, non test data SurveyResponses submitted within the past 3 days for contact 999
-# This example shows you how to use some of the gem's built in filters and filter generators as well as how to
-# construct your own raw filter.
+survey.responses.each { |response| do_something_with(response) }
+# Or just get one page responses
+survey.responses(page: 5).each { |response| do_something_with(response) }
+# Use filters to limit results - this example will iterate over page 3 of completed, non test data
+# SurveyResponses submitted within the past 3 days for contact 999.
+# It demonstrates how to use some of the gem's built in filters/generators as well as how to construct a filter.
 # See: http://apihelp.surveygizmo.com/help/article/link/filters for more info on filters
-SurveyGizmo::API::Response.all(
-  survey_id: 12345,
-  page: 3,
-  filters: [
-    SurveyGizmo::API::Response::NO_TEST_DATA,
-    SurveyGizmo::API::Response::ONLY_COMPLETED,
-    SurveyGizmo::API::Response.submitted_since_filter(Time.now - 72.hours),
-    {
-      field: 'contact_id',
-      operator: '=',
-      value: 999
-    }
-  ]
-).each { |response| do_stuff_with(response) }
+filters = [
+  SurveyGizmo::API::Response::NO_TEST_DATA,
+  SurveyGizmo::API::Response::ONLY_COMPLETED,
+  SurveyGizmo::API::Response.submitted_since_filter(Time.now - 72.hours),
+  {
+    field: 'contact_id',
+    operator: '=',
+    value: 999
+  }
+]
+survey.responses(page: 3, filters: filters).each { |response| do_stuff_with(response) }
 
 # Parse the wacky answer hash format into a more usable format. Answers with keys but no values will not be returned
 # "Other" text for some questions is parsed to @other_text; all other answers to @answer_text
 # Custom table question answers have the @question_pipe string parsed out to an attribute.
 # See http://apihelp.surveygizmo.com/help/article/link/surveyresponse-per-question for more info on answers
-response.parsed_answers => # [#<SurveyGizmo::API::Answer @survey_id=12345, @question_id=1, @answer_text='text'>]
+response.parsed_answers => # [#<SurveyGizmo::API::Answer @survey_id=12345, @question_id=1, @option_id=2, @answer_text='text'>]
 
-# Retrieve all answers from all responses, write rows to your database
-SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
-  response.parsed_answers.each do |answer|
-     MyLocalSurveyGizmoResponseModel.create(answer.to_hash)
+# Retrieve all answers from all responses to all surveys, write rows to your database
+SurveyGizmo::API::Survey.all(all_pages: true).each do |survey|
+  survey.responses.each do |response|
+    response.parsed_answers.each do |answer|
+       MyLocalSurveyGizmoResponseModel.create(answer.to_hash)
+    end
   end
 end
 ```

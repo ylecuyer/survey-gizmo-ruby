@@ -43,6 +43,10 @@ module SurveyGizmo; module API
       questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic)$/ }
     end
 
+    def responses(conditions = {})
+      Response.all(conditions.merge(survey_id: id, all_pages: !conditions[:page]))
+    end
+
     # Statistics array of arrays looks like:
     # [["Partial", 2], ["Disqualified", 28], ["Complete", 15]]
     def number_of_completed_responses
