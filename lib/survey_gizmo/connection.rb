@@ -16,31 +16,11 @@ module SurveyGizmo
 
     private
 
-    class PesterMiddleware < Faraday::Middleware
-      Faraday::Response.register_middleware(pester: self)
-
-      def call(environment)
-        Pester.survey_gizmo_ruby.retry do
-          @app.call(environment).on_complete do |response_env|
-            fail RateLimitExceededError if response_env.status == 429
-            fail BadResponseError, "Bad response code #{http_response.status} in #{http_response.inspect}" unless response_env.status == 200
-            fail BadResponseError, response_env.inspect unless response_ok?(response_env)
-          end
-        end
-      end
-
-      private
-
-      def response_ok?(response)
-        response.body['result_ok'] && response.body['result_ok'].to_s.downcase == 'true'
-      end
-    end
-
     def connection
       fail 'Not configured' unless SurveyGizmo.configuration
 
       options = {
-        url: "https://restapi.surveygizmo.com",
+        url: SurveyGizmo.configuration.api_url,
         params: { 'user:md5' => "#{SurveyGizmo.configuration.user}:#{Digest::MD5.hexdigest(SurveyGizmo.configuration.password)}" },
         request: {
           timeout: TIMEOUT_SECONDS,
@@ -56,6 +36,22 @@ module SurveyGizmo
         connection.response :json, content_type: /\bjson$/
 
         connection.adapter Faraday.default_adapter
+      end
+    end
+
+    class PesterMiddleware < Faraday::Middleware
+      Faraday::Response.register_middleware(pester: self)
+
+      def call(environment)
+        Pester.survey_gizmo_ruby.retry do
+          @app.call(environment).on_complete do |response|
+            fail RateLimitExceededError if response.status == 429
+            fail BadResponseError, "Bad response code #{response.status} in #{response.inspect}" unless response.status == 200
+            unless response.body['result_ok'] && response.body['result_ok'].to_s.downcase == 'true'
+              fail BadResponseError, response.inspect unless response_ok?(response)
+            end
+          end
+        end
       end
     end
   end
