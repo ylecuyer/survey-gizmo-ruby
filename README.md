@@ -6,6 +6,12 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ## Versions
 
+### Major Changes in 5.x
+
+* BREAKING CHANGE: `.all` returns Enumerators, not arrays.  This may or may not break your code.
+* Feature: .all will automatically paginate responses for you with the :all_pages option
+* Feature: Answer class to parse SurveyGizmo's sort of wild and wooly way of representing survey responses
+
 ### Major Changes in 4.x
 
 * BREAKING CHANGE: There is no more error tracking.  If the API gives an error or bad response, an exception will be raised.
