@@ -29,6 +29,8 @@ module SurveyGizmo; module API
     attribute :url,                  Hash       # READ-ONLY
     attribute :answers,              Hash       # READ-ONLY
 
+    alias_method :submitted_at, :datesubmitted
+
     route '/survey/:survey_id/surveyresponse',     :create
     route '/survey/:survey_id/surveyresponse/:id', [:get, :update, :delete]
 
@@ -40,13 +42,13 @@ module SurveyGizmo; module API
       answers.select do |k,v|
         next false unless v.is_a?(FalseClass) || v.present?
 
+        # Strip out "Other" answers that don't actually have the "other" text.
         if k =~ /\[question\((\d+)\),\s*option\((\d+)\)\]/
-          # Strip out "Other" answers that don't actually have the "other" text
           !answers.keys.any? { |key| key =~ /\[question\((#{$1})\),\s*option\("(#{$2})-other"\)\]/ }
         else
           true
         end
-      end.map { |k,v| Answer.new(survey_id, id, k, v) }
+      end.map { |k,v| Answer.new(survey_id, id, submitted_at, k, v) }
     end
 
     def to_param_options
