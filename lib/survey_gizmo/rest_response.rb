@@ -1,17 +1,14 @@
-# This class normalizes the data returned by Survey Gizmo
-module SurveyGizmo
-  class RestResponse
-    attr_accessor :raw_response
-    attr_accessor :parsed_response
+require 'faraday_middleware/response_middleware'
 
-    def initialize(http_response)
-      @raw_response = http_response
-      @parsed_response = http_response.body
+module FaradayMiddleware
+  class ParseSurveyGizmo < ResponseMiddleware
+    Faraday::Response.register_middleware(surveygizmo_data: self)
 
-      return unless data
+    define_parser do |body|
+      return unless body['data']
 
       # Handle really crappy [] notation in SG API, so far just in SurveyResponse
-      Array.wrap(data).compact.each do |datum|
+      Array.wrap(body['data']).compact.each do |datum|
         unless datum['datesubmitted'].blank?
           # SurveyGizmo returns date information in EST but does not provide time zone information.
           # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
@@ -40,24 +37,6 @@ module SurveyGizmo
       end
     end
 
-    # The parsed JSON data of the response
-    def data
-      @parsed_response['data']
-    end
-
-    # The error message if there is one
-    def message
-      @parsed_response['message']
-    end
-
-    def current_page
-      @parsed_response['page'].to_i
-    end
-
-    def total_pages
-      @parsed_response['total_pages'].to_i
-    end
-
     private
 
     def cleanup_attribute_name(attr)
@@ -81,6 +60,40 @@ module SurveyGizmo
       when /question/
         'answers'
       end
+    end
+  end
+end
+
+# This class normalizes the data returned by Survey Gizmo
+module SurveyGizmo
+  class RestData
+    attr_accessor :raw_response
+    attr_accessor :parsed_response
+
+    def initialize(http_response)
+      @raw_response = http_response
+      @parsed_response = http_response.body
+
+      return unless data
+
+    end
+
+    # The parsed JSON data of the response
+    def data
+      @parsed_response['data']
+    end
+
+    # The error message if there is one
+    def message
+      @parsed_response['message']
+    end
+
+    def current_page
+      @parsed_response['page'].to_i
+    end
+
+    def total_pages
+      @parsed_response['total_pages'].to_i
     end
   end
 end

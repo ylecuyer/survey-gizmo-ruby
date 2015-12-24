@@ -42,8 +42,8 @@ module SurveyGizmo
         Enumerator.new do |yielder|
           while !response || (all_pages && response.current_page < response.total_pages)
             conditions[:page] = response ? response.current_page + 1 : 1
-            response = RestResponse.new(Connection.get(create_route(:create, conditions)))
-            collection = response.data.map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
+            response = Connection.get(create_route(:create, conditions))
+            collection = response.body['data'].map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
 
             # Sub questions are not pulled by default so we have to retrieve them manually.  SurveyGizmo
             # claims they will fix this bug and eventually all questions will be returned in one request.
@@ -58,7 +58,7 @@ module SurveyGizmo
 
       # Retrieve a single resource.  See usage comment on .all
       def first(conditions = {})
-        new(conditions.merge(RestResponse.new(Connection.get(create_route(:get, conditions))).data))
+        new(conditions.merge(Connection.get(create_route(:get, conditions)).body['data']))
       end
 
       # Create a new resource.  Returns the newly created Resource instance.
@@ -122,14 +122,16 @@ module SurveyGizmo
     # Returns itself if successfully saved, but with attributes (like id) added by SurveyGizmo
     def save
       method, path = id ? [:post, :update] : [:put, :create]
-      rest_response = RestResponse.new(Connection.send(method, create_route(path), attributes_without_blanks))
-      self.attributes = rest_response.data
+      rest_response = Connection.send(method, create_route(path), attributes_without_blanks)
+      self.attributes = rest_response.body['data']
       self
     end
 
     # Repopulate the attributes based on what is on SurveyGizmo's servers
     def reload
-      self.attributes = RestResponse.new(Connection.get(create_route(:get))).data
+      response = Connection.get(create_route(:get))
+      ap response
+      self.attributes = Connection.get(create_route(:get)).body['data']
       self
     end
 
