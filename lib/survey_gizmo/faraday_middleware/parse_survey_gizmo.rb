@@ -13,7 +13,7 @@ module SurveyGizmo
         body[n] = body[n].to_i if body[n]
       end
 
-      return body unless body['data']
+      next body unless body['data']
 
       # Handle really crappy [] notation in SG API, so far just in SurveyResponse
       Array.wrap(body['data']).compact.each do |datum|
