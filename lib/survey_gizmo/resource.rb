@@ -67,7 +67,7 @@ module SurveyGizmo
 
       # Delete resources
       def destroy(conditions)
-        RestResponse.new(Connection.instance.delete(create_route(:delete, conditions)))
+        Connection.instance.delete(create_route(:delete, conditions))
       end
 
       private
@@ -137,7 +137,7 @@ module SurveyGizmo
     # Delete the Resource from Survey Gizmo
     def destroy
       fail "No id; can't delete #{self.inspect}!" unless id
-      RestResponse.new(Connection.instance.delete(create_route(:delete)))
+      Connection.instance.delete(create_route(:delete))
     end
 
     def inspect

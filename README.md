@@ -201,7 +201,6 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 * OAuth authentication
 * EU domain support
 * Better foreign language support
-* Use Faraday instead of Httparty (partied too hard)
 * There are several API objects that are available and not included in this gem.  AccountTeams, for instance, has some skeleton code but is untested.
 
 # Copyright

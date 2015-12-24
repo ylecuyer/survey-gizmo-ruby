@@ -9,6 +9,7 @@ module SurveyGizmo
 
     retryables = [
       Net::ReadTimeout,
+      Faraday::Error::TimeoutError,
       SurveyGizmo::RateLimitExceededError
     ]
 
@@ -30,7 +31,7 @@ module SurveyGizmo
 
   def self.reset!
     self.configuration = Configuration.new
-#    Connection.instance.reset!
+    Connection.instance.reset!
   end
 
   class Configuration
