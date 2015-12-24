@@ -32,9 +32,3 @@ require 'survey_gizmo/api/question'
 require 'survey_gizmo/api/response'
 require 'survey_gizmo/api/survey'
 require 'survey_gizmo/api/survey_campaign'
-
-module SurveyGizmo
-  class URLError < RuntimeError; end
-  class RateLimitExceededError < RuntimeError; end
-  class BadResponseError < RuntimeError; end
-end

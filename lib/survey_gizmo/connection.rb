@@ -1,4 +1,8 @@
 module SurveyGizmo
+  class URLError < RuntimeError; end
+  class RateLimitExceededError < RuntimeError; end
+  class BadResponseError < RuntimeError; end
+
   class Connection
     include Singleton
     extend Forwardable
