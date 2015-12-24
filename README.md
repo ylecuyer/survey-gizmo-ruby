@@ -8,19 +8,19 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ### Major Changes in 5.x
 
-* BREAKING CHANGE: `.all` returns Enumerators, not arrays.  This may or may not break your code.
-* Feature: `.all` will automatically paginate responses for you with the `:all_pages` option and some built in methods like `survey.responses`.
-# Feature: Built in retries - one retry with a 60 second backoff is the default but can be configured.
-* Feature: `.parsed_answers` method on Response class and Answer class parse the sort of wild and wooly way of representing survey responses.
+* **BREAKING CHANGE**: `.all` returns Enumerators, not arrays.  This may or may not break your code.
+* FEATURE: `.all` will automatically paginate responses for you with the `:all_pages` option and some built in methods like `survey.responses`.
+# FEATURE: Built in retries - one retry with a 60 second backoff is the default but can be configured.
+* FEATURE: `.parsed_answers` method on Response class and Answer class parse the sort of wild and wooly way of representing survey responses.
 
 ### Major Changes in 4.x
 
-* BREAKING CHANGE: There is no more error tracking.  If the API gives an error or bad response, an exception will be raised.
-* BREAKING CHANGE: There is no more ```copy``` method
+* **BREAKING CHANGE**: There is no more error tracking.  If the API gives an error or bad response, an exception will be raised.
+* **BREAKING CHANGE**: There is no more ```copy``` method
 
 ### Major Changes in 3.x
 
-* BREAKING CHANGE: Configuration is completely different
+* **BREAKING CHANGE**: Configuration is completely different
 * Important Change: Defaults to using the v4 SurveyGizmo API endpoint to take advantage of various API bug fixes (notably team ownership is broken in v3)
 
 ### Old versions
