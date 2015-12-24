@@ -9,11 +9,11 @@ module FaradayMiddleware
     end
 
     define_parser do |body|
-      ['total_count', 'page', 'total_pages', 'results_per_page'].each do
-        |n| body[n] = body[n].to_i if body[n]
+      ['total_count', 'page', 'total_pages', 'results_per_page'].each do |n|
+        body[n] = body[n].to_i if body[n]
       end
 
-      return unless body['data']
+      return body unless body['data']
 
       # Handle really crappy [] notation in SG API, so far just in SurveyResponse
       Array.wrap(body['data']).compact.each do |datum|
