@@ -9,9 +9,9 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 ### Major Changes in 5.x
 
 * **BREAKING CHANGE**: `.all` returns an `Enumerator`, not an `Array`. This will break your code if you are using the return value of `.all` without iterating over it.
-* FEATURE: `.all` will automatically paginate responses for you with the `:all_pages` option. There are also some built in methods like `survey.responses` that will auto paginate.
-* FEATURE: Built in retries - one retry with a 60 second backoff is the default but can be configured.
-* FEATURE: `.parsed_answers` method on `Response` returns an array of `Answers` (new class) that are sane, stable Ruby objects instead of the sort of wild and wooly way SurveyGizmo has chosen to represent survey responses.
+* FEATURE: `.all` will automatically paginate responses for you with the `:all_pages` option. There are also some built in methods like `Survey#responses` that will auto paginate.
+* FEATURE: Built in retries. 1 retry with a 60 second backoff is the default but can be configured.
+* FEATURE: `Response#parsed_answers` returns an array of `Answers` (new class) that are sane, stable Ruby objects instead of the sort of wild and wooly way SurveyGizmo has chosen to represent survey responses.
 
 ### Major Changes in 4.x
 
@@ -74,19 +74,19 @@ If you want to get really fancy with retry strategies and which exceptions to re
 
 `SurveyGizmo::API::Klass.all` returns an `Enumerator` you can use to loop through your results/questions/surveys etc.  It will actually iterate through ALL your results (pagination will be handled for you) if you pass `all_pages: true`.
 
+Because `.all` returns an `Enumerator`, you have to call `.to_a` or some other enumerable method to trigger actual API data retrieval.
+```ruby
+SurveyGizmo::API::Survey.all(all_pages: true)      # => #<Enumerator: #<Enumerator::Generator>:each>
+SurveyGizmo::API::Survey.all(all_pages: true).to_a # => [Survey, Survey, Survey, ...]
+```
+
 ### Examples
 
 ```ruby
 # Iterate over your all surveys directly with the iterator
-SurveyGizmo::API::Survey.all(all_pages: true).each do |survey|
-  do_something_with(survey)
-end
+SurveyGizmo::API::Survey.all(all_pages: true).each { |survey| do_something_with(survey) }
 # Iterate over the 1st page of your surveys
 SurveyGizmo::API::Survey.all(page: 1).each { |survey| do_something_with(survey) }
-# Because .all returns an Enumerator, you have to call .to_a or some other enumerable method
-# to cause data to actually be retrieved
-surveys = SurveyGizmo::API::Survey.all(all_pages: true)      # => #<Enumerator: #<Enumerator::Generator:0x007fac8dc1e6e8>:each>
-surveys = SurveyGizmo::API::Survey.all(all_pages: true).to_a # => [Survey, Survey, Survey, ...]
 
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)
@@ -112,8 +112,6 @@ question.destroy
 
 # Iterate over all your Responses
 survey.responses.each { |response| do_something_with(response) }
-# Or just get one page responses
-survey.responses(page: 5).each { |response| do_something_with(response) }
 # Use filters to limit results - this example will iterate over page 3 of completed, non test data
 # SurveyResponses submitted within the past 3 days for contact 999. It demonstrates how to use some of the gem's
 # built in filters/generators as well as how to construct a filter.
@@ -130,9 +128,10 @@ filters = [
 ]
 survey.responses(page: 3, filters: filters).each { |response| do_stuff_with(response) }
 
-# Parse the answer hash into a more usable format. Answers with keys but empty values will not be returned.
-# "Other" text for some questions is parsed to @other_text; all other answers to @answer_text
-# Custom table question answers have the @question_pipe string parsed out to an attribute.
+# Parse the answer hash into a more usable format.
+# Answers with keys but empty values will not be returned.
+# "Other" text for some questions is parsed to Answer#other_text; all other answers to Answer#answer_text
+# Custom table question answers have the question_pipe string parsed out to Answer#question_pipe.
 # See http://apihelp.surveygizmo.com/help/article/link/surveyresponse-per-question for more info on answers
 response.parsed_answers => # [#<SurveyGizmo::API::Answer @survey_id=12345, @question_id=1, @option_id=2, @answer_text='text'>]
 
@@ -140,7 +139,7 @@ response.parsed_answers => # [#<SurveyGizmo::API::Answer @survey_id=12345, @ques
 SurveyGizmo::API::Survey.all(all_pages: true).each do |survey|
   survey.responses.each do |response|
     response.parsed_answers.each do |answer|
-       MyLocalSurveyGizmoResponseModel.create(answer.to_hash)
+       MyLocalSurveyGizmoResponseModel.create(answer.to_hash.merge(survey_id: survey.id, response_id: response.id))
     end
   end
 end
