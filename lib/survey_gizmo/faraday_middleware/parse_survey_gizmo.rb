@@ -1,8 +1,8 @@
 require 'faraday_middleware/response_middleware'
 
-module FaradayMiddleware
-  class ParseSurveyGizmo < ResponseMiddleware
-    Faraday::Response.register_middleware(surveygizmo_data: self)
+module SurveyGizmo
+  class ParseSurveyGizmo < FaradayMiddleware::ResponseMiddleware
+    Faraday::Response.register_middleware(parse_survey_gizmo_data: self)
 
     def parse_response?(env)
       true

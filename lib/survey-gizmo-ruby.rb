@@ -20,7 +20,9 @@ require 'survey_gizmo/configuration'
 require 'survey_gizmo/connection'
 require 'survey_gizmo/multilingual_title'
 require 'survey_gizmo/resource'
-require 'survey_gizmo/rest_response'
+
+require 'survey_gizmo/faraday_middleware/parse_survey_gizmo'
+require 'survey_gizmo/faraday_middleware/pester_survey_gizmo'
 
 require 'survey_gizmo/api/account_teams'
 require 'survey_gizmo/api/answer'
