@@ -79,8 +79,8 @@ module SurveyGizmo
 
       # Replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
       # values being passed in the params hash with the same keys.
-      def create_route(key, params)
-        path = @paths[key]
+      def create_route(method, params)
+        path = @paths[method]
         fail "No routes defined for `#{key}` in #{name}" unless path
         fail "User/password hash not setup!" if SurveyGizmo.default_params.empty?
 
