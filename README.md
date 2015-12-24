@@ -54,8 +54,8 @@ SurveyGizmo.configure do |config|
 
   # Optional - These configure the Pester gem to retry when SG suffers a timeout or the rate limit is exceeded.
   # The default number of retries is 0 (AKA don't retry)
-  # retry_interval is in seconds.
   config.retries = 1
+  # retry_interval is in seconds.
   config.retry_interval = 60
   # You can also instruct the gem to retry on ANY exception.  Defaults to false.  Use with caution.
   config.retry_everything = true
