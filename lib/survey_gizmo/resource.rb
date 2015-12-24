@@ -82,7 +82,7 @@ module SurveyGizmo
           route += '/:id' if [:get, :update, :delete].include?(method)
         end
 
-        fail "No route defined for #{method} on #{name}" unless @route
+        fail "No route defined for #{method} on #{name}" unless route
         fail "Not configured" unless SurveyGizmo.configuration
 
         url_params = params.dup
