@@ -140,7 +140,7 @@ response.parsed_answers => # [#<SurveyGizmo::API::Answer @survey_id=12345, @ques
 
 # Retrieve all answers from all responses, write rows to your database
 SurveyGizmo::API::Response.all(all_pages: true, survey_id: 12345).each do |response|
-  r.parsed_answers.each do |answer|
+  response.parsed_answers.each do |answer|
      MyLocalSurveyGizmoResponseModel.create(answer.to_hash)
   end
 end
