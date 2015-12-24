@@ -39,6 +39,10 @@ module SurveyGizmo; module API
       @questions ||= pages.map { |p| p.questions }.flatten
     end
 
+    def actual_questions
+      questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic)$/ }
+    end
+
     # Statistics array of arrays looks like:
     # [["Partial", 2], ["Disqualified", 28], ["Complete", 15]]
     def number_of_completed_responses

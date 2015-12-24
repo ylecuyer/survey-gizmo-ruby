@@ -100,6 +100,8 @@ survey.belongs_to?('Development') # => true
 
 # Retrieve all questions for all pages of this survey
 questions = survey.questions
+# Strip out instruction, urlredirect, and logic "questions"
+questions = survey.actual_questions
 
 # Create a question for your survey.  The returned object will be given an :id parameter by SG.
 question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
