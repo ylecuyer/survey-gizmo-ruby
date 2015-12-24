@@ -66,7 +66,7 @@ module SurveyGizmo
 
       # Create a new resource.  Returns the newly created Resource instance.
       def create(attributes = {})
-        new(attributes).create_record_in_surveygizmo
+        new(attributes).save
       end
 
       # Delete resources
@@ -118,16 +118,17 @@ module SurveyGizmo
       end
     end
 
-    # Save the resource to SurveyGizmo
+    ### BELOW HERE ARE INSTANCE METHODS ###
+
+    # If we have an id, it's an update, because we already know the surveygizmo assigned id
+    # Returns itself if successfully saved, but with attributes (like id) added by SurveyGizmo
     def save
-      # If we have an id, it's an update, because we already know the surveygizmo assigned id
-      if id
-        Pester.survey_gizmo_ruby.retry do
-          RestResponse.new(SurveyGizmo.post(create_route(:update), query: attributes_without_blanks))
-        end
-      else
-        create_record_in_surveygizmo
+      method, path = id ? [:post, :update] : [:put, :create]
+      rest_response = Pester.survey_gizmo_ruby.retry do
+        RestResponse.new(SurveyGizmo.send(method, create_route(path), query: attributes_without_blanks))
       end
+      self.attributes = rest_response.data
+      self
     end
 
     # Repopulate the attributes based on what is on SurveyGizmo's servers
@@ -140,21 +141,6 @@ module SurveyGizmo
     def destroy
       fail "No id; can't delete #{self.inspect}!" unless id
       Pester.survey_gizmo_ruby.retry { RestResponse.new(SurveyGizmo.delete(create_route(:delete))) }
-    end
-
-    # Sets the hash that will be used to interpolate values in routes. It needs to be defined per model.
-    # @return [Hash] a hash of the values needed in routing
-    def to_param_options
-      fail "Define #to_param_options in #{self.class.name}"
-    end
-
-    # Returns itself if successfully saved, but with attributes added by SurveyGizmo
-    def create_record_in_surveygizmo(attributes = {})
-      rest_response = Pester.survey_gizmo_ruby.retry do
-        RestResponse.new(SurveyGizmo.put(create_route(:create), query: attributes_without_blanks))
-      end
-      self.attributes = rest_response.data
-      self
     end
 
     def inspect
