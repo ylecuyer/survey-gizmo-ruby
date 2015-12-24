@@ -42,7 +42,7 @@ module SurveyGizmo
         Enumerator.new do |yielder|
           while !response || (all_pages && response['page'] < response['total_pages'])
             conditions[:page] = response ? response['page'] + 1 : 1
-            SurveyGizmo.configuration.logger.debug("Fetching #{name} page #{conditions[:page]}#{response ? "/#{response['total_pages']}" : ''}...")
+            SurveyGizmo.configuration.logger.debug("Fetching #{name} page #{conditions} - #{conditions[:page]}#{response ? "/#{response['total_pages']}" : ''}...")
             response = Connection.get(create_route(:create, conditions)).body
             collection = response['data'].map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
 
