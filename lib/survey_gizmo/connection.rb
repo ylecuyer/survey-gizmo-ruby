@@ -23,7 +23,7 @@ module SurveyGizmo
         Pester.survey_gizmo_ruby.retry do
           @app.call(environment).on_complete do |response_env|
             fail RateLimitExceededError if response_env.status == 429
-            fail "Bad response code #{http_response.status} in #{http_response.inspect}" unless response_env.status == 200
+            fail BadResponseError, "Bad response code #{http_response.status} in #{http_response.inspect}" unless response_env.status == 200
             fail BadResponseError, response_env.inspect unless response_ok?(response_env)
           end
         end
