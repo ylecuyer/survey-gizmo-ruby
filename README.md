@@ -61,17 +61,16 @@ SurveyGizmo.configure do |config|
   config.retry_everything = true
 end
 
-# Iterate over your surveys directly with the iterator
+# Iterate over your all surveys directly with the iterator
 SurveyGizmo::API::Survey.all(all_pages: true).each do |survey|
   do_something_with(survey)
 end
-# Retrieve the 1st page of your surveys
-SurveyGizmo::API::Survey.all(page: 1).each do do |survey|
-  do_something_with(survey)
-end
-# Note that because you get an Enumerator, you have to call .to_a or some other enumerable method
+# Iterate over the 1st page of your surveys
+SurveyGizmo::API::Survey.all(page: 1).each { |survey| do_something_with(survey) }
+# Because .all returns an Enumerator, you have to call .to_a or some other enumerable method
 # to cause data to actually be retrieved
-surveys = SurveyGizmo::API::Survey.all(all_pages: true).to_a
+surveys = SurveyGizmo::API::Survey.all(all_pages: true)      # => #<Enumerator: #<Enumerator::Generator:0x007fac8dc1e6e8>:each>
+surveys = SurveyGizmo::API::Survey.all(all_pages: true).to_a # => [Survey, Survey, Survey, ...]
 
 # Retrieve the survey with id: 12345
 survey = SurveyGizmo::API::Survey.first(id: 12345)
