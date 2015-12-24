@@ -11,7 +11,6 @@ module SurveyGizmo
       SurveyGizmo::Resource.descendants << self
     end
 
-    # @return [Set] Every class that includes SurveyGizmo::Resource
     def self.descendants
       @descendants ||= Set.new
     end
@@ -19,7 +18,7 @@ module SurveyGizmo
     # These are methods that every API resource can use to access resources in SurveyGizmo
     module ClassMethods
       # Get an enumerator of resources.
-      # @param [Hash] conditions - simple URL params at the top level, and SurveyGizmo "filters" at the :filters key
+      # @param [Hash] conditions - URL and pagination params with SurveyGizmo "filters" at the :filters key
       #
       # Set all_pages: true if you want the gem to page through all the available responses
       #
@@ -27,9 +26,7 @@ module SurveyGizmo
       #
       # The top level keys (e.g. :page, :resultsperpage) get encoded in the url, while the
       # contents of the array of hashes passed at the :filters key get turned into the format
-      # SurveyGizmo expects for its internal filtering, for example:
-      #
-      # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
+      # SurveyGizmo expects for its internal filtering.
       #
       # Properties from the conditions hash (e.g. survey_id) will be added to the returned objects
       def all(conditions = {})
@@ -99,6 +96,9 @@ module SurveyGizmo
       end
 
       # Convert a [Hash] of params and internal surveygizmo style filters into a query string
+      #
+      # The hashes at the :filters key get turned into URL params like:
+      # # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       def filters_to_query_string(params = {})
         return '' unless params && params.size > 0
 

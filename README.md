@@ -8,10 +8,10 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ### Major Changes in 5.x
 
-* **BREAKING CHANGE**: `.all` returns Enumerators, not arrays.  This may or may not break your code.
-* FEATURE: `.all` will automatically paginate responses for you with the `:all_pages` option and some built in methods like `survey.responses`.
+* **BREAKING CHANGE**: `.all` returns an `Enumerator`, not an `Array`. This will break your code if you are using the return value of `.all` without iterating over it.
+* FEATURE: `.all` will automatically paginate responses for you with the `:all_pages` option. There are also some built in methods like `survey.responses` that will auto paginate.
 * FEATURE: Built in retries - one retry with a 60 second backoff is the default but can be configured.
-* FEATURE: `.parsed_answers` method on Response class and Answer class parse the sort of wild and wooly way of representing survey responses.
+* FEATURE: `.parsed_answers` method on `Response` returns an array of `Answers` (new class) that are sane, stable Ruby objects instead of the sort of wild and wooly way SurveyGizmo has chosen to represent survey responses.
 
 ### Major Changes in 4.x
 
