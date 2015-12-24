@@ -161,8 +161,8 @@ module SurveyGizmo
 
     private
 
-    def create_route(key)
-      self.class.send(:create_route, key, to_param_options)
+    def create_route(method)
+      self.class.send(:create_route, method, to_param_options)
     end
   end
 end
