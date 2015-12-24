@@ -21,8 +21,7 @@ module SurveyGizmo; module API
     attribute :modified_on,    DateTime
     attribute :copy,           Boolean
 
-    route '/survey/:id', [:get, :update, :delete]
-    route '/survey',     :create
+    @route = '/survey'
 
     def to_param_options
       { id: id }

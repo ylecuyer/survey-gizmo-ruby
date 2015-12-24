@@ -7,7 +7,7 @@ module SurveyGizmo
 
     included do
       include Virtus.model
-      instance_variable_set('@paths', {})
+      instance_variable_set('@route', nil)
       SurveyGizmo::Resource.descendants << self
     end
 
@@ -75,22 +75,23 @@ module SurveyGizmo
       # Replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
       # values being passed in the params hash with the same keys.
       def create_route(method, params)
-        path = @paths[method]
-        fail "No routes defined for `#{key}` in #{name}" unless path
+        if @route.is_a?(Hash)
+          route = @route[method]
+        else
+          route = @route
+          route += '/:id' if [:get, :update, :delete].include?(method)
+        end
+
+        fail "No route defined for #{method} on #{name}" unless @route
         fail "Not configured" unless SurveyGizmo.configuration
 
         url_params = params.dup
-        rest_path = path.gsub(/:(\w+)/) do |m|
+        rest_path = route.gsub(/:(\w+)/) do |m|
           fail SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`" unless url_params[$1.to_sym]
           url_params.delete($1.to_sym)
         end
 
         SurveyGizmo.configuration.api_version + rest_path + filters_to_query_string(url_params)
-      end
-
-      # Define the path where a resource is located
-      def route(path, methods)
-        Array.wrap(methods).each { |m| @paths[m] = path }
       end
 
       # Convert a [Hash] of params and internal surveygizmo style filters into a query string
