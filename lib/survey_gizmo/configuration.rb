@@ -9,6 +9,7 @@ module SurveyGizmo
 
     retryables = [
       Net::ReadTimeout,
+      Faraday::Error::TimeoutError,
       SurveyGizmo::RateLimitExceededError
     ]
 
@@ -26,22 +27,24 @@ module SurveyGizmo
         c.environments[:survey_gizmo_ruby][:retry_error_classes] = retryables
       end
     end
-
-    SurveyGizmo.setup
   end
 
   def self.reset!
     self.configuration = Configuration.new
+    Connection.reset!
   end
 
   class Configuration
-    DEFAULT_RESULTS_PER_PAGE = 50
+    DEFAULT_REST_API_URL = 'https://restapi.surveygizmo.com'
     DEFAULT_API_VERSION = 'v4'
+    DEFAULT_RESULTS_PER_PAGE = 50
 
-    attr_accessor :api_version
     attr_accessor :user
     attr_accessor :password
 
+    attr_accessor :api_debug
+    attr_accessor :api_url
+    attr_accessor :api_version
     attr_accessor :logger
     attr_accessor :results_per_page
     attr_accessor :retries
@@ -49,12 +52,14 @@ module SurveyGizmo
     attr_accessor :retry_everything
 
     def initialize
-      @results_per_page = DEFAULT_RESULTS_PER_PAGE
+      @api_url = DEFAULT_REST_API_URL
       @api_version = DEFAULT_API_VERSION
+      @results_per_page = DEFAULT_RESULTS_PER_PAGE
       @retries = 1
       @retry_interval = 60
       @retry_everything = false
       @logger = ::Logger.new(STDOUT)
+      @api_debug = ENV['GIZMO_DEBUG'].to_s =~ /^(true|t|yes|y|1)$/i
     end
   end
 end

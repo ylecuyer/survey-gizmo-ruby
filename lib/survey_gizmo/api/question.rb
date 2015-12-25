@@ -17,15 +17,19 @@ module SurveyGizmo; module API
 
     alias_attribute :_subtype, :type
 
-    route '/survey/:survey_id/surveyquestion/:id', :get
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion', :create
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', [:update, :delete]
+    @route = {
+      get:    '/survey/:survey_id/surveyquestion/:id',
+      create: '/survey/:survey_id/surveypage/:page_id/surveyquestion',
+      update: '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id'
+    }
+    @route[:delete] = @route[:update]
 
     def survey
       @survey ||= Survey.first(id: survey_id)
     end
 
     def options
+      return parent_question.options if parent_question
       @options ||= Option.all(survey_id: survey_id, page_id: page_id, question_id: id, all_pages: true).to_a
     end
 

@@ -31,8 +31,7 @@ module SurveyGizmo; module API
 
     alias_method :submitted_at, :datesubmitted
 
-    route '/survey/:survey_id/surveyresponse',     :create
-    route '/survey/:survey_id/surveyresponse/:id', [:get, :update, :delete]
+    @route = '/survey/:survey_id/surveyresponse'
 
     def survey
       @survey ||= Survey.first(id: survey_id)

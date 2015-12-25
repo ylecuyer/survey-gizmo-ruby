@@ -10,9 +10,7 @@ module SurveyGizmo; module API
     attribute :after,         Integer
     attribute :survey_id,     Integer
 
-    # routing
-    route '/survey/:survey_id/surveypage', :create
-    route '/survey/:survey_id/surveypage/:id', [:get, :update, :delete]
+    @route = '/survey/:survey_id/surveypage'
 
     def survey
       @survey ||= Survey.first(id: survey_id)
