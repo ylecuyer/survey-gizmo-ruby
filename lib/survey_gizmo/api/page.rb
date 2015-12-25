@@ -20,13 +20,15 @@ module SurveyGizmo; module API
     end
 
     def questions
-      @questions ||= Question.all(pass_down_attributes.merge(all_pages: true)).to_a
+      @questions ||= Question.all(children_param_hash.merge(all_pages: true)).to_a
+
+      # See note about broken subquestions in resource.rb
       @questions.flat_map { |q| q.sub_question_skus }.each do |sku|
         next if @questions.find { |q| q.id == sku }
         @questions << Question.first(survey_id: survey_id, id: sku)
       end
 
-      @questions.each { |q| q.attributes = pass_down_attributes }
+      @questions.each { |q| q.attributes = children_param_hash }
     end
 
     def to_param_options

@@ -27,8 +27,8 @@ module SurveyGizmo; module API
     @route = '/survey'
 
     def pages
-      @pages ||= Page.all(pass_down_attributes.merge(all_pages: true)).to_a
-      @pages.each { |p| p.attributes = pass_down_attributes }
+      @pages ||= Page.all(children_param_hash.merge(all_pages: true)).to_a
+      @pages.each { |p| p.attributes = children_param_hash }
     end
 
     # Sub question handling is in resource.rb.  It should probably be here instead but if it gets moved here
@@ -43,7 +43,7 @@ module SurveyGizmo; module API
     end
 
     def responses(conditions = {})
-      Response.all(conditions.merge(survey_id: id, all_pages: !conditions[:page]))
+      Response.all(conditions.merge(children_param_hash).merge(all_pages: !conditions[:page]))
     end
 
     # Statistics array of arrays looks like:
@@ -57,13 +57,14 @@ module SurveyGizmo; module API
     end
 
     def server_has_new_results_since?(time)
-      Response.all(survey_id: id, page: 1, resultsperpage: 1, filters: Response.submitted_since_filter(time)).to_a.size > 0
+      conditions = children_param_hash.merge(page: 1, resultsperpage: 1, filters: Response.submitted_since_filter(time))
+      Response.all(conditions).to_a.size > 0
     end
 
     # As of 2015-12-18, when you request data on multiple surveys from /survey, the team variable comes
     # back as "0".  If you request one survey at a time from /survey/{id}, it is populated correctly.
     def teams
-      @individual_survey ||= Survey.first(id: id)
+      @individual_survey ||= Survey.first(to_param_options)
       @individual_survey.team
     end
 
@@ -73,6 +74,10 @@ module SurveyGizmo; module API
 
     def belongs_to?(team)
       team_names.any? { |t| t == team }
+    end
+
+    def campaigns
+      SurveyCampaign.all(children_param_hash.merge(all_pages: true))
     end
 
     def to_param_options

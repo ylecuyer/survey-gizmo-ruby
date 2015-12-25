@@ -34,8 +34,8 @@ module SurveyGizmo; module API
     def options
       return parent_question.options if parent_question
 
-      @options ||= Option.all(pass_down_attributes.merge(all_pages: true)).to_a
-      @options.each { |o| o.attributes = pass_down_attributes }
+      @options ||= Option.all(children_param_hash.merge(all_pages: true)).to_a
+      @options.each { |o| o.attributes = children_param_hash }
     end
 
     def parent_question
