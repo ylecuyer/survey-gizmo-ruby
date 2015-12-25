@@ -20,7 +20,6 @@ module SurveyGizmo; module API
     attribute :contact_id,           Integer
     attribute :data,                 String
     attribute :status,               String
-    attribute :datesubmitted,        DateTime
     attribute :is_test_data,         Boolean
     attribute :sResponseComment,     String
     attribute :variable,             Hash       # READ-ONLY
@@ -28,8 +27,8 @@ module SurveyGizmo; module API
     attribute :shown,                Hash       # READ-ONLY
     attribute :url,                  Hash       # READ-ONLY
     attribute :answers,              Hash       # READ-ONLY
-
-    alias_method :submitted_at, :datesubmitted
+    attribute :datesubmitted,        DateTime
+    alias_attribute :submitted_at, :datesubmitted
 
     @route = '/survey/:survey_id/surveyresponse'
 
