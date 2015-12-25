@@ -26,10 +26,10 @@ module SurveyGizmo; module API
     @route = '/survey/:survey_id/surveycampaign'
 
     def contacts(conditions = {})
-      Contact.all(conditions.merge(children_param_hash).merge(all_pages: !conditions[:page]))
+      Contact.all(conditions.merge(children_params).merge(all_pages: !conditions[:page]))
     end
 
-    def to_param_options
+    def route_params
       { id: id, survey_id: survey_id }
     end
   end

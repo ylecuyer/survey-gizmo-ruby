@@ -157,7 +157,7 @@ module SurveyGizmo
 
     # Attributes that should be passed down the object hierarchy - e.g. a Question should have a survey_id
     # Also often useful for loading member objects, e.g. loading Options for a given question.
-    def children_param_hash
+    def children_params
       klass_id = self.class.name.split('::').last.downcase + '_id'
       to_param_options.merge(klass_id.to_sym => id).reject { |k,v| k == :id }
     end
