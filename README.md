@@ -9,6 +9,7 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 ### Major Changes in 5.x
 
 * **BREAKING CHANGE**: `.all` returns an `Enumerator`, not an `Array`. This will break your code if you are using the return value of `.all` without iterating over it.
+* **BREAKING CHANGE**: `SurveyCampaign` has been renamed `Campaign` to be in line with the other model names.
 * FEATURE: `.all` will automatically paginate responses for you with the `:all_pages` option. There are also some built in methods like `Survey#responses` that will auto paginate.
 * FEATURE: Built in retries. 1 retry with a 60 second backoff is the default but can be configured.
 * FEATURE: `Response#parsed_answers` returns an array of `Answers` (new class) that are sane, stable Ruby objects instead of the sort of wild and wooly way SurveyGizmo has chosen to represent survey responses.
@@ -157,7 +158,7 @@ bundle exec rails whatever
 
 ## Adding API Objects
 
-Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`, `Response`, `EmailMessage`, `SurveyCampaign`, `Contact`, `AccountTeams`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the how to do so:
+Currently, the following API objects are included in the gem: `Survey`, `Question`, `Option`, `Page`, `Response`, `EmailMessage`, `Campaign`, `Contact`, `AccountTeams`. If you want to use something that isn't included you can easily write a class that handles it. Here's an example of the how to do so:
 
 ```ruby
 class SomeObject
