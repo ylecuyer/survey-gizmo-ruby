@@ -77,7 +77,7 @@ module SurveyGizmo; module API
     end
 
     def campaigns
-      SurveyCampaign.all(children_param_hash.merge(all_pages: true))
+      @campaigns ||= Campaign.all(children_param_hash.merge(all_pages: true)).to_a
     end
 
     def to_param_options
