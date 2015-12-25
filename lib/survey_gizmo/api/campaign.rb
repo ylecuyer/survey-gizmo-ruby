@@ -1,6 +1,6 @@
 module SurveyGizmo; module API
   # @see SurveyGizmo::Resource::ClassMethods
-  class SurveyCampaign
+  class Campaign
     include SurveyGizmo::Resource
 
     attribute :id,              Integer
@@ -23,8 +23,7 @@ module SurveyGizmo; module API
     attribute :surveycampaign,  Integer
     attribute :copy,            Boolean
 
-    route '/survey/:survey_id/surveycampaign/:id', [:get, :update, :delete]
-    route '/survey/:survey_id/surveycampaign', :create
+    @route = '/survey/:survey_id/surveycampaign'
 
     def to_param_options
       { id: id, survey_id: survey_id }

@@ -21,8 +21,7 @@ module SurveyGizmo; module API
     attribute :modified_on,    DateTime
     attribute :copy,           Boolean
 
-    route '/survey/:id', [:get, :update, :delete]
-    route '/survey',     :create
+    @route = '/survey'
 
     def to_param_options
       { id: id }
@@ -39,6 +38,14 @@ module SurveyGizmo; module API
       @questions ||= pages.map { |p| p.questions }.flatten
     end
 
+    def actual_questions
+      questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic)$/ }
+    end
+
+    def responses(conditions = {})
+      Response.all(conditions.merge(survey_id: id, all_pages: !conditions[:page]))
+    end
+
     # Statistics array of arrays looks like:
     # [["Partial", 2], ["Disqualified", 28], ["Complete", 15]]
     def number_of_completed_responses
@@ -50,7 +57,7 @@ module SurveyGizmo; module API
     end
 
     def server_has_new_results_since?(time)
-      Response.all(survey_id: id, filters: Response.submitted_since_filter(time)).size > 0
+      Response.all(survey_id: id, page: 1, resultsperpage: 1, filters: Response.submitted_since_filter(time)).to_a.size > 0
     end
 
     # As of 2015-12-18, when you request data on multiple surveys from /survey, the team variable comes

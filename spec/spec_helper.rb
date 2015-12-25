@@ -11,14 +11,16 @@ RSpec.configure do |config|
   config.include SurveyGizmoSpec::Methods
 
   config.before(:each) do
-    @base = 'https://restapi.surveygizmo.com/v4'
     SurveyGizmo.configure do |config|
       config.user = 'test@test.com'
       config.password = 'password'
+      config.logger.level = Logger::WARN
     end
 
     Pester.configure do |config|
-      config.logger = ::Logger.new(nil)
+      config.environments[:survey_gizmo_ruby][:logger] = ::Logger.new(nil)
     end
+
+    @base = "#{SurveyGizmo.configuration.api_url}/#{SurveyGizmo.configuration.api_version}"
   end
 end

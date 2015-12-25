@@ -68,6 +68,14 @@ describe 'Survey Gizmo Resource' do
       survey = described_class.new('statistics' => [['Partial', 2], ['Disqualified', 28], ['Complete', 15]])
       expect(survey.number_of_completed_responses).to eq(15)
     end
+
+    it 'should determine if there are new results' do
+      stub_request(:get, /#{@base}\/survey\/1\/surveyresponse/).to_return(json_response(true, []))
+
+      survey = described_class.new(id: 1)
+      expect(survey.server_has_new_results_since?(Time.now)).to be_false
+      a_request(:get, /#{@base}\/survey\/1\/surveyresponse/).should have_been_made
+    end
   end
 
   describe SurveyGizmo::API::Question do
