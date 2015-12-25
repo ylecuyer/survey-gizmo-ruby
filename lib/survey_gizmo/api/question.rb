@@ -54,8 +54,8 @@ module SurveyGizmo; module API
       end
     end
 
-    # @see SurveyGizmo::Resource#to_param_options
-    def to_param_options
+    # @see SurveyGizmo::Resource#route_params
+    def route_params
       { id: id, survey_id: survey_id, page_id: page_id }
     end
   end

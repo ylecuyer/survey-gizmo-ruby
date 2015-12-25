@@ -31,7 +31,7 @@ module SurveyGizmo; module API
       @questions.each { |q| q.attributes = children_params }
     end
 
-    def to_param_options
+    def route_params
       { id: id, survey_id: survey_id }
     end
   end

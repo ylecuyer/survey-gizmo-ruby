@@ -159,11 +159,11 @@ module SurveyGizmo
     # Also often useful for loading member objects, e.g. loading Options for a given question.
     def children_params
       klass_id = self.class.name.split('::').last.downcase + '_id'
-      to_param_options.merge(klass_id.to_sym => id).reject { |k,v| k == :id }
+      route_params.merge(klass_id.to_sym => id).reject { |k,v| k == :id }
     end
 
     def create_route(method)
-      self.class.send(:create_route, method, to_param_options)
+      self.class.send(:create_route, method, route_params)
     end
   end
 end

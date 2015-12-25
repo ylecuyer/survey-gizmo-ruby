@@ -49,7 +49,7 @@ module SurveyGizmo; module API
       end.map { |k,v| Answer.new(survey_id, id, submitted_at, k, v) }
     end
 
-    def to_param_options
+    def route_params
       { id: id, survey_id: survey_id }
     end
   end

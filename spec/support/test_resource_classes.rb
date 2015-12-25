@@ -14,7 +14,7 @@ module SurveyGizmoSpec
       delete: '/test/:test_id/resource/:id'
     }
 
-    def to_param_options
+    def route_params
       { id: id, test_id: test_id }
     end
   end
