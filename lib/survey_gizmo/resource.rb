@@ -119,6 +119,12 @@ module SurveyGizmo
 
     ### BELOW HERE ARE INSTANCE METHODS ###
 
+    def initialize(attrs = {})
+      puts "Setting attrs to #{attrs}"
+      @raw_data = attrs
+      super
+    end
+
     # If we have an id, it's an update, because we already know the surveygizmo assigned id
     # Returns itself if successfully saved, but with attributes (like id) added by SurveyGizmo
     def save
@@ -147,6 +153,12 @@ module SurveyGizmo
       end.compact
 
       "#<#{self.class.name}:#{self.object_id}>\n#{attribute_strings.join}"
+    end
+
+    # Attributes that should be passed into members - for instance Questions should have a survey_id populated
+    def pass_down_attributes
+      pass_down_id = self.class.name.split('::').last.downcase + '_id'
+      to_param_options.merge(pass_down_id.to_sym => id).reject { |k,v| k == :id }
     end
 
     protected

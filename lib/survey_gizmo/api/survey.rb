@@ -1,3 +1,5 @@
+require 'survey_gizmo/api/page'
+
 module SurveyGizmo; module API
   # @see SurveyGizmo::Resource::ClassMethods
   class Survey
@@ -20,15 +22,13 @@ module SurveyGizmo; module API
     attribute :created_on,     DateTime
     attribute :modified_on,    DateTime
     attribute :copy,           Boolean
+    attribute :pages,          Array[Page]
 
     @route = '/survey'
 
-    def to_param_options
-      { id: id }
-    end
-
     def pages
-      @pages ||= Page.all(survey_id: id, all_pages: true).to_a
+      @pages ||= Page.all(pass_down_attributes.merge(all_pages: true)).to_a
+      @pages.each { |p| p.attributes = pass_down_attributes }
     end
 
     # Sub question handling is in resource.rb.  It should probably be here instead but if it gets moved here
@@ -73,6 +73,10 @@ module SurveyGizmo; module API
 
     def belongs_to?(team)
       team_names.any? { |t| t == team }
+    end
+
+    def to_param_options
+      { id: id }
     end
   end
 end; end
