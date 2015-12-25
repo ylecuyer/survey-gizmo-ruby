@@ -1,19 +1,18 @@
 module SurveyGizmo
   module API
     class Answer
-      extend ActiveSupport::Concern
       include Virtus.model
 
-      attribute :key, String
-      attribute :value, String
+      attribute :key,           String
+      attribute :value,         String
 
-      attribute :survey_id, Integer
-      attribute :response_id, Integer
-      attribute :question_id, Integer
-      attribute :option_id, Integer
-      attribute :submitted_at, DateTime
-      attribute :answer_text, String
-      attribute :other_text, String
+      attribute :survey_id,     Integer
+      attribute :response_id,   Integer
+      attribute :question_id,   Integer
+      attribute :option_id,     Integer
+      attribute :submitted_at,  DateTime
+      attribute :answer_text,   String
+      attribute :other_text,    String
       attribute :question_pipe, String
 
       def initialize(attrs = {})
