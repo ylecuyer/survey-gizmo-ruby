@@ -1,6 +1,6 @@
 module SurveyGizmo; module API
   # @see SurveyGizmo::Resource::ClassMethods
-  class SurveyCampaign
+  class Campaign
     include SurveyGizmo::Resource
 
     attribute :id,              Integer
