@@ -140,7 +140,7 @@ response.parsed_answers => # [#<SurveyGizmo::API::Answer @survey_id=12345, @ques
 SurveyGizmo::API::Survey.all(all_pages: true).each do |survey|
   survey.responses.each do |response|
     response.parsed_answers.each do |answer|
-       MyLocalSurveyGizmoResponseModel.create(answer.to_hash.merge(survey_id: survey.id, response_id: response.id))
+      MyLocalSurveyGizmoResponseModel.create(answer.to_hash)
     end
   end
 end

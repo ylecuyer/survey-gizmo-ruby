@@ -1,4 +1,7 @@
 module SurveyGizmo
+  class RateLimitExceededError < RuntimeError; end
+  class BadResponseError < RuntimeError; end
+
   class PesterSurveyGizmoMiddleware < Faraday::Middleware
     Faraday::Response.register_middleware(pester_survey_gizmo: self)
 

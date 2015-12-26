@@ -5,7 +5,6 @@ module SurveyGizmo
 
       attribute :key,           String
       attribute :value,         String
-
       attribute :survey_id,     Integer
       attribute :response_id,   Integer
       attribute :question_id,   Integer
@@ -32,7 +31,7 @@ module SurveyGizmo
         when /\[question\((\d+)\)\]/
           @question_id = $1
         else
-          fail "Didn't recognize pattern for #{{attrs[:key] => attrs[:value]}} - you may have to parse your answers manually."
+          fail "Can't recognize pattern for #{attrs[:key]} => #{attrs[:value]} - you may have to parse your answers manually."
         end
 
         self.question_id = @question_id.to_i
