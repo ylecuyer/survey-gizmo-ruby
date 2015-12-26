@@ -33,7 +33,7 @@ module SurveyGizmo
       # Properties from the conditions hash (e.g. survey_id) will be added to the returned objects
       def all(conditions = {})
         fail ':all_pages and :page are mutually exclusive' if conditions[:page] && conditions[:all_pages]
-        $stderr.puts('WARNING: Only retrieving first page of results!') if conditions[:page].nil? && conditions[:all_pages].nil?
+        logger.warn('WARNING: Only retrieving first page of results!') if conditions[:page].nil? && conditions[:all_pages].nil?
 
         all_pages = conditions.delete(:all_pages)
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
@@ -42,7 +42,7 @@ module SurveyGizmo
         Enumerator.new do |yielder|
           while !response || (all_pages && response['page'] < response['total_pages'])
             conditions[:page] = response ? response['page'] + 1 : 1
-            SurveyGizmo.configuration.logger.debug("Fetching #{name} page #{conditions} - #{conditions[:page]}#{response ? "/#{response['total_pages']}" : ''}...")
+            logger.debug("Fetching #{name} page #{conditions} - #{conditions[:page]}#{response ? "/#{response['total_pages']}" : ''}...")
             response = Connection.get(create_route(:create, conditions)).body
             collection = response['data'].map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
 
@@ -115,6 +115,10 @@ module SurveyGizmo
 
         uri = Addressable::URI.new(query_values: url_params.merge(params))
         "?#{uri.query}"
+      end
+
+      def logger
+        SurveyGizmo.configuration.logger
       end
     end
 
