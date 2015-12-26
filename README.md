@@ -206,7 +206,6 @@ The [Virtus](https://github.com/solnic/virtus) gem is included to handle the att
 
 * Better specs with VCR/Webmock
 * OAuth authentication
-* EU domain support
 * Better foreign language support
 * There are several API objects that are available and not included in this gem.  AccountTeams, for instance, has some skeleton code but is untested.
 
