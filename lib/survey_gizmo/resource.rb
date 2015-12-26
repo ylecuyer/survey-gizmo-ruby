@@ -101,6 +101,7 @@ module SurveyGizmo
       # # filter[field][0]=istestdata&filter[operator][0]=<>&filter[value][0]=1
       def filters_to_query_string(params = {})
         return '' unless params && params.size > 0
+
         params = params.dup
         url_params = {}
 

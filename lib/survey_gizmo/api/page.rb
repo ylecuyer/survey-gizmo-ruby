@@ -24,6 +24,7 @@ module SurveyGizmo; module API
 
       # See note about broken subquestions in resource.rb
       @questions.flat_map { |q| q.sub_question_skus }.each do |sku|
+        sku = sku[1] if sku.is_a?(Array)
         next if @questions.find { |q| q.id == sku }
         @questions << Question.first(survey_id: survey_id, id: sku)
       end
