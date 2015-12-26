@@ -4,14 +4,15 @@ module SurveyGizmo
   class ParseSurveyGizmo < FaradayMiddleware::ResponseMiddleware
     Faraday::Response.register_middleware(parse_survey_gizmo_data: self)
 
+    PAGINATION_FIELDS = ['total_count', 'page', 'total_pages', 'results_per_page']
+    TIME_FIELDS = ['datesubmitted', 'created_on', 'modified_on', 'datecreated', 'datemodified']
+
     def parse_response?(env)
       true
     end
 
     define_parser do |body|
-      ['total_count', 'page', 'total_pages', 'results_per_page'].each do |n|
-        body[n] = body[n].to_i if body[n]
-      end
+      PAGINATION_FIELDS.each { |n| body[n] = body[n].to_i if body[n] }
 
       next body unless body['data']
 
@@ -19,8 +20,8 @@ module SurveyGizmo
       Array.wrap(body['data']).compact.each do |datum|
         # SurveyGizmo returns date information in EST but does not provide time zone information.
         # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
-        ['datesubmitted', 'created_on', 'modified_on', 'datecreated', 'datemodified'].each do |date_key|
-          datum[date_key] = datum[date_key] + ' EST' unless datum[date_key].blank?
+        TIME_FIELDS.each do |time_key|
+          datum[time_key] = datum[time_key] + ' EST' unless datum[time_key].blank?
         end
 
         datum.keys.grep(/^\[/).each do |key|
