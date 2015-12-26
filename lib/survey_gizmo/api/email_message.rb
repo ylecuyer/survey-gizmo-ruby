@@ -22,7 +22,7 @@ module SurveyGizmo; module API
 
     @route = '/survey/:survey_id/surveycampaign/:campaign_id/emailmessage'
 
-    def to_param_options
+    def route_params
       { id: id, survey_id: survey_id, campaign_id: campaign_id }
     end
   end

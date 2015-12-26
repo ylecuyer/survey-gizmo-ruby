@@ -19,7 +19,7 @@ module SurveyGizmo
       Array.wrap(body['data']).compact.each do |datum|
         # SurveyGizmo returns date information in EST but does not provide time zone information.
         # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
-        ['datesubmitted', 'created_on', 'modified_on'].each do |date_key|
+        ['datesubmitted', 'created_on', 'modified_on', 'datecreated', 'datemodified'].each do |date_key|
           datum[date_key] = datum[date_key] + ' EST' unless datum[date_key].blank?
         end
 

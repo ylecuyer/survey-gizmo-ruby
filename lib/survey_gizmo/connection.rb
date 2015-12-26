@@ -1,9 +1,6 @@
 require 'active_support/core_ext/module/delegation'
 
 module SurveyGizmo
-  class RateLimitExceededError < RuntimeError; end
-  class BadResponseError < RuntimeError; end
-
   class Connection
     TIMEOUT_SECONDS = 300
 

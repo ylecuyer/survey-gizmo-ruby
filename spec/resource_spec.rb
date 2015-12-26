@@ -103,20 +103,53 @@ describe 'Survey Gizmo Resource' do
       described_class.new(:_subtype => 'radio').type.should == 'radio'
     end
 
-    it 'should have no subquestions' do
-      expect(described_class.new.sub_questions).to eq([])
-    end
-
     it 'should find the survey' do
       stub_request(:get, /#{@base}\/survey\/1234/).to_return(json_response(true, get_attributes))
       described_class.new(base_params).survey
       a_request(:get, /#{@base}\/survey\/1234/).should have_been_made
     end
 
-    context 'with subquestions' do
+    context 'options' do
+      let(:survey_id) { 15 }
+      let(:question_id) { 23 }
+      let(:body_data) do
+        {
+          "id"=>question_id,
+          "title"=>{"English"=>"How likely are you to bang your head to Bohemian Rhapsody?"},
+          "options"=>
+             [
+               {
+                 "id"=>10014,
+                 "title"=>{"English"=>"0 = Not at all likely"},
+                 "value"=>"0 = Not at all likely"
+               },
+               {
+                 "id"=>10015,
+                 "title"=>{"English"=>"1"},
+                 "value"=>"1"
+               }
+             ]
+        }
+      end
+
+      it 'correctly parses options out of question data' do
+        stub_request(:get, /#{@base}\/survey\/#{survey_id}\/surveyquestion\/#{question_id}/).to_return(json_response(true, body_data))
+
+        question = described_class.first(survey_id: survey_id, id: question_id)
+        expect(question.options.all? { |o| o.question_id == question_id && o.survey_id == survey_id }).to be_true
+        expect(question.options.map { |o| o.id }).to eq([10014, 10015])
+        a_request(:get, /#{@base}\/.*surveyoption/).should_not have_been_made
+      end
+    end
+
+    context 'subquestions' do
       let(:parent_id) { 33 }
       let(:skus) { [544, 322] }
       let(:question_with_subquestions) { described_class.new(id: parent_id, survey_id: 1234, sub_question_skus: skus) }
+
+      it 'should have no subquestions' do
+        expect(described_class.new.sub_questions).to eq([])
+      end
 
       it 'should have 2 subquestions and they should have the right parent question' do
         stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
@@ -191,6 +224,9 @@ describe 'Survey Gizmo Resource' do
     it_should_behave_like 'an object with errors'
 
     context 'answers' do
+      let(:survey_id) { 6 }
+      let(:response_id) { 7 }
+      let(:timestamp) { '2015-01-02'.to_time(:utc) }
       let(:answers) do
         {
           "[question(3), option(\"10021-other\")]" => "Some other text field answer",
@@ -205,11 +241,21 @@ describe 'Survey Gizmo Resource' do
         }
       end
 
+      it 'should propagate time, survey_id, and response_id' do
+        response = described_class.new(
+          answers: answers.select { |k,v| k == "[question(5)]"},
+          survey_id: survey_id,
+          id: response_id,
+          submitted_at: timestamp
+        )
+        expect(response.parsed_answers.map { |a| a.to_hash }).to eq([ { survey_id: survey_id, response_id: response_id, question_id: 5, answer_text: "VERY important", submitted_at: timestamp }])
+      end
+
       it 'should parse the answers and remove extraneous answers' do
         expect(described_class.new(answers: answers, survey_id: 1).parsed_answers.map { |a| a.to_hash }).to eq([
           { survey_id: 1, question_id: 3, option_id: 10021, other_text: "Some other text field answer" },
           { survey_id: 1, question_id: 5, answer_text: "VERY important" },
-          { survey_id: 1, question_id: 8, answer_text: false },
+          { survey_id: 1, question_id: 8, answer_text: 'false' },
           { survey_id: 1, question_id: 9, option_id: 10002 },
           { survey_id: 1, question_id: 10, question_pipe: "Que aplicación", answer_text: "5 = Extremely important" }
         ])

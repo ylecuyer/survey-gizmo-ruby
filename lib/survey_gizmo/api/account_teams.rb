@@ -15,7 +15,7 @@ module SurveyGizmo
 
       @route = '/accountteams'
 
-      def to_param_options
+      def route_params
         { id: id }
       end
     end

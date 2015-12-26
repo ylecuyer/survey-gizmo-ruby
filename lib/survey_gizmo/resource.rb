@@ -149,16 +149,21 @@ module SurveyGizmo
       "#<#{self.class.name}:#{self.object_id}>\n#{attribute_strings.join}"
     end
 
-    protected
+    private
 
     def attributes_without_blanks
       attributes.reject { |k,v| v.blank? }
     end
 
-    private
+    # Attributes that should be passed down the object hierarchy - e.g. a Question should have a survey_id
+    # Also often useful for loading member objects, e.g. loading Options for a given question.
+    def children_params
+      klass_id = self.class.name.split('::').last.downcase + '_id'
+      route_params.merge(klass_id.to_sym => id).reject { |k,v| k == :id }
+    end
 
     def create_route(method)
-      self.class.send(:create_route, method, to_param_options)
+      self.class.send(:create_route, method, route_params)
     end
   end
 end

@@ -1,3 +1,5 @@
+require 'survey_gizmo/api/page'
+
 module SurveyGizmo; module API
   # @see SurveyGizmo::Resource::ClassMethods
   class Survey
@@ -20,15 +22,13 @@ module SurveyGizmo; module API
     attribute :created_on,     DateTime
     attribute :modified_on,    DateTime
     attribute :copy,           Boolean
+    attribute :pages,          Array[Page]
 
     @route = '/survey'
 
-    def to_param_options
-      { id: id }
-    end
-
     def pages
-      @pages ||= Page.all(survey_id: id, all_pages: true).to_a
+      @pages ||= Page.all(children_params.merge(all_pages: true)).to_a
+      @pages.each { |p| p.attributes = children_params }
     end
 
     # Sub question handling is in resource.rb.  It should probably be here instead but if it gets moved here
@@ -43,7 +43,7 @@ module SurveyGizmo; module API
     end
 
     def responses(conditions = {})
-      Response.all(conditions.merge(survey_id: id, all_pages: !conditions[:page]))
+      Response.all(conditions.merge(children_params).merge(all_pages: !conditions[:page]))
     end
 
     # Statistics array of arrays looks like:
@@ -57,13 +57,13 @@ module SurveyGizmo; module API
     end
 
     def server_has_new_results_since?(time)
-      Response.all(survey_id: id, page: 1, resultsperpage: 1, filters: Response.submitted_since_filter(time)).to_a.size > 0
+      Response.all(children_params.merge(page: 1, resultsperpage: 1, filters: Response.submitted_since_filter(time))).to_a.size > 0
     end
 
     # As of 2015-12-18, when you request data on multiple surveys from /survey, the team variable comes
     # back as "0".  If you request one survey at a time from /survey/{id}, it is populated correctly.
     def teams
-      @individual_survey ||= Survey.first(id: id)
+      @individual_survey ||= Survey.first(route_params)
       @individual_survey.team
     end
 
@@ -73,6 +73,14 @@ module SurveyGizmo; module API
 
     def belongs_to?(team)
       team_names.any? { |t| t == team }
+    end
+
+    def campaigns
+      @campaigns ||= Campaign.all(children_params.merge(all_pages: true)).to_a
+    end
+
+    def route_params
+      { id: id }
     end
   end
 end; end

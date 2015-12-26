@@ -1,3 +1,5 @@
+require 'survey_gizmo/api/option'
+
 module SurveyGizmo; module API
   # @see SurveyGizmo::Resource::ClassMethods
   class Question
@@ -10,6 +12,7 @@ module SurveyGizmo; module API
     attribute :shortname,          String
     attribute :properties,         Hash
     attribute :after,              Integer
+    attribute :options,            Array[Option]
     attribute :survey_id,          Integer
     attribute :page_id,            Integer, default: 1
     attribute :sub_question_skus,  Array
@@ -30,7 +33,9 @@ module SurveyGizmo; module API
 
     def options
       return parent_question.options if parent_question
-      @options ||= Option.all(survey_id: survey_id, page_id: page_id, question_id: id, all_pages: true).to_a
+
+      @options ||= Option.all(children_params.merge(all_pages: true)).to_a
+      @options.each { |o| o.attributes = children_params }
     end
 
     def parent_question
@@ -49,8 +54,8 @@ module SurveyGizmo; module API
       end
     end
 
-    # @see SurveyGizmo::Resource#to_param_options
-    def to_param_options
+    # @see SurveyGizmo::Resource#route_params
+    def route_params
       { id: id, survey_id: survey_id, page_id: page_id }
     end
   end
