@@ -68,7 +68,7 @@ module SurveyGizmo; module API
     # As of 2015-12-18, when you request data on multiple surveys from /survey, the team variable comes
     # back as "0".  If you request one survey at a time from /survey/{id}, it is populated correctly.
     def teams
-      @individual_survey ||= Survey.first(route_params)
+      @individual_survey ||= self.reload
       @individual_survey.team
     end
 
@@ -82,10 +82,6 @@ module SurveyGizmo; module API
 
     def campaigns
       @campaigns ||= Campaign.all(children_params.merge(all_pages: true)).to_a
-    end
-
-    def route_params
-      { id: id }
     end
   end
 end; end

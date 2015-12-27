@@ -28,9 +28,5 @@ module SurveyGizmo; module API
     def contacts(conditions = {})
       Contact.all(conditions.merge(children_params).merge(all_pages: !conditions[:page]))
     end
-
-    def route_params
-      { id: id, survey_id: survey_id }
-    end
   end
 end; end

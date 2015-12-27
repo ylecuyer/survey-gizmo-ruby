@@ -13,10 +13,6 @@ module SurveyGizmoSpec
       update: '/test/:test_id/resource/:id',
       delete: '/test/:test_id/resource/:id'
     }
-
-    def route_params
-      { id: id, test_id: test_id }
-    end
   end
 
   class GenericResource

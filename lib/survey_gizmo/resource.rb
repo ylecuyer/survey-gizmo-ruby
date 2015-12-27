@@ -19,6 +19,8 @@ module SurveyGizmo
 
     # These are methods that every API resource can use to access resources in SurveyGizmo
     module ClassMethods
+      attr_accessor :route
+
       # Get an enumerator of resources.
       # @param [Hash] conditions - URL and pagination params with SurveyGizmo "filters" at the :filters key
       #
@@ -32,14 +34,16 @@ module SurveyGizmo
       #
       # Properties from the conditions hash (e.g. survey_id) will be added to the returned objects
       def all(conditions = {})
+        puts "all called on #{name} with #{conditions}"
         fail ':all_pages and :page are mutually exclusive' if conditions[:page] && conditions[:all_pages]
         logger.warn('WARNING: Only retrieving first page of results!') if conditions[:page].nil? && conditions[:all_pages].nil?
 
         all_pages = conditions.delete(:all_pages)
         conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
-        response = nil
 
         Enumerator.new do |yielder|
+          response = nil
+
           while !response || (all_pages && response['page'] < response['total_pages'])
             conditions[:page] = response ? response['page'] + 1 : 1
             logger.debug("Fetching #{name} page #{conditions} - #{conditions[:page]}#{response ? "/#{response['total_pages']}" : ''}...")
@@ -62,7 +66,7 @@ module SurveyGizmo
         new(conditions.merge(Connection.get(create_route(:get, conditions)).body['data']))
       end
 
-      # Create a new resource.  Returns the newly created Resource instance.
+      # Create a new resource object locally and save to SurveyGizmo.  Returns the newly created Resource instance.
       def create(attributes = {})
         new(attributes).save
       end
@@ -74,25 +78,24 @@ module SurveyGizmo
 
       private
 
-      # Replaces the :page_id, :survey_id, etc strings defined in each model's URI routes with the
-      # values being passed in the params hash with the same keys.
+      # Replaces the :page_id, :survey_id, etc strings defined in each model's routes with the
+      # values in the params hash
       def create_route(method, params)
-        if @route.is_a?(Hash)
-          route = @route[method]
-        else
-          route = @route
-          route += '/:id' if [:get, :update, :delete].include?(method)
-        end
-
-        fail "No route defined for #{method} on #{name}" unless route
-
         url_params = params.dup
-        rest_path = route.gsub(/:(\w+)/) do |m|
+        rest_path = lookup_route_string(method).gsub(/:(\w+)/) do |m|
           fail SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`" unless url_params[$1.to_sym]
           url_params.delete($1.to_sym)
         end
 
         SurveyGizmo.configuration.api_version + rest_path + filters_to_query_string(url_params)
+      end
+
+      def lookup_route_string(method)
+        return @route[method] if @route.is_a?(Hash)
+        route = [:get, :update, :delete].include?(method) ? @route + '/:id' : @route
+        fail "No route defined for #{method} on #{name}" unless route
+
+        route
       end
 
       # Convert a [Hash] of params and internal surveygizmo style filters into a query string
@@ -160,8 +163,24 @@ module SurveyGizmo
       attributes.reject { |k,v| v.blank? }
     end
 
+    # Attributes required for API calls
+    def route_params
+      params = {}
+
+      routes = self.class.route.is_a?(Hash) ? self.class.route.values : [self.class.route]
+      routes.each do |route|
+        route.gsub(/:(\w+)/) do |m|
+          m = m.delete(':').to_sym
+          params[m] = self.send(m)
+        end
+      end
+      params[:id] = id
+
+      params
+    end
+
     # Attributes that should be passed down the object hierarchy - e.g. a Question should have a survey_id
-    # Also often useful for loading member objects, e.g. loading Options for a given question.
+    # Also used for loading member objects, e.g. loading Options for a given Question.
     def children_params
       klass_id = self.class.name.split('::').last.downcase + '_id'
       route_params.merge(klass_id.to_sym => id).reject { |k,v| k == :id }
