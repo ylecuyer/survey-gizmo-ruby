@@ -11,10 +11,9 @@ module SurveyGizmo; module API
     attribute :value,         String
     attribute :properties,    Hash
 
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption',     :create
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption/:id', [:get, :update, :delete]
+    @route = '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption'
 
-    def to_param_options
+    def route_params
       { id: id, survey_id: survey_id, page_id: page_id, question_id: question_id }
     end
   end

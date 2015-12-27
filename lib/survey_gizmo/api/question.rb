@@ -1,3 +1,5 @@
+require 'survey_gizmo/api/option'
+
 module SurveyGizmo; module API
   # @see SurveyGizmo::Resource::ClassMethods
   class Question
@@ -10,6 +12,7 @@ module SurveyGizmo; module API
     attribute :shortname,          String
     attribute :properties,         Hash
     attribute :after,              Integer
+    attribute :options,            Array[Option]
     attribute :survey_id,          Integer
     attribute :page_id,            Integer, default: 1
     attribute :sub_question_skus,  Array
@@ -17,16 +20,22 @@ module SurveyGizmo; module API
 
     alias_attribute :_subtype, :type
 
-    route '/survey/:survey_id/surveyquestion/:id', :get
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion', :create
-    route '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id', [:update, :delete]
+    @route = {
+      get:    '/survey/:survey_id/surveyquestion/:id',
+      create: '/survey/:survey_id/surveypage/:page_id/surveyquestion',
+      update: '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id'
+    }
+    @route[:delete] = @route[:update]
 
     def survey
       @survey ||= Survey.first(id: survey_id)
     end
 
     def options
-      @options ||= Option.all(survey_id: survey_id, page_id: page_id, question_id: id, all_pages: true).to_a
+      return parent_question.options if parent_question
+
+      @options ||= Option.all(children_params.merge(all_pages: true)).to_a
+      @options.each { |o| o.attributes = children_params }
     end
 
     def parent_question
@@ -45,8 +54,8 @@ module SurveyGizmo; module API
       end
     end
 
-    # @see SurveyGizmo::Resource#to_param_options
-    def to_param_options
+    # @see SurveyGizmo::Resource#route_params
+    def route_params
       { id: id, survey_id: survey_id, page_id: page_id }
     end
   end

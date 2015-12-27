@@ -36,10 +36,9 @@ module SurveyGizmo; module API
     attribute :scustomfield9,           String
     attribute :scustomfield10,          String
 
-    route '/survey/:survey_id/surveycampaign/:campaign_id/contact/:id', [:get, :update, :delete]
-    route '/survey/:survey_id/surveycampaign/:campaign_id/contact', :create
+    @route = '/survey/:survey_id/surveycampaign/:campaign_id/contact'
 
-    def to_param_options
+    def route_params
       { id: id, survey_id: survey_id, campaign_id: campaign_id }
     end
   end

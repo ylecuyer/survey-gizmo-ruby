@@ -4,16 +4,12 @@ shared_examples_for 'an API object' do
   end
 
   context "#create" do
-    it "should make a request" do
-      stub_api_call(:put)
-      described_class.create(create_attributes)
-      a_request(:put, /#{@base}#{uri_paths[:create]}/).should have_been_made
-    end
-
-    it "should return a new instance" do
+    it "should make a request and create a new instance" do
       stub_api_call(:put)
       obj = described_class.create(create_attributes)
+
       obj.should be_instance_of(described_class)
+      a_request(:put, /#{@base}#{uri_paths[:create]}/).should have_been_made
     end
 
     it "should set the attributes" do
@@ -25,15 +21,10 @@ shared_examples_for 'an API object' do
   end
 
   context "#get" do
-    it "should make a request" do
-      stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
-      described_class.first(first_params)
-      a_request(:get, /#{@base}#{uri_paths[:get]}/).should have_been_made
-    end
-
-    it "should set the attributes" do
+    it "should make a request and set the attributes" do
       stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
       obj = described_class.first(first_params)
+      a_request(:get, /#{@base}#{uri_paths[:get]}/).should have_been_made
       obj.attributes.reject{|k,v| v.blank? }.should == (get_attributes_to_compare || get_attributes)
     end
 
@@ -90,8 +81,8 @@ shared_examples_for 'an API object' do
   end
 
   context '#all' do
-    before(:all) do
-      @array = [
+    let(:data) do
+      [
         {:id => 1, :title => 'resource 1'},
         {:id => 2, :title => 'resource 2'},
         {:id => 3, :title => 'resource 3'}
@@ -99,28 +90,13 @@ shared_examples_for 'an API object' do
     end
 
     it "should make a get request" do
-      stub_request(:get, /#{@base}/).to_return(json_response(true, []))
-      described_class.all(get_attributes).to_a
+      stub_request(:get, /#{@base}/).to_return(json_response(true, data))
+      iterator = described_class.all(get_attributes.merge(page: 1))
+      iterator.should be_instance_of(Enumerator)
+      collection = iterator.to_a
       a_request(:get, /#{@base}#{uri_paths[:create]}/).should have_been_made
-    end
-
-    it "should create a collection using the class" do
-      stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
-      collection = described_class.all(get_attributes)
-      collection.should be_instance_of(Enumerator)
-    end
-
-    it "should return instances of the class" do
-      stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
-      collection = described_class.all(get_attributes)
       collection.first.should be_instance_of(described_class)
-    end
-
-    it "should include all elements" do
-      stub_request(:get, /#{@base}/).to_return(json_response(true, @array))
-      collection = described_class.all(get_attributes).to_a
       collection.length.should == 3
     end
   end
-
 end

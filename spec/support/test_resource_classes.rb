@@ -7,11 +7,14 @@ module SurveyGizmoSpec
     attribute :test_id, Integer
 
     # routes
-    route '/test/:id', :get
-    route '/test/:test_id/resource', :create
-    route '/test/:test_id/resource/:id', [:update, :delete]
+    @route = {
+      get: '/test/:id',
+      create: '/test/:test_id/resource',
+      update: '/test/:test_id/resource/:id',
+      delete: '/test/:test_id/resource/:id'
+    }
 
-    def to_param_options
+    def route_params
       { id: id, test_id: test_id }
     end
   end

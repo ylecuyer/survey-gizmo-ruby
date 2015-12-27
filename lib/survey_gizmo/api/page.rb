@@ -1,3 +1,5 @@
+require 'survey_gizmo/api/question'
+
 module SurveyGizmo; module API
   # @see SurveyGizmo::Resource::ClassMethods
   class Page
@@ -9,20 +11,26 @@ module SurveyGizmo; module API
     attribute :properties,    Hash
     attribute :after,         Integer
     attribute :survey_id,     Integer
+    attribute :questions,     Array[Question]
 
-    # routing
-    route '/survey/:survey_id/surveypage', :create
-    route '/survey/:survey_id/surveypage/:id', [:get, :update, :delete]
+    @route = '/survey/:survey_id/surveypage'
 
     def survey
       @survey ||= Survey.first(id: survey_id)
     end
 
     def questions
-      @questions ||= Question.all(survey_id: survey_id, page_id: id, all_pages: true).to_a
+      # See note about broken subquestions in resource.rb
+      @questions.flat_map { |q| q.sub_question_skus }.each do |sku|
+        sku = sku[1] if sku.is_a?(Array)
+        next if @questions.find { |q| q.id == sku }
+        @questions << Question.first(survey_id: survey_id, id: sku)
+      end
+
+      @questions.each { |q| q.attributes = children_params }
     end
 
-    def to_param_options
+    def route_params
       { id: id, survey_id: survey_id }
     end
   end
