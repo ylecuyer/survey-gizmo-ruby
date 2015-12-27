@@ -15,17 +15,13 @@ module SurveyGizmo
 
     Pester.configure do |c|
       c.environments[:survey_gizmo_ruby] = {
-        max_attempts: configuration.retries + 1,
-        delay_interval: configuration.retry_interval,
+        max_attempts: 2,
+        delay_interval: 60,
         on_retry: Pester::Behaviors::Sleep::Constant,
         logger: configuration.logger
       }
 
-      if configuration.retry_everything
-        c.environments[:survey_gizmo_ruby].delete(:retry_error_classes) rescue nil
-      else
-        c.environments[:survey_gizmo_ruby][:retry_error_classes] = retryables
-      end
+      c.environments[:survey_gizmo_ruby][:retry_error_classes] = retryables
     end
   end
 
@@ -47,17 +43,11 @@ module SurveyGizmo
     attr_accessor :api_version
     attr_accessor :logger
     attr_accessor :results_per_page
-    attr_accessor :retries
-    attr_accessor :retry_interval
-    attr_accessor :retry_everything
 
     def initialize
       @api_url = DEFAULT_REST_API_URL
       @api_version = DEFAULT_API_VERSION
       @results_per_page = DEFAULT_RESULTS_PER_PAGE
-      @retries = 1
-      @retry_interval = 60
-      @retry_everything = false
       @logger = ::Logger.new(STDOUT)
       @api_debug = ENV['GIZMO_DEBUG'].to_s =~ /^(true|t|yes|y|1)$/i
     end
