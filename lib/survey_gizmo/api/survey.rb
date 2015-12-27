@@ -22,18 +22,23 @@ module SurveyGizmo; module API
     attribute :created_on,     DateTime
     attribute :modified_on,    DateTime
     attribute :copy,           Boolean
-    attribute :pages,          Array[Page]
+    # Unfortunately if pages is an attribute, then save and update requests will collide with the differing response
+    # types to Survey.all and Survey.first and cause an incorrect reload
+    # attribute :pages,          Array[Page]
 
     @route = '/survey'
 
     def pages
+      # SurveyGizmo sends down the page info to .first requests but NOT to .all requests, so we must load pages manually
+      # We should be able to just .reload this Survey BUT we can't make :pages a Virtus attribute without requiring a
+      # call to this method during Survey.save
       @pages ||= Page.all(children_params.merge(all_pages: true)).to_a
       @pages.each { |p| p.attributes = children_params }
     end
 
-    # Sub question handling is in resource.rb.  It should probably be here instead but if it gets moved here
-    # and people try to request all the questions for a specific page directly from a ::API::Question request,
-    # sub questions will not be included!  So I left it there for least astonishment.
+    # Sub question handling is in resource.rb and page.rb.  It should probably be here instead but if it gets moved
+    # here and people try to request all the questions for a specific page directly from a ::API::Question request or
+    # from Page.questions, sub questions will not be included!  So I left it there for least astonishment.
     def questions
       @questions ||= pages.map { |p| p.questions }.flatten
     end

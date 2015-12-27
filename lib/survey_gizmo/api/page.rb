@@ -20,8 +20,6 @@ module SurveyGizmo; module API
     end
 
     def questions
-      @questions ||= Question.all(children_params.merge(all_pages: true)).to_a
-
       # See note about broken subquestions in resource.rb
       @questions.flat_map { |q| q.sub_question_skus }.each do |sku|
         sku = sku[1] if sku.is_a?(Array)
