@@ -163,7 +163,7 @@ module SurveyGizmo
       attributes.reject { |k,v| v.blank? }
     end
 
-    # Attributes required for API calls
+    # Extract attributes required for API calls about this object
     def route_params
       params = {}
 

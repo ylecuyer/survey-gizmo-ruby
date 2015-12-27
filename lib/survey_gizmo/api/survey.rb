@@ -40,7 +40,7 @@ module SurveyGizmo; module API
     # here and people try to request all the questions for a specific page directly from a ::API::Question request or
     # from Page.questions, sub questions will not be included!  So I left it there for least astonishment.
     def questions
-      @questions ||= pages.map { |p| p.questions }.flatten
+      @questions ||= pages.flat_map { |p| p.questions }
     end
 
     def actual_questions
