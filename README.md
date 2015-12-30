@@ -61,10 +61,14 @@ end
 
 ### Retries
 
-[Pester](https://github.com/lumoslabs/pester) will be configured to handle 1 retry with a 60 second timeout upon encountering basic net timeouts and rate limit errors.  If you want to specify more retries, a longer backoff, new classes to retry on, or otherwise get fancy with the retry strategy, you can configured Pester directly.  SurveyGizmo API calls are executed in Pester's `survey_gizmo_ruby` environment, so anything you configure there will apply to all your requests. **Just take care that you add additional `Pester` configuration AFTER you configure this gem** (configuring this gem will reset the `:survey_gizmo_ruby` Pester environment).
+The [Pester](https://github.com/lumoslabs/pester) gem is used to manage retry strategies.  By default it will be configured to handle 1 retry with a 60 second timeout upon encountering basic net timeouts and rate limit errors, which is enough for most people's needs.
+
+If, however, you want to specify more retries, a longer backoff, new classes to retry on, or otherwise get fancy with the retry strategy, you can configured Pester directly.  SurveyGizmo API calls are executed in Pester's `survey_gizmo_ruby` environment, so anything you configure there will apply to all your requests.
+
+**Just take care that you add additional `Pester` configuration AFTER you configure this gem** (configuring this gem will reset the `:survey_gizmo_ruby` Pester environment).
 
 For example, to change the retry interval, max attempts, or exception classes to be retried:
-```ruby```
+```ruby
 Pester.configure do |config|
   # Retry 10 times
   config.environments[:survey_gizmo_ruby][:max_attempts] = 10
@@ -73,7 +77,9 @@ Pester.configure do |config|
   # Retry different exception classes
   config.environments[:survey_gizmo_ruby][:retry_error_classes] = [MyExceptionClass, MyOtherExceptionClass]
 end
+```
 
+```ruby
 # To set Pester to retry on ALL exception classes, do this (use with caution - this can include exceptions Rails likes to throw on SIGHUP)
 ```ruby
 Pester.configure do |config|
