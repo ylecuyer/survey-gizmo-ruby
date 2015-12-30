@@ -1,33 +1,45 @@
 module SurveyGizmo
   class << self
-    attr_accessor :configuration
-  end
+    attr_writer :configuration
 
-  def self.configure
-    self.configuration ||= Configuration.new
-    yield(configuration) if block_given?
-
-    retryables = [
-      Net::ReadTimeout,
-      Faraday::Error::TimeoutError,
-      SurveyGizmo::RateLimitExceededError
-    ]
-
-    Pester.configure do |c|
-      c.environments[:survey_gizmo_ruby] = {
-        max_attempts: 2,
-        delay_interval: 60,
-        on_retry: Pester::Behaviors::Sleep::Constant,
-        logger: configuration.logger
-      }
-
-      c.environments[:survey_gizmo_ruby][:retry_error_classes] = retryables
+    def configuration
+      fail 'Not configured!' unless @configuration
+      @configuration
     end
-  end
 
-  def self.reset!
-    self.configuration = Configuration.new
-    Connection.reset!
+    def configure
+      @configuration ||= Configuration.new
+      yield(configuration) if block_given?
+      configure_pester
+    end
+
+    def reset!
+      self.configuration = Configuration.new
+      configure_pester
+      Connection.reset!
+    end
+
+    private
+
+    def configure_pester
+      Pester.configure do |c|
+        c.environments[:survey_gizmo_ruby] = {
+          max_attempts: 2,
+          delay_interval: 60,
+          on_retry: Pester::Behaviors::Sleep::Constant,
+          logger: configuration.logger,
+          retry_error_classes: retryables
+        }
+      end
+    end
+
+    def retryables
+      [
+        Net::ReadTimeout,
+        Faraday::Error::TimeoutError,
+        SurveyGizmo::RateLimitExceededError
+      ]
+    end
   end
 
   class Configuration

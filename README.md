@@ -56,19 +56,28 @@ SurveyGizmo.configure do |config|
 
   # Optional - Defaults to 50, maximum 500. Setting too high may cause SurveyGizmo to start throwing timeouts.
   config.results_per_page = 100
-
-  # Optional - These configure the Pester gem to retry when SG suffers a timeout or the rate limit is exceeded.
-  # The default number of retries is 1, with a wait time of 60 seconds - enough time to recover from a rate limit error.
-  config.retries = 1
-  # retry_interval is in seconds.  Default is 60.
-  config.retry_interval = 60
-  # You can also instruct the gem to retry on ANY exception.  Defaults to false.  Use with caution.
-  config.retry_everything = true
 end
 ```
 
-If you want to get really fancy with retry strategies and which exceptions to retry on you can configure the [Pester gem](https://github.com/lumoslabs/pester) directly.  SurveyGizmo API calls execute in Pester's `survey_gizmo_ruby` environment, so anything you configure there will apply to your requests. Just take care that you add additional `Pester` configuration AFTER you configure this gem.
+[Pester](https://github.com/lumoslabs/pester) will be configured to handle 1 retry with a 60 second timeout upon encountering basic net timeouts and rate limit errors.  If you want to specify more retries, a longer backoff, new classes to retry on, or otherwise get fancy with the retry strategy, you can configured Pester directly.  SurveyGizmo API calls are executed in Pester's `survey_gizmo_ruby` environment, so anything you configure there will apply to all your requests. **Just take care that you add additional `Pester` configuration AFTER you configure this gem** (configuring this gem will reset the `:survey_gizmo_ruby` Pester environment).
 
+For example, to change the retry interval, max attempts, or exception classes to be retried:
+```ruby```
+Pester.configure do |config|
+  # Retry 10 times
+  config.environments[:survey_gizmo_ruby][:max_attempts] = 10
+  # Backoff for 2 minutes
+  config.environments[:survey_gizmo_ruby][:delay_interval] = 120
+  # Retry another exception class
+  config.environments[:survey_gizmo_ruby][:retry_error_classes] += [MyExceptionClass]
+end
+
+# To set Pester to retry on ALL exception classes, do this (use with caution - this can include exceptions Rails likes to throw on SIGHUP)
+```ruby
+Pester.configure do |config|
+  config.environments[:survey_gizmo_ruby][:retry_error_classes] = nil
+end
+```
 
 ## Usage
 

@@ -14,8 +14,6 @@ module SurveyGizmo
       private
 
       def connection
-        fail 'Not configured' unless SurveyGizmo.configuration
-
         options = {
           url: SurveyGizmo.configuration.api_url,
           params: { 'user:md5' => "#{SurveyGizmo.configuration.user}:#{Digest::MD5.hexdigest(SurveyGizmo.configuration.password)}" },
