@@ -114,31 +114,43 @@ describe 'Survey Gizmo Resource' do
       let(:question_id) { 23 }
       let(:body_data) do
         {
-          "id"=>question_id,
-          "title"=>{"English"=>"How likely are you to bang your head to Bohemian Rhapsody?"},
+          "id" => question_id,
+          "title" => {"English"=>"How likely are you to bang your head to Bohemian Rhapsody?"},
           "options"=>
              [
                {
-                 "id"=>10014,
-                 "title"=>{"English"=>"0 = Not at all likely"},
-                 "value"=>"0 = Not at all likely"
+                 "id" => 10014,
+                 "title" => {"English"=>"0 = Not at all likely"},
+                 "value" => "0 = Not at all likely"
                },
                {
-                 "id"=>10015,
-                 "title"=>{"English"=>"1"},
-                 "value"=>"1"
+                 "id" => 10015,
+                 "title" => {"English"=>"1"},
+                 "value" => "1"
                }
              ]
         }
       end
 
-      it 'correctly parses options out of question data' do
-        stub_request(:get, /#{@base}\/survey\/#{survey_id}\/surveyquestion\/#{question_id}/).to_return(json_response(true, body_data))
+      context 'option parsing' do
+        before do
+          stub_request(:get, /#{@base}\/survey\/#{survey_id}\/surveyquestion\/#{question_id}/).to_return(json_response(true, body_data))
+        end
 
-        question = described_class.first(survey_id: survey_id, id: question_id)
-        expect(question.options.all? { |o| o.question_id == question_id && o.survey_id == survey_id }).to be_true
-        expect(question.options.map { |o| o.id }).to eq([10014, 10015])
-        a_request(:get, /#{@base}\/.*surveyoption/).should_not have_been_made
+        it 'correctly parses options out of question data' do
+          question = described_class.first(survey_id: survey_id, id: question_id)
+          expect(question.options.all? { |o| o.question_id == question_id && o.survey_id == survey_id }).to be_true
+          expect(question.options.map { |o| o.id }).to eq([10014, 10015])
+          a_request(:get, /#{@base}\/.*surveyoption/).should_not have_been_made
+        end
+
+        it 'correctly parses sub question options' do
+          question = described_class.new(survey_id: survey_id, id: question_id + 1, parent_question_id: question_id)
+          expect(question.parent_question.id).to eq(described_class.new(body_data).id)
+          expect(question.options.all? { |o| o.question_id == question.id && o.survey_id == survey_id }).to be_true
+          expect(question.options.map { |o| o.id }).to eq([10014, 10015])
+          a_request(:get, /#{@base}\/survey\/#{survey_id}\/surveyquestion\/#{question_id}/).should have_been_made
+        end
       end
     end
 

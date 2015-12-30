@@ -24,14 +24,10 @@ module SurveyGizmo; module API
       @questions.flat_map { |q| q.sub_question_skus }.each do |sku|
         sku = sku[1] if sku.is_a?(Array)
         next if @questions.find { |q| q.id == sku }
-        @questions << Question.first(survey_id: survey_id, id: sku)
+        @questions << Question.first(children_params.merge(id: sku))
       end
 
       @questions.each { |q| q.attributes = children_params }
-    end
-
-    def route_params
-      { id: id, survey_id: survey_id }
     end
   end
 end; end
