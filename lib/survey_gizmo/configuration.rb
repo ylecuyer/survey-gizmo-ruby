@@ -1,37 +1,57 @@
 module SurveyGizmo
   class << self
-    attr_accessor :configuration
-  end
+    attr_writer :configuration
 
-  def self.configure
-    self.configuration ||= Configuration.new
-    yield(configuration) if block_given?
+    def configuration
+      fail 'Not configured!' unless @configuration
+      @configuration
+    end
 
-    retryables = [
-      Net::ReadTimeout,
-      Faraday::Error::TimeoutError,
-      SurveyGizmo::RateLimitExceededError
-    ]
+    def configure
+      @configuration ||= Configuration.new
+      yield(configuration) if block_given?
+      configure_pester
+    end
 
-    Pester.configure do |c|
-      c.environments[:survey_gizmo_ruby] = {
-        max_attempts: configuration.retries + 1,
-        delay_interval: configuration.retry_interval,
+    def reset!
+      self.configuration = Configuration.new
+      Pester.configure { |c| c.environments[:survey_gizmo_ruby] = nil }
+      configure_pester
+      Connection.reset!
+    end
+
+    private
+
+    def configure_pester
+      default_config = {
         on_retry: Pester::Behaviors::Sleep::Constant,
-        logger: configuration.logger
+        logger: configuration.logger,
+        max_attempts: 2,
+        delay_interval: 60,
+        retry_error_classes: retryables
       }
 
-      if configuration.retry_everything
-        c.environments[:survey_gizmo_ruby].delete(:retry_error_classes) rescue nil
-      else
-        c.environments[:survey_gizmo_ruby][:retry_error_classes] = retryables
+      Pester.configure do |c|
+        if c.environments[:survey_gizmo_ruby].nil?
+          c.environments[:survey_gizmo_ruby] = default_config
+        else
+          default_config.each { |k,v| c.environments[:survey_gizmo_ruby][k] ||= v unless k == :retry_error_classes }
+
+          # Don't set :retry_error_classes to something when user has configured nothing
+          if c.environments[:survey_gizmo_ruby][:retry_error_classes].nil? && !c.environments[:survey_gizmo_ruby].has_key?(:retry_error_classes)
+            c.environments[:survey_gizmo_ruby][:retry_error_classes] = retryables
+          end
+        end
       end
     end
-  end
 
-  def self.reset!
-    self.configuration = Configuration.new
-    Connection.reset!
+    def retryables
+      [
+        Net::ReadTimeout,
+        Faraday::Error::TimeoutError,
+        SurveyGizmo::RateLimitExceededError
+      ]
+    end
   end
 
   class Configuration
@@ -47,17 +67,11 @@ module SurveyGizmo
     attr_accessor :api_version
     attr_accessor :logger
     attr_accessor :results_per_page
-    attr_accessor :retries
-    attr_accessor :retry_interval
-    attr_accessor :retry_everything
 
     def initialize
       @api_url = DEFAULT_REST_API_URL
       @api_version = DEFAULT_API_VERSION
       @results_per_page = DEFAULT_RESULTS_PER_PAGE
-      @retries = 1
-      @retry_interval = 60
-      @retry_everything = false
       @logger = ::Logger.new(STDOUT)
       @api_debug = ENV['GIZMO_DEBUG'].to_s =~ /^(true|t|yes|y|1)$/i
     end
