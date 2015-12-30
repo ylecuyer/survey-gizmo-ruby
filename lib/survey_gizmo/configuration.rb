@@ -15,6 +15,7 @@ module SurveyGizmo
 
     def reset!
       self.configuration = Configuration.new
+      Pester.configure { |c| c.environments[:survey_gizmo_ruby] = nil }
       configure_pester
       Connection.reset!
     end
@@ -22,14 +23,26 @@ module SurveyGizmo
     private
 
     def configure_pester
+      default_config = {
+        on_retry: Pester::Behaviors::Sleep::Constant,
+        logger: configuration.logger,
+        max_attempts: 2,
+        delay_interval: 60,
+        retry_error_classes: retryables
+      }
+
       Pester.configure do |c|
-        c.environments[:survey_gizmo_ruby] = {
-          on_retry: Pester::Behaviors::Sleep::Constant,
-          logger: configuration.logger
-        }
-        c.environments[:survey_gizmo_ruby][:max_attempts] ||= 2
-        c.environments[:survey_gizmo_ruby][:delay_interval] ||= 60
-        c.environments[:survey_gizmo_ruby][:retry_error_classes] ||= retryables
+        if c.environments[:survey_gizmo_ruby].nil?
+          c.environments[:survey_gizmo_ruby] = default_config
+        else
+          c.environments[:survey_gizmo_ruby][:max_attempts] ||= default_config[:max_attempts]
+          c.environments[:survey_gizmo_ruby][:delay_interval] ||= default_config[:delay_interval]
+
+          # Don't set :retry_error_classes to something when user has configured nothing
+          if c.environments[:survey_gizmo_ruby][:retry_error_classes].nil? && !c.environments[:survey_gizmo_ruby].has_key?(:retry_error_classes)
+            c.environments[:survey_gizmo_ruby][:retry_error_classes] = retryables
+          end
+        end
       end
     end
 
