@@ -44,7 +44,7 @@ module SurveyGizmo; module API
     end
 
     def actual_questions
-      questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic)$/ }
+      questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic|media|script|javascript)$/ }
     end
 
     def responses(conditions = {})
