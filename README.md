@@ -194,14 +194,9 @@ class SomeObject
   @route = {
     get: '/something/weird/:id',
     update: '/something/weird/:id',
-    create: '/something'
+    create: '/something',
+    delete: /delete/something/:id'
   }
-
-  # this must be defined with the params that would be included in any route related
-  # to an instance of SomeObject
-  def to_param_options
-    { id: self.id }
-  end
 end
 ```
 
