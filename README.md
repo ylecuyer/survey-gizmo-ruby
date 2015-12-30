@@ -68,8 +68,8 @@ Pester.configure do |config|
   config.environments[:survey_gizmo_ruby][:max_attempts] = 10
   # Backoff for 2 minutes
   config.environments[:survey_gizmo_ruby][:delay_interval] = 120
-  # Retry another exception class
-  config.environments[:survey_gizmo_ruby][:retry_error_classes] += [MyExceptionClass]
+  # Retry different exception classes
+  config.environments[:survey_gizmo_ruby][:retry_error_classes] = [MyExceptionClass, MyOtherExceptionClass]
 end
 
 # To set Pester to retry on ALL exception classes, do this (use with caution - this can include exceptions Rails likes to throw on SIGHUP)
