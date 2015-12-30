@@ -65,10 +65,8 @@ The [Pester](https://github.com/lumoslabs/pester) gem is used to manage retry st
 
 If, however, you want to specify more retries, a longer backoff, new classes to retry on, or otherwise get fancy with the retry strategy, you can configured Pester directly.  SurveyGizmo API calls are executed in Pester's `survey_gizmo_ruby` environment, so anything you configure there will apply to all your requests.
 
-**Just take care that you add additional `Pester` configuration AFTER you configure this gem** (configuring this gem will reset the `:survey_gizmo_ruby` Pester environment).
-
-For example, to change the retry interval, max attempts, or exception classes to be retried:
 ```ruby
+# For example, to change the retry interval, max attempts, or exception classes to be retried:
 Pester.configure do |config|
   # Retry 10 times
   config.environments[:survey_gizmo_ruby][:max_attempts] = 10
@@ -77,10 +75,8 @@ Pester.configure do |config|
   # Retry different exception classes
   config.environments[:survey_gizmo_ruby][:retry_error_classes] = [MyExceptionClass, MyOtherExceptionClass]
 end
-```
 
-To set Pester to retry on ALL exception classes, do this (use with caution - this can include exceptions Rails likes to throw on SIGHUP)
-```ruby
+# To set Pester to retry on ALL exception classes, do this (use with caution! Can include exceptions Rails likes to throw on SIGHUP)
 Pester.configure do |config|
   config.environments[:survey_gizmo_ruby][:retry_error_classes] = nil
 end

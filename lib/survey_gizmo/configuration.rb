@@ -24,12 +24,12 @@ module SurveyGizmo
     def configure_pester
       Pester.configure do |c|
         c.environments[:survey_gizmo_ruby] = {
-          max_attempts: 2,
-          delay_interval: 60,
           on_retry: Pester::Behaviors::Sleep::Constant,
-          logger: configuration.logger,
-          retry_error_classes: retryables
+          logger: configuration.logger
         }
+        c.environments[:survey_gizmo_ruby][:max_attempts] ||= 2
+        c.environments[:survey_gizmo_ruby][:delay_interval] ||= 60
+        c.environments[:survey_gizmo_ruby][:retry_error_classes] ||= retryables
       end
     end
 
