@@ -79,8 +79,8 @@ Pester.configure do |config|
 end
 ```
 
+To set Pester to retry on ALL exception classes, do this (use with caution - this can include exceptions Rails likes to throw on SIGHUP)
 ```ruby
-# To set Pester to retry on ALL exception classes, do this (use with caution - this can include exceptions Rails likes to throw on SIGHUP)
 Pester.configure do |config|
   config.environments[:survey_gizmo_ruby][:retry_error_classes] = nil
 end
