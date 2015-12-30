@@ -35,8 +35,7 @@ module SurveyGizmo
         if c.environments[:survey_gizmo_ruby].nil?
           c.environments[:survey_gizmo_ruby] = default_config
         else
-          c.environments[:survey_gizmo_ruby][:max_attempts] ||= default_config[:max_attempts]
-          c.environments[:survey_gizmo_ruby][:delay_interval] ||= default_config[:delay_interval]
+          default_config.each { |k,v| c.environments[:survey_gizmo_ruby][k] ||= v unless k == :retry_error_classes }
 
           # Don't set :retry_error_classes to something when user has configured nothing
           if c.environments[:survey_gizmo_ruby][:retry_error_classes].nil? && !c.environments[:survey_gizmo_ruby].has_key?(:retry_error_classes)
