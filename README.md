@@ -188,14 +188,14 @@ class SomeObject
   attribute :created_on,  DateTime
 
   # define the paths used to retrieve/set info
-  # if the routing is such that :get, :create, and :update only append /:id to the main route, do this
+  # if the routing is such that :get, :update, and :delete only append /:id to the main route, do this
   @route = '/something'
-  # but if the class needs special routing, do this
+  # but if the class needs special routing, specify each method route with a hash:
   @route = {
-    get: '/something/weird/:id',
+    get: '/something/:id',
     update: '/something/weird/:id',
     create: '/something',
-    delete: /delete/something/:id'
+    delete: /something/delete/:id'
   }
 end
 ```
