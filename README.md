@@ -115,7 +115,7 @@ survey.belongs_to?('Development') # => true
 
 # Retrieve all questions for all pages of this survey
 questions = survey.questions
-# Strip out instruction, urlredirect, and logic "questions"
+# Strip out instruction, urlredirect, logic, media, and other non question "questions"
 questions = survey.actual_questions
 
 # Create a question for your survey.  The returned object will be given an :id parameter by SG.
