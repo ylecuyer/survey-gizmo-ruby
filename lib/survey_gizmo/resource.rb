@@ -34,7 +34,6 @@ module SurveyGizmo
       #
       # Properties from the conditions hash (e.g. survey_id) will be added to the returned objects
       def all(conditions = {})
-        puts "all called on #{name} with #{conditions}"
         fail ':all_pages and :page are mutually exclusive' if conditions[:page] && conditions[:all_pages]
         logger.warn('WARNING: Only retrieving first page of results!') if conditions[:page].nil? && conditions[:all_pages].nil?
 
@@ -76,13 +75,23 @@ module SurveyGizmo
         Connection.delete(create_route(:delete, conditions))
       end
 
-      private
+      # @route is either a hash to be used directly or a string from which standard routes will be built
+      def routes
+        fail "route not set in #{name}" unless @route
+
+        return @route if @route.is_a?(Hash)
+        routes = { create: @route }
+        [:get, :update, :delete].each { |k| routes[k] = @route + '/:id' }
+        routes
+      end
 
       # Replaces the :page_id, :survey_id, etc strings defined in each model's routes with the
       # values in the params hash
       def create_route(method, params)
+        fail "No route defined for #{method} on #{name}" unless routes[method]
+
         url_params = params.dup
-        rest_path = lookup_route_string(method).gsub(/:(\w+)/) do |m|
+        rest_path = routes[method].gsub(/:(\w+)/) do |m|
           fail SurveyGizmo::URLError, "Missing RESTful parameters in request: `#{m}`" unless url_params[$1.to_sym]
           url_params.delete($1.to_sym)
         end
@@ -90,13 +99,7 @@ module SurveyGizmo
         SurveyGizmo.configuration.api_version + rest_path + filters_to_query_string(url_params)
       end
 
-      def lookup_route_string(method)
-        return @route[method] if @route.is_a?(Hash)
-        route = [:get, :update, :delete].include?(method) ? @route + '/:id' : @route
-        fail "No route defined for #{method} on #{name}" unless route
-
-        route
-      end
+      private
 
       # Convert a [Hash] of params and internal surveygizmo style filters into a query string
       #
@@ -165,16 +168,14 @@ module SurveyGizmo
 
     # Extract attributes required for API calls about this object
     def route_params
-      params = {}
+      params = { id: id }
 
-      routes = self.class.route.is_a?(Hash) ? self.class.route.values : [self.class.route]
-      routes.each do |route|
+      self.class.routes.values.each do |route|
         route.gsub(/:(\w+)/) do |m|
           m = m.delete(':').to_sym
           params[m] = self.send(m)
         end
       end
-      params[:id] = id
 
       params
     end
@@ -187,7 +188,7 @@ module SurveyGizmo
     end
 
     def create_route(method)
-      self.class.send(:create_route, method, route_params)
+      self.class.create_route(method, route_params)
     end
   end
 end
