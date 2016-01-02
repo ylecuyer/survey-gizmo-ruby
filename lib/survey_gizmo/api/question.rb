@@ -32,14 +32,15 @@ module SurveyGizmo; module API
     end
 
     def options
-      return parent_question.options if parent_question
+      return parent_question.options.dup.each { |o| o.question_id = id } if parent_question
 
       @options ||= Option.all(children_params.merge(all_pages: true)).to_a
       @options.each { |o| o.attributes = children_params }
     end
 
     def parent_question
-      @parent_question ||= parent_question_id ? Question.first(survey_id: survey_id, id: parent_question_id) : nil
+      return nil unless parent_question_id
+      @parent_question ||= Question.first(survey_id: survey_id, id: parent_question_id)
     end
 
     def sub_questions
@@ -52,11 +53,6 @@ module SurveyGizmo; module API
         subquestion.parent_question_id = id
         subquestion
       end
-    end
-
-    # @see SurveyGizmo::Resource#route_params
-    def route_params
-      { id: id, survey_id: survey_id, page_id: page_id }
     end
   end
 end; end

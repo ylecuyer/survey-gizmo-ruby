@@ -14,10 +14,6 @@ module SurveyGizmo
       attribute :status,        String
 
       @route = '/accountteams'
-
-      def route_params
-        { id: id }
-      end
     end
   end
 end

@@ -21,9 +21,5 @@ module SurveyGizmo; module API
     attribute :datemodified,      DateTime
 
     @route = '/survey/:survey_id/surveycampaign/:campaign_id/emailmessage'
-
-    def route_params
-      { id: id, survey_id: survey_id, campaign_id: campaign_id }
-    end
   end
 end; end

@@ -48,9 +48,5 @@ module SurveyGizmo; module API
         end
       end.map { |k,v| Answer.new(children_params.merge(key: k, value: v, answer_text: v, submitted_at: submitted_at)) }
     end
-
-    def route_params
-      { id: id, survey_id: survey_id }
-    end
   end
 end; end

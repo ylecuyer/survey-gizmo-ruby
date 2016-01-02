@@ -40,11 +40,11 @@ module SurveyGizmo; module API
     # here and people try to request all the questions for a specific page directly from a ::API::Question request or
     # from Page.questions, sub questions will not be included!  So I left it there for least astonishment.
     def questions
-      @questions ||= pages.map { |p| p.questions }.flatten
+      @questions ||= pages.flat_map { |p| p.questions }
     end
 
     def actual_questions
-      questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic)$/ }
+      questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic|media|script|javascript)$/ }
     end
 
     def responses(conditions = {})
@@ -68,7 +68,7 @@ module SurveyGizmo; module API
     # As of 2015-12-18, when you request data on multiple surveys from /survey, the team variable comes
     # back as "0".  If you request one survey at a time from /survey/{id}, it is populated correctly.
     def teams
-      @individual_survey ||= Survey.first(route_params)
+      @individual_survey ||= self.reload
       @individual_survey.team
     end
 
@@ -82,10 +82,6 @@ module SurveyGizmo; module API
 
     def campaigns
       @campaigns ||= Campaign.all(children_params.merge(all_pages: true)).to_a
-    end
-
-    def route_params
-      { id: id }
     end
   end
 end; end
