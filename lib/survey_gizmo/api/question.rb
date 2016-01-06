@@ -43,12 +43,16 @@ module SurveyGizmo; module API
       @parent_question ||= Question.first(survey_id: survey_id, id: parent_question_id)
     end
 
+    def sub_question_skus
+      # As of 2015-12-23, the sub_question_skus attribute can either contain an array of integers if no shortname (alias)
+      # was set for any question, or an array of [String, Integer] with the String corresponding to the subquestion
+      # shortname and the integer corresponding to the subquestion id if at least one shortname was set.
+      @sub_question_skus.map { |sku| sku.is_a?(Array) ? sku[1] : sku }
+    end
+
     def sub_questions
       @sub_questions ||= sub_question_skus.map do |sku|
-        # As of 2015-12-23, the sub_question_skus attribute can either contain an array of integers if no shortname (alias)
-        # was set for any question, or an array of [String, Integer] with the String corresponding to the subquestion
-        # shortname and the integer corresponding to the subquestion id if at least one shortname was set.
-        sku = sku[1] if sku.is_a?(Array)
+        SurveyGizmo.configuration.logger.warn("Have to do individual load of sub question #{sku}...")
         subquestion = Question.first(survey_id: survey_id, id: sku)
         subquestion.parent_question_id = id
         subquestion

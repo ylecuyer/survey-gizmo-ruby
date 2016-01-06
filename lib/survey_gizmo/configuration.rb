@@ -72,7 +72,7 @@ module SurveyGizmo
       @api_url = DEFAULT_REST_API_URL
       @api_version = DEFAULT_API_VERSION
       @results_per_page = DEFAULT_RESULTS_PER_PAGE
-      @logger = ::Logger.new(STDOUT)
+      @logger = SurveyGizmo::Logger.new(STDOUT)
       @api_debug = ENV['GIZMO_DEBUG'].to_s =~ /^(true|t|yes|y|1)$/i
     end
   end

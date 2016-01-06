@@ -14,7 +14,7 @@ RSpec.configure do |config|
     SurveyGizmo.configure do |config|
       config.user = 'test@test.com'
       config.password = 'password'
-      config.logger.level = Logger::WARN
+      config.logger.level = Logger::FATAL
     end
 
     Pester.configure do |config|
