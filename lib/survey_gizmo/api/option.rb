@@ -1,4 +1,4 @@
-module SurveyGizmo; module API
+module SurveyGizmo::API
   # @see SurveyGizmo::Resource::ClassMethods
   class Option
     include SurveyGizmo::Resource
@@ -13,4 +13,4 @@ module SurveyGizmo; module API
 
     @route = '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption'
   end
-end; end
+end

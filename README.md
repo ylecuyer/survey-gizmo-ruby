@@ -76,7 +76,8 @@ Pester.configure do |config|
   config.environments[:survey_gizmo_ruby][:retry_error_classes] = [MyExceptionClass, MyOtherExceptionClass]
 end
 
-# To set Pester to retry on ALL exception classes, do this (use with caution! Can include exceptions Rails likes to throw on SIGHUP)
+# To set Pester to retry on ALL exception classes, do this:
+# (use with caution! Can include exceptions Rails likes to throw on SIGHUP)
 Pester.configure do |config|
   config.environments[:survey_gizmo_ruby][:retry_error_classes] = nil
 end
@@ -119,9 +120,9 @@ questions = survey.questions
 questions = survey.actual_questions
 
 # Create a question for your survey.  The returned object will be given an :id parameter by SG.
-question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do you like ruby?', type: 'checkbox')
+question = SurveyGizmo::API::Question.create(survey_id: survey.id, title: 'Do u ruby?', type: 'checkbox')
 # Update a question
-question.title = "Do you LOVE Ruby?"
+question.title = "Do u <3 Ruby?"
 question.save
 # Destroy a question
 question.destroy
@@ -129,8 +130,8 @@ question.destroy
 # Iterate over all your Responses
 survey.responses.each { |response| do_something_with(response) }
 # Use filters to limit results - this example will iterate over page 3 of completed, non test data
-# SurveyResponses submitted within the past 3 days for contact 999. It demonstrates how to use some of the gem's
-# built in filters/generators as well as how to construct a filter.
+# SurveyResponses submitted within the past 3 days for contact 999. It demonstrates how to use some of
+# the gem's built in filters/generators as well as how to construct a filter.
 # See: http://apihelp.surveygizmo.com/help/article/link/filters for more info on filters
 filters = [
   SurveyGizmo::API::Response::NO_TEST_DATA,
@@ -195,7 +196,7 @@ class SomeObject
     get: '/something/:id',
     update: '/something/weird/:id',
     create: '/something',
-    delete: /something/delete/:id'
+    delete: '/something/delete/:id'
   }
 end
 ```

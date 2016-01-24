@@ -1,4 +1,4 @@
-module SurveyGizmo
+module SurveyGizmo::API
   module API
     class Answer
       include Virtus.model
@@ -19,25 +19,24 @@ module SurveyGizmo
 
         case key
         when /\[question\((\d+)\),\s*option\((\d+|"\d+-other")\)\]/
-          @question_id, @option_id = $1, $2
+          self.question_id, self.option_id = $1, $2
 
-          if @option_id =~ /other/
-            @option_id.delete!('-other"')
+          if option_id =~ /-other/
+            option_id.delete!('-other"')
             self.other_text = value
           end
         when /\[question\((\d+)\),\s*question_pipe\("(.*)"\)\]/
-          @question_id = $1
-          @question_pipe = $2
+          self.question_id, self.question_pipe = $1, $2
         when /\[question\((\d+)\)\]/
-          @question_id = $1
+          self.question_id = $1
         else
           fail "Can't recognize pattern for #{attrs[:key]} => #{attrs[:value]} - you may have to parse your answers manually."
         end
 
-        self.question_id = @question_id.to_i
-        if @option_id
+        self.question_id = question_id.to_i
+        if option_id
           fail "Bad option_id #{option_id}!" if option_id.to_i == 0 && option_id != '0'
-          self.option_id = @option_id.to_i
+          self.option_id = option_id.to_i
         end
       end
 
