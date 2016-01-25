@@ -58,6 +58,7 @@ module SurveyGizmo
     DEFAULT_REST_API_URL = 'https://restapi.surveygizmo.com'
     DEFAULT_API_VERSION = 'v4'
     DEFAULT_RESULTS_PER_PAGE = 50
+    DEFAULT_TIMEOUT_SECONDS = 300
 
     attr_accessor :user
     attr_accessor :password
@@ -67,11 +68,13 @@ module SurveyGizmo
     attr_accessor :api_version
     attr_accessor :logger
     attr_accessor :results_per_page
+    attr_accessor :timeout_seconds
 
     def initialize
       @api_url = DEFAULT_REST_API_URL
       @api_version = DEFAULT_API_VERSION
       @results_per_page = DEFAULT_RESULTS_PER_PAGE
+      @timeout_seconds = DEFAULT_TIMEOUT_SECONDS
       @logger = SurveyGizmo::Logger.new(STDOUT)
       @api_debug = ENV['GIZMO_DEBUG'].to_s =~ /^(true|t|yes|y|1)$/i
     end
