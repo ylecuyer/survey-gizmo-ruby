@@ -11,7 +11,7 @@ Gem::Specification.new do |gem|
   gem.email = ['adrien.jarthon@dimelo.com']
   gem.description = 'Gem to use the SurveyGizmo.com REST API, v3+'
   gem.summary = 'Gem to use the SurveyGizmo.com REST API, v3+'
-  gem.homepage = 'http://github.com/RipTheJacker/survey-gizmo-ruby'
+  gem.homepage = 'http://github.com/jarthod/survey-gizmo-ruby'
   gem.licenses = ['MIT']
   gem.required_ruby_version = '>= 1.9'
 
