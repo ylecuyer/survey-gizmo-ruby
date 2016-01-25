@@ -1,5 +1,4 @@
-module SurveyGizmo; module API
-  # @see SurveyGizmo::Resource::ClassMethods
+module SurveyGizmo::API
   class Campaign
     include SurveyGizmo::Resource
 
@@ -29,4 +28,4 @@ module SurveyGizmo; module API
       Contact.all(conditions.merge(children_params).merge(all_pages: !conditions[:page]))
     end
   end
-end; end
+end

@@ -1,5 +1,4 @@
-module SurveyGizmo; module API
-  # @see SurveyGizmo::Resource::ClassMethods
+module SurveyGizmo::API
   class Response
     include SurveyGizmo::Resource
 
@@ -40,7 +39,8 @@ module SurveyGizmo; module API
       answers.select do |k,v|
         next false unless v.is_a?(FalseClass) || v.present?
 
-        # Strip out "Other" answers that don't actually have the "other" text.
+        # Strip out "Other" answers that don't actually have the "other" text (they come back as two responses - one
+        # for the "Other" option_id, and then a whole separate response for the text given as an "Other" response.
         if k =~ /\[question\((\d+)\),\s*option\((\d+)\)\]/
           !answers.keys.any? { |key| key =~ /\[question\((#{$1})\),\s*option\("(#{$2})-other"\)\]/ }
         else
@@ -49,4 +49,4 @@ module SurveyGizmo; module API
       end.map { |k,v| Answer.new(children_params.merge(key: k, value: v, answer_text: v, submitted_at: submitted_at)) }
     end
   end
-end; end
+end

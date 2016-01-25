@@ -1,7 +1,6 @@
 require 'survey_gizmo/api/option'
 
-module SurveyGizmo; module API
-  # @see SurveyGizmo::Resource::ClassMethods
+module SurveyGizmo::API
   class Question
     include SurveyGizmo::Resource
     include SurveyGizmo::MultilingualTitle
@@ -59,4 +58,4 @@ module SurveyGizmo; module API
       end
     end
   end
-end; end
+end

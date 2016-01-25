@@ -1,5 +1,4 @@
 module SurveyGizmo::API
-  # @see SurveyGizmo::Resource::ClassMethods
   class Option
     include SurveyGizmo::Resource
     include SurveyGizmo::MultilingualTitle

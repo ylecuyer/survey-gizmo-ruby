@@ -1,5 +1,4 @@
-module SurveyGizmo; module API
-  # @see SurveyGizmo::Resource::ClassMethods
+module SurveyGizmo::API
   class Contact
     include SurveyGizmo::Resource
 
@@ -38,4 +37,4 @@ module SurveyGizmo; module API
 
     @route = '/survey/:survey_id/surveycampaign/:campaign_id/contact'
   end
-end; end
+end
