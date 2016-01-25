@@ -2,8 +2,6 @@ require 'active_support/core_ext/module/delegation'
 
 module SurveyGizmo
   class Connection
-    TIMEOUT_SECONDS = 300
-
     class << self
       delegate :put, :get, :delete, :post, to: :connection
 
@@ -18,8 +16,8 @@ module SurveyGizmo
           url: SurveyGizmo.configuration.api_url,
           params: { 'user:md5' => "#{SurveyGizmo.configuration.user}:#{Digest::MD5.hexdigest(SurveyGizmo.configuration.password)}" },
           request: {
-            timeout: TIMEOUT_SECONDS,
-            open_timeout: TIMEOUT_SECONDS
+            timeout: SurveyGizmo.configuration.timeout_seconds,
+            open_timeout: SurveyGizmo.configuration.timeout_seconds
           }
         }
 

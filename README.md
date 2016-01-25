@@ -56,6 +56,9 @@ SurveyGizmo.configure do |config|
 
   # Optional - Defaults to 50, maximum 500. Setting too high may cause SurveyGizmo to start throwing timeouts.
   config.results_per_page = 100
+
+  # Optional - Defaults to 300 seconds
+  config.timeout_seconds = 600
 end
 ```
 
