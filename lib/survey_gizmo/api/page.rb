@@ -1,7 +1,6 @@
 require 'survey_gizmo/api/question'
 
-module SurveyGizmo; module API
-  # @see SurveyGizmo::Resource::ClassMethods
+module SurveyGizmo::API
   class Page
     include SurveyGizmo::Resource
     include SurveyGizmo::MultilingualTitle
@@ -33,4 +32,4 @@ module SurveyGizmo; module API
       @questions = with_subquestions.each { |q| q.attributes = children_params }
     end
   end
-end; end
+end
