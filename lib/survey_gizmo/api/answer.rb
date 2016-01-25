@@ -34,7 +34,7 @@ module SurveyGizmo::API
 
       self.question_id = question_id.to_i
       if option_id
-        fail "Bad option_id #{option_id}!" if option_id.to_i == 0 && option_id != '0'
+        fail "Bad option_id #{option_id} (class: #{option_id.class}) for #{attrs}!" if option_id.to_i == 0 && option_id != '0' && option_id != 0
         self.option_id = option_id.to_i
       end
     end
@@ -50,7 +50,7 @@ module SurveyGizmo::API
         survey_id: survey_id,
         other_text: other_text,
         answer_text: option_id || other_text ? nil : answer_text
-      }.reject { |k,v| v.nil? }
+      }.reject { |k, v| v.nil? }
     end
   end
 end
