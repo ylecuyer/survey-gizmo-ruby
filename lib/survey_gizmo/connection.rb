@@ -26,7 +26,7 @@ module SurveyGizmo
 
           connection.response :parse_survey_gizmo_data
           connection.response :pester_survey_gizmo
-          connection.response :logger, @logger, bodies: true if SurveyGizmo.configuration.api_debug
+          connection.response :logger, SurveyGizmo.configuration.logger, bodies: true if SurveyGizmo.configuration.api_debug
           connection.response :json, content_type: /\bjson$/
 
           connection.adapter Faraday.default_adapter
