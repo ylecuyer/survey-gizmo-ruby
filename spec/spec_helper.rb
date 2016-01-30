@@ -19,6 +19,7 @@ RSpec.configure do |config|
 
     Pester.configure do |config|
       config.environments[:survey_gizmo_ruby][:logger] = ::Logger.new(nil)
+      config.environments[:survey_gizmo_ruby][:max_attempts] = 1
     end
 
     @base = "#{SurveyGizmo.configuration.api_url}/#{SurveyGizmo.configuration.api_version}"
