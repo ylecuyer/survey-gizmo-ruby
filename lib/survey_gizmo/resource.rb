@@ -35,10 +35,10 @@ module SurveyGizmo
       # Properties from the conditions hash (e.g. survey_id) will be added to the returned objects
       def all(conditions = {})
         fail ':all_pages and :page are mutually exclusive' if conditions[:page] && conditions[:all_pages]
-        logger.warn('WARNING: Only retrieving first page of results!') if conditions[:page].nil? && conditions[:all_pages].nil?
+        logger.warn('WARNING: Only retrieving first page of results!') unless conditions[:page] || conditions[:all_pages]
 
         all_pages = conditions.delete(:all_pages)
-        conditions[:resultsperpage] = SurveyGizmo.configuration.results_per_page unless conditions[:resultsperpage]
+        conditions[:resultsperpage] ||= SurveyGizmo.configuration.results_per_page
 
         Enumerator.new do |yielder|
           response = nil
@@ -78,8 +78,8 @@ module SurveyGizmo
       # @route is either a hash to be used directly or a string from which standard routes will be built
       def routes
         fail "route not set in #{name}" unless @route
-
         return @route if @route.is_a?(Hash)
+
         routes = { create: @route }
         [:get, :update, :delete].each { |k| routes[k] = @route + '/:id' }
         routes
@@ -130,7 +130,7 @@ module SurveyGizmo
 
     ### BELOW HERE ARE INSTANCE METHODS ###
 
-    # If we have an id, it's an update, because we already know the surveygizmo assigned id
+    # If we have an id, it's an update because we already know the surveygizmo assigned id
     # Returns itself if successfully saved, but with attributes (like id) added by SurveyGizmo
     def save
       method, path = id ? [:post, :update] : [:put, :create]
