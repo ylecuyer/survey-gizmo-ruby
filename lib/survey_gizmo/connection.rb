@@ -14,7 +14,10 @@ module SurveyGizmo
       def connection
         options = {
           url: SurveyGizmo.configuration.api_url,
-          params: { 'user:md5' => "#{SurveyGizmo.configuration.user}:#{Digest::MD5.hexdigest(SurveyGizmo.configuration.password)}" },
+          params: {
+            api_token: SurveyGizmo.configuration.api_token,
+            api_token_secret: SurveyGizmo.configuration.api_token_secret
+          },
           request: {
             timeout: SurveyGizmo.configuration.timeout_seconds,
             open_timeout: SurveyGizmo.configuration.timeout_seconds

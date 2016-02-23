@@ -60,8 +60,8 @@ module SurveyGizmo
     DEFAULT_RESULTS_PER_PAGE = 50
     DEFAULT_TIMEOUT_SECONDS = 300
 
-    attr_accessor :user
-    attr_accessor :password
+    attr_accessor :api_token
+    attr_accessor :api_token_secret
 
     attr_accessor :api_debug
     attr_accessor :api_url
