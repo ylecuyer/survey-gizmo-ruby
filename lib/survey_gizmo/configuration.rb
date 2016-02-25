@@ -71,6 +71,9 @@ module SurveyGizmo
     attr_accessor :timeout_seconds
 
     def initialize
+      @api_token = ENV['SURVEYGIZMO_API_TOKEN'] || nil
+      @api_token_secret = ENV['SURVEYGIZMO_API_TOKEN_SECRET'] || nil
+
       @api_url = DEFAULT_REST_API_URL
       @api_version = DEFAULT_API_VERSION
       @results_per_page = DEFAULT_RESULTS_PER_PAGE
