@@ -8,6 +8,9 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ## Versions
 
+### Major Changes in 6.x
+* **BREAKING CHANGE**: SurveyGizmo changed the authentication so you need to configure `api_token` and `api_token_secret` instead of user and password.
+
 ### Major Changes in 5.x
 
 * **BREAKING CHANGE**: `.all` returns an `Enumerator`, not an `Array`. This will break your code if you are using the return value of `.all` without iterating over it.
@@ -47,8 +50,8 @@ require 'survey-gizmo-ruby'
 
 # Configure your credentials
 SurveyGizmo.configure do |config|
-  config.user = 'still_tippin@woodgraingrip.com'
-  config.password = 'it_takes_grindin_to_be_a_king'
+  config.api_token = 'still_tippin_woodgraingrip'
+  config.api_token_secret = 'it_takes_grindin_to_be_a_king'
 
   # Optional - Defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
   config.api_version = 'v4'
@@ -63,6 +66,23 @@ SurveyGizmo.configure do |config|
   config.timeout_seconds = 600
 end
 ```
+
+`api_token` and `api_token_secret` can be read from environment variables, in which case you would set them like this:
+
+```bash
+$ export SURVEYGIZMO_API_TOKEN=till_tippin_woodgraingrip
+$ export SURVEYGIZMO_API_TOKEN_SECRET=it_takes_grindin_to_be_a_king
+$ bundle exec ruby whatever
+```
+
+And then your ruby code just has to make sure to call
+
+```ruby
+SurveyGizmo.configure
+````
+
+once at some point.
+
 
 ### Retries
 

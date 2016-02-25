@@ -12,8 +12,8 @@ RSpec.configure do |config|
 
   config.before(:each) do
     SurveyGizmo.configure do |config|
-      config.user = 'test@test.com'
-      config.password = 'password'
+      config.api_token = 'king_of_the_whirled'
+      config.api_token_secret = 'dreamword'
       config.logger.level = Logger::FATAL
     end
 
