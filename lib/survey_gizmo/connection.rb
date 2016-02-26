@@ -24,7 +24,20 @@ module SurveyGizmo
           }
         }
 
+        retry_options = {
+          max: SurveyGizmo.configuration.retry_attempts,
+          interval: SurveyGizmo.configuration.retry_interval,
+          exceptions: [
+            BadResponseError,
+            RateLimitExceededError,
+            Errno::ETIMEDOUT,
+            'Timeout::Error',
+            'Error::TimeoutError'
+          ]
+        }
+
         @connection ||= Faraday.new(options) do |connection|
+          connection.request :retry, retry_options
           connection.request :url_encoded
 
           connection.response :parse_survey_gizmo_data
