@@ -14,12 +14,11 @@ RSpec.configure do |config|
     SurveyGizmo.configure do |config|
       config.api_token = 'king_of_the_whirled'
       config.api_token_secret = 'dreamword'
-      config.logger.level = Logger::FATAL
-    end
 
-    Pester.configure do |config|
-      config.environments[:survey_gizmo_ruby][:logger] = ::Logger.new(nil)
-      config.environments[:survey_gizmo_ruby][:max_attempts] = 1
+      config.retry_attempts = 0
+      config.retry_interval = 0
+
+      config.logger.level = Logger::FATAL
     end
 
     @base = "#{SurveyGizmo.configuration.api_url}/#{SurveyGizmo.configuration.api_version}"
