@@ -28,9 +28,11 @@ module SurveyGizmo
           max: SurveyGizmo.configuration.retry_attempts,
           interval: SurveyGizmo.configuration.retry_interval,
           exceptions: [
-            BadResponseError,
-            RateLimitExceededError,
+            SurveyGizmo::BadResponseError,
+            SurveyGizmo::RateLimitExceededError,
             Errno::ETIMEDOUT,
+            Net::ReadTimeout,
+            Faraday::Error::TimeoutError,
             'Timeout::Error',
             'Error::TimeoutError'
           ]
