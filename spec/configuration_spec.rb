@@ -4,8 +4,8 @@ require 'survey_gizmo/configuration'
 describe SurveyGizmo::Configuration do
   before(:each) do
     SurveyGizmo.configure do |config|
-      config.user = 'test@test.com'
-      config.password = 'password'
+      config.api_token = 'token'
+      config.api_token_secret = 'doken'
     end
   end
 
@@ -15,10 +15,10 @@ describe SurveyGizmo::Configuration do
 
   it 'should allow changing user and pass' do
     SurveyGizmo.configure do |config|
-      config.user = 'slimthug'
-      config.password = 'fourfourz'
+      config.api_token = 'slimthug'
+      config.api_token_secret = 'fourfourz'
     end
 
-    expect(SurveyGizmo::Connection.send(:connection).params).to eq({ 'user:md5'=>'slimthug:836fd7e2961a094c01cb7ba78bac6a06' })
+    expect(SurveyGizmo::Connection.send(:connection).params).to eq('api_token' => 'slimthug', 'api_token_secret' => 'fourfourz')
   end
 end

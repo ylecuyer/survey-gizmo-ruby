@@ -11,7 +11,6 @@ require 'digest/md5'
 require 'faraday'
 require 'faraday_middleware'
 require 'logger'
-require 'pester'
 require 'virtus'
 
 path = File.join(File.expand_path(File.dirname(__FILE__)), 'survey_gizmo')

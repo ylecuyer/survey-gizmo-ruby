@@ -14,14 +14,32 @@ module SurveyGizmo
       def connection
         options = {
           url: SurveyGizmo.configuration.api_url,
-          params: { 'user:md5' => "#{SurveyGizmo.configuration.user}:#{Digest::MD5.hexdigest(SurveyGizmo.configuration.password)}" },
+          params: {
+            api_token: SurveyGizmo.configuration.api_token,
+            api_token_secret: SurveyGizmo.configuration.api_token_secret
+          },
           request: {
             timeout: SurveyGizmo.configuration.timeout_seconds,
             open_timeout: SurveyGizmo.configuration.timeout_seconds
           }
         }
 
+        retry_options = {
+          max: SurveyGizmo.configuration.retry_attempts,
+          interval: SurveyGizmo.configuration.retry_interval,
+          exceptions: [
+            SurveyGizmo::BadResponseError,
+            SurveyGizmo::RateLimitExceededError,
+            Errno::ETIMEDOUT,
+            Net::ReadTimeout,
+            Faraday::Error::TimeoutError,
+            'Timeout::Error',
+            'Error::TimeoutError'
+          ]
+        }
+
         @connection ||= Faraday.new(options) do |connection|
+          connection.request :retry, retry_options
           connection.request :url_encoded
 
           connection.response :parse_survey_gizmo_data

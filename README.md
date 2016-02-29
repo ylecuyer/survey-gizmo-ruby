@@ -8,6 +8,10 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ## Versions
 
+### Major Changes in 6.x
+* **BREAKING CHANGE**: SurveyGizmo changed the authentication so you need to configure `api_token` and `api_token_secret` instead of user and password.
+* **BREAKING CHANGE**: Pester has been removed as the retry source in favor of Faraday's `Request::Retry`.
+
 ### Major Changes in 5.x
 
 * **BREAKING CHANGE**: `.all` returns an `Enumerator`, not an `Array`. This will break your code if you are using the return value of `.all` without iterating over it.
@@ -47,8 +51,8 @@ require 'survey-gizmo-ruby'
 
 # Configure your credentials
 SurveyGizmo.configure do |config|
-  config.user = 'still_tippin@woodgraingrip.com'
-  config.password = 'it_takes_grindin_to_be_a_king'
+  config.api_token = 'still_tippin_woodgraingrip'
+  config.api_token_secret = 'it_takes_grindin_to_be_a_king'
 
   # Optional - Defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
   config.api_version = 'v4'
@@ -61,32 +65,28 @@ SurveyGizmo.configure do |config|
 
   # Optional - Defaults to 300 seconds
   config.timeout_seconds = 600
+
+  # Optional - Defaults to 3 retries with a 60 second delay interval
+  config.retry_attempts = 3
+  config.retry_interval = 60
 end
 ```
 
-### Retries
+`api_token` and `api_token_secret` can be read from environment variables, in which case you would set them like this:
 
-The [Pester](https://github.com/lumoslabs/pester) gem is used to manage retry strategies.  By default it will be configured to handle 1 retry with a 60 second timeout upon encountering basic net timeouts and rate limit errors, which is enough for most people's needs.
+```bash
+$ export SURVEYGIZMO_API_TOKEN=till_tippin_woodgraingrip
+$ export SURVEYGIZMO_API_TOKEN_SECRET=it_takes_grindin_to_be_a_king
+$ bundle exec ruby whatever
+```
 
-If, however, you want to specify more retries, a longer backoff, new classes to retry on, or otherwise get fancy with the retry strategy, you can configured Pester directly.  SurveyGizmo API calls are executed in Pester's `survey_gizmo_ruby` environment, so anything you configure there will apply to all your requests.
+And then your ruby code just has to make sure to call
 
 ```ruby
-# For example, to change the retry interval, max attempts, or exception classes to be retried:
-Pester.configure do |config|
-  # Retry 10 times
-  config.environments[:survey_gizmo_ruby][:max_attempts] = 10
-  # Backoff for 2 minutes
-  config.environments[:survey_gizmo_ruby][:delay_interval] = 120
-  # Retry different exception classes
-  config.environments[:survey_gizmo_ruby][:retry_error_classes] = [MyExceptionClass, MyOtherExceptionClass]
-end
+SurveyGizmo.configure
+````
 
-# To set Pester to retry on ALL exception classes, do this:
-# (use with caution! Can include exceptions Rails likes to throw on SIGHUP)
-Pester.configure do |config|
-  config.environments[:survey_gizmo_ruby][:retry_error_classes] = nil
-end
-```
+once at some point.
 
 ## Usage
 
