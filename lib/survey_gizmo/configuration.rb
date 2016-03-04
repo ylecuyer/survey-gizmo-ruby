@@ -8,12 +8,12 @@ module SurveyGizmo
     end
 
     def configure
-      @configuration ||= Configuration.new
-      yield(configuration) if block_given?
+      reset!
+      yield(@configuration) if block_given?
     end
 
     def reset!
-      self.configuration = Configuration.new
+      @configuration = Configuration.new
       Connection.reset!
     end
   end
