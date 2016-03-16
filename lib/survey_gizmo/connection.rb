@@ -3,7 +3,21 @@ require 'active_support/core_ext/module/delegation'
 module SurveyGizmo
   class Connection
     class << self
-      delegate :put, :get, :delete, :post, to: :connection
+      def get(route)
+        Retriable.retriable(retriable_args) { connection.get(route) }
+      end
+
+      def post(route, params)
+        Retriable.retriable(retriable_args) { connection.post(route, params) }
+      end
+
+      def put(route, params)
+        Retriable.retriable(retriable_args) { connection.put(route, params) }
+      end
+
+      def delete(route)
+        Retriable.retriable(retriable_args) { connection.delete(route) }
+      end
 
       def reset!
         @connection = nil
@@ -24,31 +38,29 @@ module SurveyGizmo
           }
         }
 
-        retry_options = {
-          max: SurveyGizmo.configuration.retry_attempts,
-          interval: SurveyGizmo.configuration.retry_interval,
-          exceptions: [
-            SurveyGizmo::BadResponseError,
-            SurveyGizmo::RateLimitExceededError,
-            Errno::ETIMEDOUT,
-            Net::ReadTimeout,
-            Faraday::Error::TimeoutError,
-            'Timeout::Error',
-            'Error::TimeoutError'
-          ]
-        }
-
         @connection ||= Faraday.new(options) do |connection|
-          connection.request :retry, retry_options
           connection.request :url_encoded
 
           connection.response :parse_survey_gizmo_data
-          connection.response :pester_survey_gizmo
-          connection.response :logger, SurveyGizmo.configuration.logger, bodies: true if SurveyGizmo.configuration.api_debug
           connection.response :json, content_type: /\bjson$/
+          connection.response :logger, SurveyGizmo.configuration.logger, bodies: true if SurveyGizmo.configuration.api_debug
 
           connection.adapter Faraday.default_adapter
         end
+      end
+
+      def retriable_args
+        {
+          base_interval: SurveyGizmo.configuration.retry_interval,
+          tries:         SurveyGizmo.configuration.retry_attempts + 1,
+          on: [
+            BadResponseError,
+            RateLimitExceededError,
+            Errno::ETIMEDOUT,
+            Net::ReadTimeout,
+            Faraday::Error::TimeoutError,
+          ]
+        }
       end
     end
   end
