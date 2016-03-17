@@ -14,6 +14,9 @@ describe SurveyGizmo::Configuration do
   end
 
   it 'should allow changing user and pass' do
+    # preload connection to verify that memoization is purged
+    SurveyGizmo::Connection.send(:connection)
+
     SurveyGizmo.configure do |config|
       config.api_token = 'slimthug'
       config.api_token_secret = 'fourfourz'
