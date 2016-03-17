@@ -26,7 +26,7 @@ module SurveyGizmo
       private
 
       def connection
-        options = {
+        faraday_options = {
           url: SurveyGizmo.configuration.api_url,
           params: {
             api_token: SurveyGizmo.configuration.api_token,
@@ -38,7 +38,7 @@ module SurveyGizmo
           }
         }
 
-        @connection ||= Faraday.new(options) do |connection|
+        @connection ||= Faraday.new(faraday_options) do |connection|
           connection.request :url_encoded
 
           connection.response :parse_survey_gizmo_data

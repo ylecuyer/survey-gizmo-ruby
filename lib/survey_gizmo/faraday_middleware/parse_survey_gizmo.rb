@@ -7,8 +7,20 @@ module SurveyGizmo
   class ParseSurveyGizmo < FaradayMiddleware::ResponseMiddleware
     Faraday::Response.register_middleware(parse_survey_gizmo_data: self)
 
-    PAGINATION_FIELDS = ['total_count', 'page', 'total_pages', 'results_per_page']
-    TIME_FIELDS = ['datesubmitted', 'created_on', 'modified_on', 'datecreated', 'datemodified']
+    PAGINATION_FIELDS = [
+      'page',
+      'results_per_page',
+      'total_count',
+      'total_pages'
+    ]
+
+    TIME_FIELDS = [
+      'created_on',
+      'datecreated',
+      'datemodified',
+      'datesubmitted',
+      'modified_on'
+    ]
 
     def call(environment)
       @app.call(environment).on_complete do |response|
