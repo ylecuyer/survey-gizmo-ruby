@@ -20,7 +20,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'awesome_print', '~> 1'
   gem.add_dependency 'faraday', '>= 0.9.1', '~> 0.9'
   gem.add_dependency 'faraday_middleware', '~> 0.9'
-  gem.add_dependency 'retriable', '~> 2'
+  gem.add_dependency 'retriable', '~> 1.4'
   gem.add_dependency 'i18n'
   gem.add_dependency 'virtus', '>= 1.0.0'
 
