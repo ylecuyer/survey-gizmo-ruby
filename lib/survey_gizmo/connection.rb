@@ -51,11 +51,11 @@ module SurveyGizmo
 
       def retriable_args
         {
-          base_interval: SurveyGizmo.configuration.retry_interval,
+          interval: SurveyGizmo.configuration.retry_interval,
           tries:         SurveyGizmo.configuration.retry_attempts + 1,
           on: [
-            BadResponseError,
-            RateLimitExceededError,
+            SurveyGizmo::BadResponseError,
+            SurveyGizmo::RateLimitExceededError,
             Errno::ETIMEDOUT,
             Net::ReadTimeout,
             Faraday::Error::TimeoutError,
