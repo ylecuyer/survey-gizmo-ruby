@@ -1,14 +1,35 @@
 require 'faraday_middleware/response_middleware'
 
 module SurveyGizmo
+  class RateLimitExceededError < RuntimeError; end
+  class BadResponseError < RuntimeError; end
+
   class ParseSurveyGizmo < FaradayMiddleware::ResponseMiddleware
     Faraday::Response.register_middleware(parse_survey_gizmo_data: self)
 
-    PAGINATION_FIELDS = ['total_count', 'page', 'total_pages', 'results_per_page']
-    TIME_FIELDS = ['datesubmitted', 'created_on', 'modified_on', 'datecreated', 'datemodified']
+    PAGINATION_FIELDS = [
+      'page',
+      'results_per_page',
+      'total_count',
+      'total_pages'
+    ]
 
-    def parse_response?(env)
-      true
+    TIME_FIELDS = [
+      'created_on',
+      'datecreated',
+      'datemodified',
+      'datesubmitted',
+      'modified_on'
+    ]
+
+    def call(environment)
+      @app.call(environment).on_complete do |response|
+        fail RateLimitExceededError if response.status == 429
+        fail BadResponseError, "Bad response code #{response.status} in #{response.inspect}" unless response.status == 200
+        fail BadResponseError, response.body['message'] unless response.body['result_ok'] && response.body['result_ok'].to_s =~ /^true$/i
+
+        process_response(response)
+      end
     end
 
     define_parser do |body|
