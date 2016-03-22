@@ -39,10 +39,10 @@ module SurveyGizmo
 
       # Handle really crappy [] notation in SG API, so far just in SurveyResponse
       Array.wrap(body['data']).compact.each do |datum|
-        # SurveyGizmo returns date information in EST but does not provide time zone information.
-        # See https://surveygizmov4.helpgizmo.com/help/article/link/date-and-time-submitted
+        # SurveyGizmo returns date information in GMT -4 but does not provide time zone information.
+        # See https://apihelp.surveygizmo.com/help/article/link/surveyresponse-returned-fields#examplereturns
         TIME_FIELDS.each do |time_key|
-          datum[time_key] = datum[time_key] + ' EST' unless datum[time_key].blank?
+          datum[time_key] = datum[time_key] + ' -0400' unless datum[time_key].blank?
         end
 
         datum.keys.grep(/^\[/).each do |key|

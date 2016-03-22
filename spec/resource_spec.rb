@@ -221,7 +221,7 @@ describe 'Survey Gizmo Resource' do
 
   describe SurveyGizmo::API::Response do
     let(:create_attributes) { {:survey_id => 1234, :datesubmitted => "2015-04-15 05:46:30" } }
-    let(:create_attributes_to_compare) { create_attributes.merge(:datesubmitted => Time.parse("2015-04-15 05:46:30 EST")) }
+    let(:create_attributes_to_compare) { create_attributes.merge(:datesubmitted => Time.parse("2015-04-15 05:46:30 -0400")) }
     let(:get_attributes)    { create_attributes.merge(:id => 1) }
     let(:get_attributes_to_compare)    { create_attributes_to_compare.merge(:id => 1) }
     let(:update_attributes) { {:survey_id => 1234, :title => 'Updated'} }
