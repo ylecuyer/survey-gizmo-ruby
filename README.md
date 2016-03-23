@@ -10,7 +10,7 @@ Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
 ### Major Changes in 6.x
 * **BREAKING CHANGE**: SurveyGizmo changed the authentication so you need to configure `api_token` and `api_token_secret` instead of user and password.
-* **BREAKING CHANGE**: Pester has been removed as the retry source in favor of Faraday's `Request::Retry`.
+* **BREAKING CHANGE**: Pester has been removed as the retry source in favor of `Retriable`.
 
 ### Major Changes in 5.x
 
