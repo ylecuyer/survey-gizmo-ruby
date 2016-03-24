@@ -235,6 +235,14 @@ describe 'Survey Gizmo Resource' do
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
 
+    context 'during EST' do
+      let(:create_attributes) { {:survey_id => 1234, :datesubmitted => "2015-01-15 05:46:30" } }
+      let(:create_attributes_to_compare) { create_attributes.merge(:datesubmitted => Time.parse("2015-01-15 05:46:30 -0500")) }
+
+      it_should_behave_like 'an API object'
+      it_should_behave_like 'an object with errors'
+    end
+
     context 'answers' do
       let(:survey_id) { 6 }
       let(:response_id) { 7 }
