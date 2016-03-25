@@ -25,6 +25,7 @@ module SurveyGizmo
     DEFAULT_TIMEOUT_SECONDS = 300
     DEFAULT_RETRIES = 3
     DEFAULT_RETRY_INTERVAL = 60
+    SURVEYGIZMO_TIME_ZONE = 'Eastern Time (US & Canada)'
 
     attr_accessor :api_token
     attr_accessor :api_token_secret
