@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/jarthod/survey-gizmo-ruby.svg?branch=master)](https://travis-ci.org/jarthod/survey-gizmo-ruby)
 
-Integrate with the [Survey Gizmo API](http://apisurveygizmo.helpgizmo.com/help) using an ActiveModel style interface.
+Integrate with the [Survey Gizmo API](https://apihelp.surveygizmo.com/help) using an ActiveModel style interface.
 
 Currently supports SurveyGizmo API **v4** (default) and **v3**.
 
