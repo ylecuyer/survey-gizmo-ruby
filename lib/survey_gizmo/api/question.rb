@@ -51,7 +51,7 @@ module SurveyGizmo::API
 
     def sub_questions
       @sub_questions ||= sub_question_skus.map do |sku|
-        SurveyGizmo.configuration.logger.warn("Have to do individual load of sub question #{sku}...")
+        SurveyGizmo.configuration.logger.debug("Have to do individual load of sub question #{sku}...")
         subquestion = Question.first(survey_id: survey_id, id: sku)
         subquestion.parent_question_id = id
         subquestion
