@@ -42,7 +42,7 @@ module SurveyGizmo
         # SurveyGizmo returns date information using US/Eastern timezone but does not provide time zone information.
         # See https://apihelp.surveygizmo.com/help/article/link/surveyresponse-returned-fields#examplereturns
         TIME_FIELDS.each do |time_key|
-          datum[time_key] = ActiveSupport::TimeZone.new(SurveyGizmo::Configuration::SURVEYGIZMO_TIME_ZONE).parse(datum[time_key]) unless datum[time_key].blank?
+          datum[time_key] = ActiveSupport::TimeZone.new(SurveyGizmo.configuration.api_locale).parse(datum[time_key]) unless datum[time_key].blank?
         end
 
         datum.keys.grep(/^\[/).each do |key|

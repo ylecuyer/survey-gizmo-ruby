@@ -11,6 +11,7 @@ require 'digest/md5'
 require 'faraday'
 require 'faraday_middleware'
 require 'logger'
+require 'net/http'
 require 'retriable'
 require 'virtus'
 

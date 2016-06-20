@@ -24,4 +24,40 @@ describe SurveyGizmo::Configuration do
 
     expect(SurveyGizmo::Connection.send(:connection).params).to eq('api_token' => 'slimthug', 'api_token_secret' => 'fourfourz')
   end
+
+  describe '#api=' do
+    it 'should set US API by default' do
+      SurveyGizmo.configure
+      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
+      expect(SurveyGizmo.configuration.api_locale).to eq('Eastern Time (US & Canada)')
+    end
+
+    it 'should set US API with :us symbol specified' do
+      SurveyGizmo.configure do |config|
+        config.api = :us
+      end
+
+      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
+      expect(SurveyGizmo.configuration.api_locale).to eq('Eastern Time (US & Canada)')
+    end
+
+    it 'should set EU API with :eu symbol specified' do
+      SurveyGizmo.configure do |config|
+        config.api = :eu
+      end
+
+      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.eu')
+      expect(SurveyGizmo.configuration.api_locale).to eq('Berlin')
+    end
+
+    it 'should fail with a unknown server' do
+      expect {
+        SurveyGizmo.configure do |config|
+          config.api = :cz
+        end
+      }.to raise_error
+    end
+
+  end
+
 end
