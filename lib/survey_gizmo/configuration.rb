@@ -24,7 +24,7 @@ module SurveyGizmo
     DEFAULT_TIMEOUT_SECONDS = 300
     DEFAULT_RETRIES = 3
     DEFAULT_RETRY_INTERVAL = 60
-    DEFAULT_API = :us
+    DEFAULT_REGION = :us
 
     SURVEY_GIZMO_APIS = {
       us: {
@@ -62,18 +62,18 @@ module SurveyGizmo
       @timeout_seconds = DEFAULT_TIMEOUT_SECONDS
       @retry_attempts = DEFAULT_RETRIES
       @retry_interval = DEFAULT_RETRY_INTERVAL
-      self.api = DEFAULT_API
+      self.region = DEFAULT_REGION
 
       @logger = SurveyGizmo::Logger.new(STDOUT)
       @api_debug = ENV['GIZMO_DEBUG'].to_s =~ /^(true|t|yes|y|1)$/i
     end
 
-    def api=(location)
-      api_infos = SURVEY_GIZMO_APIS[location]
-      fail 'Unknown server!' unless api_infos
+    def region=(region)
+      region_infos = SURVEY_GIZMO_APIS[region]
+      fail 'Unknown server!' unless region_infos
 
-      @api_url = api_infos[:url]
-      @api_locale = api_infos[:locale]
+      @api_url = region_infos[:url]
+      @api_locale = region_infos[:locale]
     end
   end
 
