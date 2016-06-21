@@ -42,7 +42,7 @@ module SurveyGizmo
 
     attr_accessor :api_debug
     attr_accessor :api_url
-    attr_accessor :api_locale
+    attr_accessor :api_time_zone
     attr_accessor :api_version
     attr_accessor :logger
     attr_accessor :results_per_page
@@ -70,10 +70,10 @@ module SurveyGizmo
 
     def region=(region)
       region_infos = SURVEY_GIZMO_APIS[region]
-      fail 'Unknown server!' unless region_infos
+      ArgumentError.new("Unknown region: #{region}") unless region_infos
 
       @api_url = region_infos[:url]
-      @api_locale = region_infos[:locale]
+      @api_time_zone = region_infos[:locale]
     end
   end
 

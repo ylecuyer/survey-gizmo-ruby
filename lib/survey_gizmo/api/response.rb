@@ -10,7 +10,7 @@ module SurveyGizmo::API
       {
         field: 'datesubmitted',
         operator: '>=',
-        value: time.in_time_zone(SurveyGizmo.configuration.api_locale).strftime('%Y-%m-%d %H:%M:%S')
+        value: time.in_time_zone(SurveyGizmo.configuration.api_time_zone).strftime('%Y-%m-%d %H:%M:%S')
       }
     end
 

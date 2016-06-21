@@ -29,7 +29,7 @@ describe SurveyGizmo::Configuration do
     it 'should set US region by default' do
       SurveyGizmo.configure
       expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
-      expect(SurveyGizmo.configuration.api_locale).to eq('Eastern Time (US & Canada)')
+      expect(SurveyGizmo.configuration.api_time_zone).to eq('Eastern Time (US & Canada)')
     end
 
     it 'should set US region with :us symbol specified' do
@@ -38,7 +38,7 @@ describe SurveyGizmo::Configuration do
       end
 
       expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
-      expect(SurveyGizmo.configuration.api_locale).to eq('Eastern Time (US & Canada)')
+      expect(SurveyGizmo.configuration.api_time_zone).to eq('Eastern Time (US & Canada)')
     end
 
     it 'should set EU region with :eu symbol specified' do
@@ -47,7 +47,7 @@ describe SurveyGizmo::Configuration do
       end
 
       expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.eu')
-      expect(SurveyGizmo.configuration.api_locale).to eq('Berlin')
+      expect(SurveyGizmo.configuration.api_time_zone).to eq('Berlin')
     end
 
     it 'should fail with an unavailable region' do
