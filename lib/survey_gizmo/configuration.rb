@@ -26,7 +26,7 @@ module SurveyGizmo
     DEFAULT_RETRY_INTERVAL = 60
     DEFAULT_REGION = :us
 
-    SURVEY_GIZMO_APIS = {
+    REGION_INFO = {
       us: {
         url: 'https://restapi.surveygizmo.com',
         locale: 'Eastern Time (US & Canada)'
@@ -69,7 +69,7 @@ module SurveyGizmo
     end
 
     def region=(region)
-      region_infos = SURVEY_GIZMO_APIS[region]
+      region_infos = REGION_INFO[region]
       ArgumentError.new("Unknown region: #{region}") unless region_infos
 
       @api_url = region_infos[:url]

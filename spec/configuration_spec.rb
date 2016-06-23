@@ -25,7 +25,7 @@ describe SurveyGizmo::Configuration do
     expect(SurveyGizmo::Connection.send(:connection).params).to eq('api_token' => 'slimthug', 'api_token_secret' => 'fourfourz')
   end
 
-  describe '#api=' do
+  describe '#region=' do
     it 'should set US region by default' do
       SurveyGizmo.configure
       expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
@@ -59,5 +59,4 @@ describe SurveyGizmo::Configuration do
     end
 
   end
-
 end
