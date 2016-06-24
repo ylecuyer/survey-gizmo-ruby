@@ -29,8 +29,8 @@ SurveyGizmo.configure do |config|
   # Optional - Defaults to v4, but you can probably set to v3 safely if you suspect a bug in v4
   config.api_version = 'v4'
 
-  # Optional - Set if you need to hit a different base URL (e.g. the .eu domain)
-  config.api_url = 'https://restapi.surveygizmo.eu'
+  # Optional - Set if you need to hit a different region (e.g. the .eu domain)
+  config.region = :eu
 
   # Optional - Defaults to 50, maximum 500. Setting too high may cause SurveyGizmo to start throwing timeouts.
   config.results_per_page = 100
