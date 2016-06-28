@@ -42,7 +42,7 @@ module SurveyGizmo::API
         # Strip out "Other" answers that don't actually have the "other" text (they come back as two responses - one
         # for the "Other" option_id, and then a whole separate response for the text given as an "Other" response.
         if k =~ /\[question\((\d+)\),\s*option\((\d+)\)\]/
-          !answers.keys.any? { |key| key =~ /\[question\((#{$1})\),\s*option\("(#{$2})-other"\)\]/ }
+          !answers.keys.any? { |key| key =~ /\[question\((#{$1})\),\s*option\(\\\"(#{$2})-other\\\"\)\]/ }
         else
           true
         end
