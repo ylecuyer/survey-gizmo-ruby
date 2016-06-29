@@ -3,7 +3,8 @@
 ## Major Changes in 6.x
 * **BREAKING CHANGE**: SurveyGizmo changed the authentication so you need to configure `api_token` and `api_token_secret` instead of user and password.
 * **BREAKING CHANGE**: Pester has been removed as the retry source in favor of `Retriable`.
-* FEATURE: `Configuration#region` will configure the region to use the corresponding api and time zone.
+* FEATURE: `Configuration#region` will configure the region to use the corresponding api and time zone. (#74)
+* Bugfix: fix escaping to resolve duplicate option issue (#75)
 
 ## Major Changes in 5.x
 
