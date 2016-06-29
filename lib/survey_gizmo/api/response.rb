@@ -10,7 +10,7 @@ module SurveyGizmo::API
       {
         field: 'datesubmitted',
         operator: '>=',
-        value: time.in_time_zone(SurveyGizmo::Configuration::SURVEYGIZMO_TIME_ZONE).strftime('%Y-%m-%d %H:%M:%S')
+        value: time.in_time_zone(SurveyGizmo.configuration.api_time_zone).strftime('%Y-%m-%d %H:%M:%S')
       }
     end
 
@@ -42,7 +42,7 @@ module SurveyGizmo::API
         # Strip out "Other" answers that don't actually have the "other" text (they come back as two responses - one
         # for the "Other" option_id, and then a whole separate response for the text given as an "Other" response.
         if k =~ /\[question\((\d+)\),\s*option\((\d+)\)\]/
-          !answers.keys.any? { |key| key =~ /\[question\((#{$1})\),\s*option\("(#{$2})-other"\)\]/ }
+          !answers.keys.any? { |key| key =~ /\[question\((#{$1})\),\s*option\(\\\"(#{$2})-other\\\"\)\]/ }
         else
           true
         end
