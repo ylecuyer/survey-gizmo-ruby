@@ -249,7 +249,7 @@ describe 'Survey Gizmo Resource' do
       let(:timestamp) { '2015-01-02'.to_time(:utc) }
       let(:answers) do
         {
-          "[question(3), option(\\\"10021-other\\\")]" => "Some other text field answer",
+          "[question(3), option(\"10021-other\")]" => "Some other text field answer",
           "[question(3), option(10021)]" => "Other (required)",
           "[question(5)]" => "VERY important",
           "[question(6)]" => nil,

@@ -17,11 +17,11 @@ module SurveyGizmo::API
       self.attributes = attrs
 
       case key
-      when /\[question\((\d+)\),\s*option\((\d+|\\\"\d+-other\\\")\)\]/
+      when /\[question\((\d+)\),\s*option\((\d+|"\d+-other")\)\]/
         self.question_id, self.option_id = $1, $2
 
-        if option_id =~ /\\\"(\d+)-other\\\"/
-          option_id = $1
+        if option_id =~ /-other/
+          option_id.delete!('-other"')
           self.other_text = value
         end
       when /\[question\((\d+)\),\s*question_pipe\("(.*)"\)\]/
