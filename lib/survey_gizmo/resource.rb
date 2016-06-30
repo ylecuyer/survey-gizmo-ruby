@@ -64,6 +64,7 @@ module SurveyGizmo
       def first(conditions = {})
         data = Connection.get(create_route(:get, conditions)).body['data']
         data = {} if data.empty?
+        data = data[0] if data.is_a?(Array) && data.present?
         new(conditions.merge(data))
       end
 
