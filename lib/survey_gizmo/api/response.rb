@@ -36,7 +36,7 @@ module SurveyGizmo::API
     end
 
     def parsed_answers
-      filtered_answers = answers.select do |k,v|
+      filtered_answers = answers.select do |k, v|
         next false unless v.is_a?(FalseClass) || v.present?
 
         # Strip out "Other" answers that don't actually have the "other" text (they come back as two responses - one
@@ -47,7 +47,10 @@ module SurveyGizmo::API
           true
         end
       end
-      filtered_answers.map { |k,v| Answer.new(children_params.merge(key: k, value: v, answer_text: v, submitted_at: submitted_at)) }
+
+      filtered_answers.map do |k, v|
+        Answer.new(children_params.merge(key: k, value: v, answer_text: v, submitted_at: submitted_at))
+      end
     end
   end
 end
