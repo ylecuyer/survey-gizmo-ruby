@@ -163,7 +163,7 @@ module SurveyGizmo
     private
 
     def attributes_without_blanks
-      attributes.reject { |k,v| v.blank? }
+      attributes.reject { |k, v| v.blank? }
     end
 
     # Extract attributes required for API calls about this object
@@ -184,7 +184,7 @@ module SurveyGizmo
     # Also used for loading member objects, e.g. loading Options for a given Question.
     def children_params
       klass_id = self.class.name.split('::').last.downcase + '_id'
-      route_params.merge(klass_id.to_sym => id).reject { |k,v| k == :id }
+      route_params.merge(klass_id.to_sym => id).reject { |k, v| k == :id }
     end
 
     def create_route(method)
