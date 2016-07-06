@@ -43,6 +43,8 @@ module SurveyGizmo::API
         # for the "Other" option_id, and then a whole separate response for the text given as an "Other" response.
         if /\[question\((?<question_id>\d+)\),\s*option\((?<option_id>\d+)\)\]/ =~ k
           !answers.keys.any? { |key| key =~ /\[question\((#{question_id})\),\s*option\("(#{option_id})-other"\)\]/ }
+        elsif /\[question\((?<question_id>\d+)\)\]/ =~ k
+          !answers.keys.any? { |key| key =~ /\[question\((#{question_id})\),\s*option\("\d+-other"\)\]/ }
         else
           true
         end
