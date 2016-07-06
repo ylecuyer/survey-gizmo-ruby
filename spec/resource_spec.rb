@@ -249,7 +249,7 @@ describe 'Survey Gizmo Resource' do
       let(:timestamp) { '2015-01-02'.to_time(:utc) }
       let(:answers) do
         {
-          "[question(3), option(\"10021-other\")]" => "Some other text field answer",
+          '[question(3), option("10021-other")]' => 'Some other text field answer',
           "[question(3), option(10021)]" => "Other (required)",
           "[question(5)]" => "VERY important",
           "[question(6)]" => nil,
@@ -257,7 +257,9 @@ describe 'Survey Gizmo Resource' do
           "[question(8)]" => false,
           "[question(9), option(10002)]" => '16',
           "[question(10), question_pipe(\"Que aplicación\")]" => "5 = Extremely important",
-          "[question(11), option(10001)]" => ""
+          # Sometimes surveygizmo only includes the option with the "other" answer.  =(
+          '[question(11)]' => 'Other - Please explain',
+          '[question(11), option("10017-other")]' => 'I understood...'
         }
       end
 
@@ -277,7 +279,8 @@ describe 'Survey Gizmo Resource' do
           { survey_id: 1, question_id: 5, answer_text: "VERY important" },
           { survey_id: 1, question_id: 8, answer_text: 'false' },
           { survey_id: 1, question_id: 9, option_id: 10002 },
-          { survey_id: 1, question_id: 10, question_pipe: "Que aplicación", answer_text: "5 = Extremely important" }
+          { survey_id: 1, question_id: 10, question_pipe: 'Que aplicación', answer_text: '5 = Extremely important' },
+          { survey_id: 1, question_id: 11, option_id: 10017, other_text: "I understood..." }
         ])
       end
     end
