@@ -58,6 +58,7 @@ module SurveyGizmo
             SurveyGizmo::RateLimitExceededError,
             Errno::ETIMEDOUT,
             Net::ReadTimeout,
+            Faraday::Error::ParsingError,
             Faraday::Error::TimeoutError
           ]
         }
