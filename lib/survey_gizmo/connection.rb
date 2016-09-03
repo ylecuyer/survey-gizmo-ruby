@@ -54,12 +54,11 @@ module SurveyGizmo
           interval: SurveyGizmo.configuration.retry_interval,
           tries: SurveyGizmo.configuration.retry_attempts + 1,
           on: [
-            SurveyGizmo::BadResponseError,
-            SurveyGizmo::RateLimitExceededError,
             Errno::ETIMEDOUT,
-            Net::ReadTimeout,
-            Faraday::Error::ParsingError,
-            Faraday::Error::TimeoutError
+            Faraday::Error::ClientError,
+            Net::ReadTimeout
+            SurveyGizmo::BadResponseError,
+            SurveyGizmo::RateLimitExceededError
           ]
         }
       end
