@@ -35,7 +35,7 @@ module SurveyGizmo
       # Properties from the conditions hash (e.g. survey_id) will be added to the returned objects
       def all(conditions = {})
         fail ':all_pages and :page are mutually exclusive' if conditions[:page] && conditions[:all_pages]
-        logger.warn('WARNING: Only retrieving first page of results!') unless conditions[:page] || conditions[:all_pages]
+        logger.warn('Only retrieving first page of results!') unless conditions[:page] || conditions[:all_pages]
 
         all_pages = conditions.delete(:all_pages)
         conditions[:resultsperpage] ||= SurveyGizmo.configuration.results_per_page
@@ -44,7 +44,7 @@ module SurveyGizmo
           response = nil
 
           while !response || (all_pages && response['page'] < response['total_pages'])
-            conditions[:page] = response ? response['page'] + 1 : conditions.fetch(:page, 1) 
+            conditions[:page] = response ? response['page'] + 1 : conditions.fetch(:page, 1)
             logger.debug("Fetching #{name} page #{conditions} - #{conditions[:page]}#{response ? "/#{response['total_pages']}" : ''}...")
             response = Connection.get(create_route(:create, conditions)).body
             collection = response['data'].map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }

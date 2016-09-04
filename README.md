@@ -68,7 +68,7 @@ once at some point.
 
 `SurveyGizmo::API::Klass.all` returns an `Enumerator` you can use to loop through your results/questions/surveys etc.  It will actually iterate through ALL your results (pagination will be handled for you) if you pass `all_pages: true`.
 
-Because `.all` returns an `Enumerator`, you have to call `.to_a` or some other enumerable method to trigger actual API data retrieval.
+Because `.all` returns an `Enumerator`, you have to call `.each` or `.to_a` or some other enumerable method to trigger actual API data retrieval.
 ```ruby
 SurveyGizmo::API::Survey.all(all_pages: true)      # => #<Enumerator: #<Enumerator::Generator>:each>
 SurveyGizmo::API::Survey.all(all_pages: true).to_a # => [Survey, Survey, Survey, ...]
