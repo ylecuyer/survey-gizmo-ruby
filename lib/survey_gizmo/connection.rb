@@ -54,13 +54,15 @@ module SurveyGizmo
           interval: SurveyGizmo.configuration.retry_interval,
           tries: SurveyGizmo.configuration.retry_attempts + 1,
           on: [
-            SurveyGizmo::BadResponseError,
-            SurveyGizmo::RateLimitExceededError,
             Errno::ETIMEDOUT,
+            Faraday::Error::ClientError,
             Net::ReadTimeout,
-            Faraday::Error::ParsingError,
-            Faraday::Error::TimeoutError
-          ]
+            SurveyGizmo::BadResponseError,
+            SurveyGizmo::RateLimitExceededError
+          ],
+          on_retry: Proc.new do |exception, tries|
+            SurveyGizmo.configuration.logger.warn("Retrying after #{exception.class}: #{tries} attempts.")
+          end
         }
       end
     end

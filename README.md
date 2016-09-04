@@ -58,7 +58,7 @@ And then your ruby code just has to make sure to call
 SurveyGizmo.configure
 ````
 
-once at some point.
+once at some point to load the tokens out of the `ENV` and into the configuration.
 
 ## Usage
 
@@ -68,7 +68,7 @@ once at some point.
 
 `SurveyGizmo::API::Klass.all` returns an `Enumerator` you can use to loop through your results/questions/surveys etc.  It will actually iterate through ALL your results (pagination will be handled for you) if you pass `all_pages: true`.
 
-Because `.all` returns an `Enumerator`, you have to call `.to_a` or some other enumerable method to trigger actual API data retrieval.
+Because `.all` returns an `Enumerator`, you have to call `.each` or `.to_a` or some other enumerable method to trigger actual API data retrieval.
 ```ruby
 SurveyGizmo::API::Survey.all(all_pages: true)      # => #<Enumerator: #<Enumerator::Generator>:each>
 SurveyGizmo::API::Survey.all(all_pages: true).to_a # => [Survey, Survey, Survey, ...]
@@ -107,8 +107,9 @@ question.destroy
 # Iterate over all your Responses
 survey.responses.each { |response| do_something_with(response) }
 # Use filters to limit results - this example will iterate over page 3 of completed, non test data
-# SurveyResponses submitted within the past 3 days for contact 999. It demonstrates how to use some of
-# the gem's built in filters/generators as well as how to construct a filter.
+# SurveyResponses submitted within the past 3 days for contact 999. The example `filters` array
+# demonstrates how to use some of the gem's built in filters/generators as well as how to construct
+# an ad hoc filter hash.
 # See: http://apihelp.surveygizmo.com/help/article/link/filters for more info on filters
 filters = [
   SurveyGizmo::API::Response::NO_TEST_DATA,
