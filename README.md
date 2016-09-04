@@ -58,7 +58,7 @@ And then your ruby code just has to make sure to call
 SurveyGizmo.configure
 ````
 
-once at some point.
+once at some point to load the tokens out of the `ENV` and into the configuration.
 
 ## Usage
 
@@ -107,8 +107,9 @@ question.destroy
 # Iterate over all your Responses
 survey.responses.each { |response| do_something_with(response) }
 # Use filters to limit results - this example will iterate over page 3 of completed, non test data
-# SurveyResponses submitted within the past 3 days for contact 999. It demonstrates how to use some of
-# the gem's built in filters/generators as well as how to construct a filter.
+# SurveyResponses submitted within the past 3 days for contact 999. The example `filters` array
+# demonstrates how to use some of the gem's built in filters/generators as well as how to construct
+# an ad hoc filter hash.
 # See: http://apihelp.surveygizmo.com/help/article/link/filters for more info on filters
 filters = [
   SurveyGizmo::API::Response::NO_TEST_DATA,

@@ -45,6 +45,8 @@ module SurveyGizmo
 
           while !response || (all_pages && response['page'] < response['total_pages'])
             conditions[:page] = response ? response['page'] + 1 : conditions.fetch(:page, 1)
+
+            start_fetch_time = Time.now
             logger.debug("Fetching #{name} page #{conditions} - #{conditions[:page]}#{response ? "/#{response['total_pages']}" : ''}...")
             response = Connection.get(create_route(:create, conditions)).body
             collection = response['data'].map { |datum| datum.is_a?(Hash) ? new(conditions.merge(datum)) : datum }
@@ -55,6 +57,7 @@ module SurveyGizmo
               collection += collection.flat_map { |question| question.sub_questions }
             end
 
+            logger.debug("  Fetched #{conditions[:resultsperpage]} of #{name} in #{(Time.now - start_fetch_time).to_i}s...")
             collection.each { |e| yielder.yield(e) }
           end
         end
