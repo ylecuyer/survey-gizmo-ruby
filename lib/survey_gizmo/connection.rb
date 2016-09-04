@@ -59,7 +59,10 @@ module SurveyGizmo
             Net::ReadTimeout,
             SurveyGizmo::BadResponseError,
             SurveyGizmo::RateLimitExceededError
-          ]
+          ],
+          on_retry: Proc.new do |exception, tries|
+            SurveyGizmo.configuration.logger.warn("Retrying after #{exception.class}: #{tries} attempts.")
+          end
         }
       end
     end
