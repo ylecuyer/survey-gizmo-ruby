@@ -51,7 +51,7 @@ module SurveyGizmo
 
       def retriable_args
         {
-          interval: SurveyGizmo.configuration.retry_interval,
+          base_interval: SurveyGizmo.configuration.retry_interval,
           tries: SurveyGizmo.configuration.retry_attempts + 1,
           on: [
             Errno::ETIMEDOUT,
