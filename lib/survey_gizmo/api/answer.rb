@@ -24,7 +24,7 @@ module SurveyGizmo::API
           option_id.delete!('-other"')
           self.other_text = value
         end
-      when /\[question\((\d+)\),\s*question_pipe\("(.*)"\)\]/
+      when /\[question\((\d+)\),\s*question_pipe\("?([^"]*)"?\)\]/
         self.question_id, self.question_pipe = $1, $2
       when /\[question\((\d+)\)\]/
         self.question_id = $1
