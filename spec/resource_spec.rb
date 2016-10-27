@@ -282,7 +282,7 @@ describe 'Survey Gizmo Resource' do
           { survey_id: 1, question_id: 9, option_id: 10002 },
           { survey_id: 1, question_id: 10, question_pipe: 'Que aplicación', answer_text: '5 = Extremely important' },
           { survey_id: 1, question_id: 11, question_pipe: '10527', answer_text: 'This product was too expensive' },
-          { survey_id: 1, question_id: 12, option_id: 10017, other_text: "I understood..." }
+          { survey_id: 1, question_id: 12, option_id: 10017, other_text: 'I understood...' }
         ])
       end
     end
