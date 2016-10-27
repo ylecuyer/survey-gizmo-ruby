@@ -1,5 +1,8 @@
 # Versions
 
+## 6.2.10
+* Fix question pipe parsing when there's an integer without quotes instead of a quoted string
+
 ## Major Changes in 6.x
 * **BREAKING CHANGE**: SurveyGizmo changed the authentication so you need to configure `api_token` and `api_token_secret` instead of user and password.
 * **BREAKING CHANGE**: Pester has been removed as the retry source in favor of `Retriable`.
