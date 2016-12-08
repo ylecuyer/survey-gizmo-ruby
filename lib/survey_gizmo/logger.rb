@@ -9,21 +9,23 @@ module SurveyGizmo
       message.gsub!(
         /#{Regexp.quote(api_token)}/,
         '<SG_API_KEY>'
-      )
+      ) if api_token
+
       message.gsub!(
         /#{Regexp.quote(api_token_secret)}/,
         '<SG_API_SECRET>'
-      )
+      ) if api_token_secret
 
       # in case the tokens are percent encoded according to CGI query spec
       message.gsub!(
         /#{Regexp.quote(CGI.escape(api_token))}/,
         '<SG_API_KEY>'
-      )
+      ) if api_token
+
       message.gsub!(
         /#{Regexp.quote(CGI.escape(api_token_secret))}/,
         '<SG_API_SECRET>'
-      )
+      ) if api_token_secret
 
       "#{timestamp.strftime('%Y-%m-%d %H:%M:%S')} #{severity} #{message}\n"
     end
