@@ -1,5 +1,8 @@
 # Versions
 
+## 6.2.11
+* Bugfix: Mask CGI escaped (percent encoded) api tokens in logs
+
 ## 6.2.10
 * Fix question pipe parsing when there's an integer without quotes instead of a quoted string (#87)
 
