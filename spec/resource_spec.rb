@@ -22,15 +22,15 @@ describe 'Survey Gizmo Resource' do
     it '#reload' do
       stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
       obj = described_class.new(get_attributes.merge(update_attributes))
-      obj.attributes.reject { |k, v| v.blank? }.should == get_attributes.merge(update_attributes)
+      expect(obj.attributes.reject { |k, v| v.blank? }).to eq(get_attributes.merge(update_attributes))
       obj.reload
-      obj.attributes.reject { |k, v| v.blank? }.should == get_attributes
+      expect(obj.attributes.reject { |k, v| v.blank? }).to eq(get_attributes)
     end
 
     it 'should raise an error if params are missing' do
-      lambda {
+      expect(lambda {
         SurveyGizmoSpec::ResourceTest.destroy(test_id: 5)
-      }.should raise_error(SurveyGizmo::URLError, 'Missing RESTful parameters in request: `:id`')
+      }).to raise_error(SurveyGizmo::URLError, 'Missing RESTful parameters in request: `:id`')
     end
 
     it_should_behave_like 'an API object'
@@ -73,8 +73,8 @@ describe 'Survey Gizmo Resource' do
       stub_request(:get, /#{@base}\/survey\/1\/surveyresponse/).to_return(json_response(true, []))
 
       survey = described_class.new(id: 1)
-      expect(survey.server_has_new_results_since?(Time.now)).to be_false
-      a_request(:get, /#{@base}\/survey\/1\/surveyresponse/).should have_been_made
+      expect(survey.server_has_new_results_since?(Time.now)).to be_falsey
+      expect(a_request(:get, /#{@base}\/survey\/1\/surveyresponse/)).to have_been_made
     end
   end
 
@@ -100,13 +100,13 @@ describe 'Survey Gizmo Resource' do
     end
 
     it 'should handle the _subtype key' do
-      described_class.new(:_subtype => 'radio').type.should == 'radio'
+      expect(described_class.new(:_subtype => 'radio').type).to eq('radio')
     end
 
     it 'should find the survey' do
       stub_request(:get, /#{@base}\/survey\/1234/).to_return(json_response(true, get_attributes))
       described_class.new(base_params).survey
-      a_request(:get, /#{@base}\/survey\/1234/).should have_been_made
+      expect(a_request(:get, /#{@base}\/survey\/1234/)).to have_been_made
     end
 
     context 'options' do
@@ -139,17 +139,17 @@ describe 'Survey Gizmo Resource' do
 
         it 'correctly parses options out of question data' do
           question = described_class.first(survey_id: survey_id, id: question_id)
-          expect(question.options.all? { |o| o.question_id == question_id && o.survey_id == survey_id }).to be_true
+          expect(question.options.all? { |o| o.question_id == question_id && o.survey_id == survey_id }).to be_truthy
           expect(question.options.map { |o| o.id }).to eq([10014, 10015])
-          a_request(:get, /#{@base}\/.*surveyoption/).should_not have_been_made
+          expect(a_request(:get, /#{@base}\/.*surveyoption/)).to_not have_been_made
         end
 
         it 'correctly parses sub question options' do
           question = described_class.new(survey_id: survey_id, id: question_id + 1, parent_question_id: question_id)
           expect(question.parent_question.id).to eq(described_class.new(body_data).id)
-          expect(question.options.all? { |o| o.question_id == question.id && o.survey_id == survey_id }).to be_true
+          expect(question.options.all? { |o| o.question_id == question.id && o.survey_id == survey_id }).to be_truthy
           expect(question.options.map { |o| o.id }).to eq([10014, 10015])
-          a_request(:get, /#{@base}\/survey\/#{survey_id}\/surveyquestion\/#{question_id}/).should have_been_made
+          expect(a_request(:get, /#{@base}\/survey\/#{survey_id}\/surveyquestion\/#{question_id}/)).to have_been_made
         end
       end
     end
@@ -168,8 +168,10 @@ describe 'Survey Gizmo Resource' do
         expect(question_with_subquestions.sub_questions.size).to eq(2)
 
         question_with_subquestions.sub_questions.first.parent_question
-        a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{parent_id}/).should have_been_made
-        skus.each { |sku| a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{sku}/).should have_been_made }
+        expect(a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{parent_id}/)).to have_been_made
+        skus.each do |sku|
+          expect(a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{sku}/)).to have_been_made
+        end
       end
 
       context 'and shortname' do
@@ -181,8 +183,8 @@ describe 'Survey Gizmo Resource' do
           expect(question_with_subquestions.sub_questions.size).to eq(2)
 
           question_with_subquestions.sub_questions.first.parent_question
-          a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{parent_id}/).should have_been_made
-          a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{sku}/).should have_been_made
+          expect(a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{parent_id}/)).to have_been_made
+          expect(a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{sku}/)).to have_been_made
         end
       end
     end
