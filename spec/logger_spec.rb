@@ -60,7 +60,7 @@ describe SurveyGizmo::Configuration do
     )
   end
 
-  it 'should mask percent encoded api token' do
+  it 'should mask percent encoded api token secret' do
     config = SurveyGizmo.configuration
     formatted_message = config.logger.format_message(
       @severity,
