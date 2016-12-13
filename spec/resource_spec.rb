@@ -262,7 +262,8 @@ describe 'Survey Gizmo Resource' do
           '[question(11), question_pipe(10527)]' => 'This product was too expensive',
           # Sometimes surveygizmo only includes the option with the "other" answer.  =(
           '[question(12)]' => 'Other - Please explain',
-          '[question(12), option("10017-other")]' => 'I understood...'
+          '[question(12), option("10017-other")]' => 'I understood...',
+          '[question(13), option(0)]' => '12345'
         }
       end
 
@@ -284,7 +285,8 @@ describe 'Survey Gizmo Resource' do
           { survey_id: 1, question_id: 9, option_id: 10002 },
           { survey_id: 1, question_id: 10, question_pipe: 'Que aplicación', answer_text: '5 = Extremely important' },
           { survey_id: 1, question_id: 11, question_pipe: '10527', answer_text: 'This product was too expensive' },
-          { survey_id: 1, question_id: 12, option_id: 10017, other_text: 'I understood...' }
+          { survey_id: 1, question_id: 12, option_id: 10017, other_text: 'I understood...' },
+          { survey_id: 1, question_id: 13, answer_text: '12345' }
         ])
       end
     end
