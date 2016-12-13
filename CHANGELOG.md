@@ -1,5 +1,8 @@
 # Versions
 
+## 6.2.12
+* Bugfix: Don't allow option_ids of 0
+
 ## 6.2.11
 * Bugfix: Mask CGI escaped (percent encoded) api tokens in logs
 
