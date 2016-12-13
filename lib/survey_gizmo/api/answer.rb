@@ -23,6 +23,9 @@ module SurveyGizmo::API
         if option_id =~ /-other/
           option_id.delete!('-other"')
           self.other_text = value
+        elsif option_id == 0
+          # Option IDs of 0 seem to happen for hidden questions, even when there is answer_text
+          self.option_id = nil
         end
       when /\[question\((\d+)\),\s*question_pipe\("?([^"]*)"?\)\]/
         self.question_id, self.question_pipe = $1, $2
@@ -33,8 +36,9 @@ module SurveyGizmo::API
       end
 
       self.question_id = question_id.to_i
-      if option_id
-        fail "Bad option_id #{option_id} (class: #{option_id.class}) for #{attrs}!" if option_id.to_i == 0 && option_id != '0' && option_id != 0
+
+      if option_id && !option_id.is_a?(Fixnum)
+        fail "Bad option_id #{option_id} (class: #{option_id.class}) for #{attrs}!" if option_id.to_i == 0
         self.option_id = option_id.to_i
       end
     end
