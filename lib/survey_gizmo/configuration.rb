@@ -52,7 +52,6 @@ module SurveyGizmo
     DEFAULT_RETRIABLE_PARAMS = {
       base_interval: 60,
       tries: 4,
-      max_elapsed_time: 3600,
       on: [
         Errno::ETIMEDOUT,
         Faraday::Error::ClientError,
