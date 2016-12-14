@@ -38,11 +38,12 @@ SurveyGizmo.configure do |config|
   # Optional - Defaults to 300 seconds
   config.timeout_seconds = 600
 
-  # Optional - Defaults to 3 retries with a 60 second delay interval
-  config.retry_attempts = 3
-  config.retry_interval = 60
+  # Optional - Configure arguments to the Retriable gem directly that will be merged into the defaults
+  config.retriable_params = { tries: 30, max_elapsed_time: 3600 }
 end
 ```
+
+Check the [Retriable](https://github.com/kamui/retriable) documentation for how to configure the `retriable_params` hash.
 
 `api_token` and `api_token_secret` can be read from environment variables, in which case you would set them like this:
 

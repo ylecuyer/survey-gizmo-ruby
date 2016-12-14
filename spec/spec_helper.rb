@@ -18,7 +18,7 @@ RSpec.configure do |config|
       config.retry_attempts = 0
       config.retry_interval = 0
 
-      config.logger.level = Logger::FATAL
+      #config.logger.level = Logger::FATAL
     end
 
     @base = "#{SurveyGizmo.configuration.api_url}/#{SurveyGizmo.configuration.api_version}"
