@@ -4,19 +4,19 @@ module SurveyGizmo
   class Connection
     class << self
       def get(route)
-        Retriable.retriable(retriable_args) { connection.get(route) }
+        Retriable.retriable(SurveyGizmo.configuration.retriable_params) { connection.get(route) }
       end
 
       def post(route, params)
-        Retriable.retriable(retriable_args) { connection.post(route, params) }
+        Retriable.retriable(SurveyGizmo.configuration.retriable_params) { connection.post(route, params) }
       end
 
       def put(route, params)
-        Retriable.retriable(retriable_args) { connection.put(route, params) }
+        Retriable.retriable(SurveyGizmo.configuration.retriable_params) { connection.put(route, params) }
       end
 
       def delete(route)
-        Retriable.retriable(retriable_args) { connection.delete(route) }
+        Retriable.retriable(SurveyGizmo.configuration.retriable_params) { connection.delete(route) }
       end
 
       def reset!
@@ -47,24 +47,6 @@ module SurveyGizmo
 
           connection.adapter Faraday.default_adapter
         end
-      end
-
-      def retriable_args
-        {
-          base_interval: SurveyGizmo.configuration.retry_interval,
-          tries: SurveyGizmo.configuration.retry_attempts + 1,
-          max_elapsed_time: 3600,
-          on: [
-            Errno::ETIMEDOUT,
-            Faraday::Error::ClientError,
-            Net::ReadTimeout,
-            SurveyGizmo::BadResponseError,
-            SurveyGizmo::RateLimitExceededError
-          ],
-          on_retry: Proc.new do |exception, tries|
-            SurveyGizmo.configuration.logger.warn("Retrying after #{exception.class}: #{tries} attempts.")
-          end
-        }
       end
     end
   end

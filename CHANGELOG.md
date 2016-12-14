@@ -1,7 +1,11 @@
 # Versions
 
+## 6.3.0
+* Deprecate `retry_attempts` and `retry_interval` configuration options
+* Add ability to set the entire `Retriable` hash directly by configuring `retriable_params`
+
 ## 6.2.13
-* max_elapsed_time of 1 hour for retriable
+* max_elapsed_time of 1 hour for `Retriable`
 
 ## 6.2.12
 * Bugfix: Don't allow option_ids of 0
