@@ -17,6 +17,7 @@ RSpec.configure do |config|
 
       config.retry_attempts = 0
       config.retry_interval = 0
+      config.retriable_params = { tries: 1, base_interval: 0 }
 
       #config.logger.level = Logger::FATAL
     end
