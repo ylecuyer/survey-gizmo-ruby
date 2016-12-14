@@ -1,5 +1,8 @@
 # Versions
 
+## 6.2.13
+* max_elapsed_time of 1 hour for retriable
+
 ## 6.2.12
 * Bugfix: Don't allow option_ids of 0
 
