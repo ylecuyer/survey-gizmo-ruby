@@ -44,6 +44,7 @@ end
 ```
 
 Check the [Retriable](https://github.com/kamui/retriable) documentation for how to configure the `retriable_params` hash.
+The default is to retry 3 times, with 60 seconds before the first retry and a slow exponential backoff after that.
 
 `api_token` and `api_token_secret` can be read from environment variables, in which case you would set them like this:
 

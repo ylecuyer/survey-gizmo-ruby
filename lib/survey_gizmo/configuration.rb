@@ -51,6 +51,8 @@ module SurveyGizmo
 
     DEFAULT_RETRIABLE_PARAMS = {
       base_interval: 60,
+      max_interval: 300,
+      rand_factor: 0,
       tries: 4,
       on: [
         Errno::ETIMEDOUT,
