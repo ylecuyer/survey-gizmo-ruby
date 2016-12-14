@@ -53,6 +53,7 @@ module SurveyGizmo
         {
           base_interval: SurveyGizmo.configuration.retry_interval,
           tries: SurveyGizmo.configuration.retry_attempts + 1,
+          max_elapsed_time: 3600,
           on: [
             Errno::ETIMEDOUT,
             Faraday::Error::ClientError,
