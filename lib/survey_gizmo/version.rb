@@ -1,3 +1,3 @@
 module SurveyGizmo
-  VERSION = '6.2.13'
+  VERSION = '6.3.0'
 end

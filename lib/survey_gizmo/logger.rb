@@ -17,7 +17,7 @@ module SurveyGizmo
         )
       end
 
-      "#{timestamp.strftime('%Y-%m-%d %H:%M:%S')} #{severity} #{message}\n"
+      "[#{timestamp.strftime('%Y-%m-%d %H:%M:%S')} #{severity} (#{Process.pid})] #{message}\n"
     end
   end
 end
