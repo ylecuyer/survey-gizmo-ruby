@@ -27,8 +27,12 @@ module SurveyGizmo::API
           # Option IDs of 0 seem to happen for hidden questions, even when there is answer_text
           self.option_id = nil
         end
-      when /\[question\((\d+)\),\s*question_pipe\("?([^"]*)"?\)\]/
+      when /\[question\((\d+)\),\s*question_pipe\("?(.*)"?\)\]/
         self.question_id, self.question_pipe = $1, $2
+
+#        question_pipe.slice!(0) if question_pipe.starts_with?('"')
+        question_pipe.chop! if question_pipe.ends_with?('"')
+
       when /\[question\((\d+)\)\]/
         self.question_id = $1
       else

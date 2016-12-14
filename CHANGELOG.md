@@ -1,5 +1,8 @@
 # Versions
 
+## 6.3.1
+* Deal with question_pipe quotes
+
 ## 6.3.0
 * Deprecate `retry_attempts` and `retry_interval` configuration options
 * Add ability to set the entire `Retriable` hash directly by configuring `retriable_params`
