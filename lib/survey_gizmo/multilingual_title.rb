@@ -5,11 +5,10 @@ module SurveyGizmo
 
     included do
       attribute :title, Hash
-      alias_method_chain :title=, :multilingual
     end
 
-    def title_with_multilingual=(val)
-      self.title_without_multilingual = val.is_a?(Hash) ? val['English'] : val
+    def title=(val)
+      super(val.is_a?(Hash) ? val['English'] : val)
     end
   end
 end
