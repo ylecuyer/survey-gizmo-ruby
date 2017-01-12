@@ -1,5 +1,8 @@
 # Versions
 
+## 6.4.0
+* Allow passing of optional extra filters to `server_has_new_results_since?`
+
 ## 6.3.1
 * Deal with question_pipe quotes
 
