@@ -137,7 +137,7 @@ module SurveyGizmo
     # Returns itself if successfully saved, but with attributes (like id) added by SurveyGizmo
     def save
       method, path = id ? [:post, :update] : [:put, :create]
-      self.attributes = Connection.send(method, create_route(path), attributes_without_blanks).body['data']
+      self.attributes = Connection.send(method, create_route(path), attributes_without_blanks).body['data'].to_h
       self
     end
 
