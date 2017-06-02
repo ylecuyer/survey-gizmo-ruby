@@ -1,5 +1,8 @@
 # Versions
 
+## 6.4.1
+* remove unnecessary usage of `alias_method_chain` (#96)
+
 ## 6.4.0
 * Allow passing of optional extra filters to `server_has_new_results_since?`
 
