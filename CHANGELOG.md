@@ -1,7 +1,7 @@
 # Versions
 
 ## 6.5.0
-# Drop support for ruby 2.0; allow ActiveSupport 5.x
+* Drop support for ruby 2.0; allow ActiveSupport 5.x
 
 ## 6.4.1
 * remove unnecessary usage of `alias_method_chain` (#96)
