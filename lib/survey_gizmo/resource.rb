@@ -65,7 +65,10 @@ module SurveyGizmo
 
       # Retrieve a single resource.  See usage comment on .all
       def first(conditions = {})
-        new(conditions.merge(Connection.get(create_route(:get, conditions)).body['data']))
+        data = Connection.get(create_route(:get, conditions)).body['data']
+        data = {} if data.empty?
+        data = data[0] if data.is_a?(Array) && data.present?
+        new(conditions.merge(data))
       end
 
       # Create a new resource object locally and save to SurveyGizmo.  Returns the newly created Resource instance.
