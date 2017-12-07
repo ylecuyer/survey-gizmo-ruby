@@ -27,7 +27,7 @@ module SurveyGizmo
         fail RateLimitExceededError if response.status == 429
         fail BadResponseError, "Bad response code #{response.status} in #{response.inspect}" unless response.status == 200
         fail BadResponseError, response.body['message'] unless response.body['result_ok'] && response.body['result_ok'].to_s =~ /^true$/i
-        puts response.inspect
+
         process_response(response)
       end
     end
