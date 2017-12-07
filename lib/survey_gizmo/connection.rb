@@ -40,7 +40,8 @@ module SurveyGizmo
 
         @connection ||= Faraday.new(faraday_options) do |connection|
           connection.request :url_encoded
-
+          puts connection
+          puts connection.response
           connection.response :parse_survey_gizmo_data
           connection.response :json, content_type: /\bjson$/
           connection.response :logger, SurveyGizmo.configuration.logger, bodies: true if SurveyGizmo.configuration.api_debug
