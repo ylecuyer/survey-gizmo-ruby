@@ -154,6 +154,7 @@ module SurveyGizmo
     end
 
     def inspect
+      puts self.inspect
       attribute_strings = self.class.attribute_set.map do |attrib|
         value = self.send(attrib.name)
         value = value.is_a?(Hash) ? value.inspect : value.to_s
