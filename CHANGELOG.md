@@ -1,6 +1,6 @@
 # Versions
 
-## 6.5.1
+## 6.6.0
 * Allow setting default locale for multi-language title (#101)
 
 ## 6.5.0
