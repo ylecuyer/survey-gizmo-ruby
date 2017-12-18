@@ -8,7 +8,7 @@ module SurveyGizmo
     end
 
     def title=(val)
-      super(val.is_a?(Hash) ? val['English'] : val)
+      super(val.is_a?(Hash) ? val[SurveyGizmo.configuration.locale] : val)
     end
   end
 end

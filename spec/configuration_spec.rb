@@ -57,6 +57,20 @@ describe SurveyGizmo::Configuration do
         end
       }.to raise_error
     end
+  end
 
+  describe 'locale' do
+    it 'should set English locale by default' do
+      SurveyGizmo.configure
+      expect(SurveyGizmo.configuration.locale).to eq('English')
+    end
+
+    it 'should set Italian locale with Italian specified' do
+      SurveyGizmo.configure do |config|
+        config.locale = 'Italian'
+      end
+
+      expect(SurveyGizmo.configuration.locale).to eq('Italian')
+    end
   end
 end

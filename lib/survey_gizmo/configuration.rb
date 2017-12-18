@@ -37,6 +37,7 @@ module SurveyGizmo
     DEFAULT_RESULTS_PER_PAGE = 50
     DEFAULT_TIMEOUT_SECONDS = 300
     DEFAULT_REGION = :us
+    DEFAULT_LOCALE = 'English'
 
     REGION_INFO = {
       us: {
@@ -77,7 +78,7 @@ module SurveyGizmo
     attr_accessor :results_per_page
     attr_accessor :timeout_seconds
     attr_accessor :retriable_params
-
+    attr_accessor :locale
     # TODO Deprecated; remove in 7.0
     attr_accessor :retry_attempts
     attr_accessor :retry_interval
@@ -90,6 +91,7 @@ module SurveyGizmo
       @results_per_page = DEFAULT_RESULTS_PER_PAGE
       @timeout_seconds = DEFAULT_TIMEOUT_SECONDS
       @retriable_params = DEFAULT_RETRIABLE_PARAMS
+      @locale = DEFAULT_LOCALE
       self.region = DEFAULT_REGION
 
       @logger = SurveyGizmo::Logger.new(STDOUT)

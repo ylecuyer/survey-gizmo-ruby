@@ -38,6 +38,9 @@ SurveyGizmo.configure do |config|
   # Optional - Defaults to 300 seconds
   config.timeout_seconds = 600
 
+  # Optional - Defaults to English. If the survey has just one translation in languages different than English, with this option methods always return the proper locale.
+  config.locale = 'Italian'
+
   # Optional - Configure arguments to the Retriable gem directly that will be merged into the defaults
   config.retriable_params = { tries: 30, max_elapsed_time: 3600 }
 end
