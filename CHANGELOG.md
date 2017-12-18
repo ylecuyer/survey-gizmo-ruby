@@ -1,5 +1,8 @@
 # Versions
 
+## 6.5.1
+* Allow setting default locale for multi-language title (#101)
+
 ## 6.5.0
 * Drop support for ruby 2.0; allow ActiveSupport 5.x
 
