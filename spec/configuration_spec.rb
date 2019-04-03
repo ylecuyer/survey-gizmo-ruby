@@ -47,7 +47,7 @@ describe SurveyGizmo::Configuration do
       end
 
       expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.eu')
-      expect(SurveyGizmo.configuration.api_time_zone).to eq('Berlin')
+      expect(SurveyGizmo.configuration.api_time_zone).to eq('UTC')
     end
 
     it 'should fail with an unavailable region' do

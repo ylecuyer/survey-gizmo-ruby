@@ -46,7 +46,7 @@ module SurveyGizmo
       },
       eu: {
         url: 'https://restapi.surveygizmo.eu',
-        locale: 'Berlin'
+        locale: 'UTC'
       }
     }
 
