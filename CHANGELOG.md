@@ -1,5 +1,8 @@
 # Versions
 
+## 6.7.0
+* Change timezone for EU servers to UTC (#103)
+
 ## 6.6.0
 * Allow setting default locale for multi-language title (#101)
 
