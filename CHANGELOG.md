@@ -1,4 +1,6 @@
 # Versions
+## 7.0.0
+* Makes configuration thread safe. When a new thread is created, the last configuration set through `SurveyGizmo.configure` will be used.
 
 ## 6.7.0
 * Change timezone for EU servers to UTC (#103)
