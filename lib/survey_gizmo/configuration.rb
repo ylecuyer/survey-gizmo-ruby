@@ -5,11 +5,9 @@ module SurveyGizmo
   CONFIG_THREAD_VARIABLE_NAME = :survey_gizmo_configuration
 
   class << self
-    attr_writer :configuration
-
     def configuration
-      fail 'Not configured!' unless Thread.current[CONFIG_THREAD_VARIABLE_NAME]
-      Thread.current[CONFIG_THREAD_VARIABLE_NAME]
+      fail 'Not configured!' unless Thread.current[CONFIG_THREAD_VARIABLE_NAME] || @global_config
+      Thread.current[CONFIG_THREAD_VARIABLE_NAME] ||= @global_config.dup
     end
 
     def configure
@@ -27,6 +25,8 @@ module SurveyGizmo
       end
 
       configuration.retriable_params = Configuration::DEFAULT_RETRIABLE_PARAMS.merge(configuration.retriable_params)
+
+      @global_config = configuration
     end
 
     def reset!
