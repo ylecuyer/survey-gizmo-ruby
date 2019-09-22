@@ -82,6 +82,36 @@ describe SurveyGizmo::Configuration do
 
       expect(SurveyGizmo.configuration.api_token).to eq('token')
     end
+
+    describe ".configuration=" do
+      let(:new_config) { SurveyGizmo::Configuration.new.tap { |c| c.api_token = "new_token" } }
+
+      it "sets the configuration" do
+        expect{
+          SurveyGizmo.configuration = new_config
+        }.to change {
+          SurveyGizmo.configuration.api_token
+        }.from(api_token).to("new_token")
+      end
+
+      it "does not affect other threads" do
+        expect {
+          Thread.new do
+            SurveyGizmo.configuration = new_config
+            expect(SurveyGizmo.configuration.api_token).to eq("new_token")
+          end.join
+        }.not_to change {
+          SurveyGizmo.configuration.api_token
+        }.from(api_token)
+      end
+
+      it "updates the last known configuration" do
+        SurveyGizmo.configuration = new_config
+        Thread.new do
+          expect(SurveyGizmo.configuration.api_token).to eq("new_token")
+        end.join
+      end
+    end
   end
 
   describe '#region=' do

@@ -10,6 +10,11 @@ module SurveyGizmo
       Thread.current[CONFIG_THREAD_VARIABLE_NAME] ||= @global_config.dup
     end
 
+    def configuration=(new_config)
+      @global_config = new_config.dup
+      Thread.current[CONFIG_THREAD_VARIABLE_NAME] = new_config
+    end
+
     def configure
       reset!
       yield(configuration) if block_given?

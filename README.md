@@ -19,7 +19,7 @@ gem 'survey-gizmo-ruby'
 ## Configuration
 
 The configuration is thread safe.
-When a new thread is created, the last configuration set through `SurveyGizmo.configure` will be used.
+When a new thread is created, the last configuration set through `SurveyGizmo.configure` or `SurveyGizmo.configuration=` will be used.
 When `SurveyGizmo.reset!` is called, only the current thread configuration will be reset.
 
 ```ruby
