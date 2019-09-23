@@ -1,33 +1,41 @@
 require 'survey_gizmo/faraday_middleware/parse_survey_gizmo'
 
 module SurveyGizmo
-  class << self
-    attr_writer :configuration
 
+  CONFIG_THREAD_VARIABLE_NAME = :survey_gizmo_configuration
+
+  class << self
     def configuration
-      fail 'Not configured!' unless @configuration
-      @configuration
+      fail 'Not configured!' unless Thread.current[CONFIG_THREAD_VARIABLE_NAME] || @global_config
+      Thread.current[CONFIG_THREAD_VARIABLE_NAME] ||= @global_config.dup
+    end
+
+    def configuration=(new_config)
+      @global_config = new_config.dup
+      Thread.current[CONFIG_THREAD_VARIABLE_NAME] = new_config
     end
 
     def configure
       reset!
-      yield(@configuration) if block_given?
+      yield(configuration) if block_given?
 
-      if @configuration.retry_attempts
-        @configuration.logger.warn('Configuring retry_attempts is deprecated; pass a retriable_params hash instead.')
-        @configuration.retriable_params[:tries] = @configuration.retry_attempts + 1
+      if configuration.retry_attempts
+        configuration.logger.warn('Configuring retry_attempts is deprecated; pass a retriable_params hash instead.')
+        configuration.retriable_params[:tries] = configuration.retry_attempts + 1
       end
 
-      if @configuration.retry_interval
-        @configuration.logger.warn('Configuring retry_interval is deprecated; pass a retriable_params hash instead.')
-        @configuration.retriable_params[:base_interval] = @configuration.retry_interval
+      if configuration.retry_interval
+        configuration.logger.warn('Configuring retry_interval is deprecated; pass a retriable_params hash instead.')
+        configuration.retriable_params[:base_interval] = configuration.retry_interval
       end
 
-      @configuration.retriable_params = Configuration::DEFAULT_RETRIABLE_PARAMS.merge(@configuration.retriable_params)
+      configuration.retriable_params = Configuration::DEFAULT_RETRIABLE_PARAMS.merge(configuration.retriable_params)
+
+      @global_config = configuration
     end
 
     def reset!
-      @configuration = Configuration.new
+      Thread.current[CONFIG_THREAD_VARIABLE_NAME] = Configuration.new
       Connection.reset!
     end
   end

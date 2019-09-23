@@ -2,10 +2,14 @@ require 'spec_helper'
 require 'survey_gizmo/configuration'
 
 describe SurveyGizmo::Configuration do
+
+  let(:api_token) { "token" }
+  let(:api_token_secret) { "doken" }
+
   before(:each) do
     SurveyGizmo.configure do |config|
-      config.api_token = 'token'
-      config.api_token_secret = 'doken'
+      config.api_token = api_token
+      config.api_token_secret = api_token_secret
     end
   end
 
@@ -13,16 +17,90 @@ describe SurveyGizmo::Configuration do
     SurveyGizmo.reset!
   end
 
-  it 'should allow changing user and pass' do
+  it "should allow changing user and pass" do
     # preload connection to verify that memoization is purged
     SurveyGizmo::Connection.send(:connection)
 
     SurveyGizmo.configure do |config|
-      config.api_token = 'slimthug'
-      config.api_token_secret = 'fourfourz'
+      config.api_token = "slimthug"
+      config.api_token_secret = "fourfourz"
     end
 
-    expect(SurveyGizmo::Connection.send(:connection).params).to eq('api_token' => 'slimthug', 'api_token_secret' => 'fourfourz')
+    expect(SurveyGizmo::Connection.send(:connection).params).to eq("api_token" => "slimthug", "api_token_secret" => "fourfourz")
+  end
+
+  context "thread safety" do
+    it "is set from the last known configuration" do
+      expect(SurveyGizmo.configuration.api_token).to eq(api_token)
+
+      Thread.new do
+        expect(SurveyGizmo.configuration.api_token).to eq(api_token)
+      end
+    end
+
+    it "is not affected by a change in another thread" do
+      expect(SurveyGizmo.configuration.api_token).to eq(api_token)
+
+      Thread.new do
+        SurveyGizmo.configure {|c| c.api_token = "new_token"}
+        expect(SurveyGizmo.configuration.api_token).to eq("new_token")
+      end.join
+
+      expect(SurveyGizmo.configuration.api_token).to eq(api_token)
+    end
+
+    it "is not affected by a reset in another thread" do
+      expect(SurveyGizmo.configuration.api_token).to eq(api_token)
+
+      Thread.new do
+        SurveyGizmo.reset!
+        expect(SurveyGizmo.configuration.api_token).to eq(nil)
+      end.join
+
+      expect(SurveyGizmo.configuration.api_token).to eq(api_token)
+    end
+
+    it "updates the last known configuration" do
+      expect(SurveyGizmo.configuration.api_token).to eq(api_token)
+
+      Thread.new do
+        SurveyGizmo.configure {|c| c.api_token = "new_token"}
+        expect(SurveyGizmo.configuration.api_token).to eq("new_token")
+      end.join
+      Thread.new do
+        expect(SurveyGizmo.configuration.api_token).to eq("new_token")
+      end.join
+    end
+
+    describe ".configuration=" do
+      let(:new_config) { SurveyGizmo::Configuration.new.tap { |c| c.api_token = "new_token" } }
+
+      it "sets the configuration" do
+        expect{
+          SurveyGizmo.configuration = new_config
+        }.to change {
+          SurveyGizmo.configuration.api_token
+        }.from(api_token).to("new_token")
+      end
+
+      it "does not affect other threads" do
+        expect {
+          Thread.new do
+            SurveyGizmo.configuration = new_config
+            expect(SurveyGizmo.configuration.api_token).to eq("new_token")
+          end.join
+        }.not_to change {
+          SurveyGizmo.configuration.api_token
+        }.from(api_token)
+      end
+
+      it "updates the last known configuration" do
+        SurveyGizmo.configuration = new_config
+        Thread.new do
+          expect(SurveyGizmo.configuration.api_token).to eq("new_token")
+        end.join
+      end
+    end
   end
 
   describe '#region=' do
