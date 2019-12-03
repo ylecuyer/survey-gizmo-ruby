@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.licenses = ['MIT']
   gem.required_ruby_version = '>= 2.1'
 
-  gem.add_dependency 'activesupport', '>= 3.0', '< 6.0'
+  gem.add_dependency 'activesupport', '>= 3.0', '< 7.0'
   gem.add_dependency 'addressable', '~> 2'
   gem.add_dependency 'awesome_print', '~> 1'
   gem.add_dependency 'faraday', '>= 0.9.1', '~> 0.9'
