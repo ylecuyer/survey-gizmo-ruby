@@ -1,4 +1,10 @@
 # Versions
+
+## 7.1.0
+* Loosen dependencies on ActiveSupport and other gems to support Rails 6
+* Minor fix to `SurveyGizmo::Configuration#region=` to raise proper error when region is invalid
+* Update some development dependencies
+
 ## 7.0.0
 * Makes configuration thread safe. When a new thread is created, the last configuration set through `SurveyGizmo.configure` will be used.
 
