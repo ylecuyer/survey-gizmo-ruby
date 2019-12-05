@@ -306,8 +306,5 @@ describe 'Survey Gizmo Resource' do
       h.default = '/account_teams/1234'
       h
     end
-
-    #it_should_behave_like 'an API object'
-    #it_should_behave_like 'an object with errors'
   end
 end

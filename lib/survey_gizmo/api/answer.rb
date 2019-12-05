@@ -41,7 +41,7 @@ module SurveyGizmo::API
 
       self.question_id = question_id.to_i
 
-      if option_id && !option_id.is_a?(Fixnum)
+      if option_id && !option_id.is_a?(Integer)
         fail "Bad option_id #{option_id} (class: #{option_id.class}) for #{attrs}!" if option_id.to_i == 0
         self.option_id = option_id.to_i
       end

@@ -108,7 +108,7 @@ module SurveyGizmo
 
     def region=(region)
       region_infos = REGION_INFO[region]
-      ArgumentError.new("Unknown region: #{region}") unless region_infos
+      raise ArgumentError.new("Unknown region: #{region}") unless region_infos
 
       @api_url = region_infos[:url]
       @api_time_zone = region_infos[:locale]

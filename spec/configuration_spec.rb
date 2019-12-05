@@ -133,7 +133,7 @@ describe SurveyGizmo::Configuration do
         SurveyGizmo.configure do |config|
           config.region = :cz
         end
-      }.to raise_error
+      }.to raise_error(ArgumentError, "Unknown region: cz")
     end
   end
 

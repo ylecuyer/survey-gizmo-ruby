@@ -1,6 +1,6 @@
 shared_examples_for 'an API object' do
   it "should be descendant of SurveyGizmo::Resource" do
-    SurveyGizmo::Resource.descendants.should include(described_class)
+    expect(SurveyGizmo::Resource.descendants).to include(described_class)
   end
 
   context "#create" do
@@ -9,7 +9,7 @@ shared_examples_for 'an API object' do
       obj = described_class.create(create_attributes)
 
       expect(obj).to be_instance_of(described_class)
-      a_request(:put, /#{@base}#{uri_paths[:create]}/).should have_been_made
+      expect(a_request(:put, /#{@base}#{uri_paths[:create]}/)).to have_been_made
     end
 
     it "should set the attributes" do
@@ -30,7 +30,7 @@ shared_examples_for 'an API object' do
 
     it "should return false if the request fails" do
       stub_request(:get, /#{@base}/).to_return(json_response(false, "something is wrong"))
-      expect { described_class.first(first_params) }.to raise_error
+      expect { described_class.first(first_params) }.to raise_error(SurveyGizmo::BadResponseError, "something is wrong")
     end
   end
 
@@ -47,7 +47,7 @@ shared_examples_for 'an API object' do
 
     it "cannot be destroyed if new" do
       @obj.id = nil
-      expect { @obj.destroy }.to raise_error
+      expect { @obj.destroy }.to raise_error(RuntimeError, /No id; can't delete/)
     end
   end
 
