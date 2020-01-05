@@ -10,14 +10,23 @@ module SurveyGizmo::API
     attribute :description,        String
     attribute :shortname,          String
     attribute :properties,         Hash
-    attribute :after,              Integer
     attribute :options,            Array[Option]
     attribute :survey_id,          Integer
     attribute :page_id,            Integer, default: 1
-    attribute :sub_question_skus,  Array
     attribute :parent_question_id, Integer
 
+    # v4 fields
+    attribute :after,              Integer
+    attribute :sub_questions_skus, Array
+    
     alias_attribute :_subtype, :type
+
+    # v5 fields
+    attribute :base_type,          String
+    attribute :varname,            Array
+    attribute :has_showhide_deps,  Boolean
+    attribute :comment,            Boolean
+    attribute :sub_questions,      Array[Question]
 
     @route = {
       get:    '/survey/:survey_id/surveyquestion/:id',

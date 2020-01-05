@@ -7,7 +7,6 @@ module SurveyGizmo::API
     attribute :id,             Integer
     attribute :team,           Array
     attribute :type,           String
-    attribute :_subtype,       String
     attribute :status,         String
     attribute :forward_only,   Boolean
     attribute :title,          String
@@ -20,9 +19,12 @@ module SurveyGizmo::API
     attribute :statistics,     Array
     attribute :created_on,     DateTime
     attribute :modified_on,    DateTime
-    attribute :copy,           Boolean
     # See comment in the #pages method for why this :pages can't be an attribute
     # attribute :pages,          Array[Page]
+
+    # v4 fields
+    attribute :_subtype,       String
+    attribute :copy,           Boolean
 
     @route = '/survey'
 

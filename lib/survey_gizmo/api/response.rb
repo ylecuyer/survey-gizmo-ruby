@@ -17,22 +17,51 @@ module SurveyGizmo::API
     attribute :id,                   Integer
     attribute :survey_id,            Integer
     attribute :contact_id,           Integer
-    attribute :data,                 String
     attribute :status,               String
     attribute :is_test_data,         Boolean
-    attribute :sResponseComment,     String
-    attribute :variable,             Hash       # READ-ONLY
     attribute :meta,                 Hash       # READ-ONLY
-    attribute :shown,                Hash       # READ-ONLY
     attribute :url,                  Hash       # READ-ONLY
     attribute :answers,              Hash       # READ-ONLY
+
+    # v4 fields
+    attribute :data,                 String
+    attribute :sResponseComment,     String
+    attribute :variable,             Hash       # READ-ONLY
     attribute :datesubmitted,        DateTime
-    alias_attribute :submitted_at, :datesubmitted
+    attribute :shown,                Hash       # READ-ONLY
+
+    # v5 fields
+    attribute :date_submitted,       DateTime
+    attribute :date_started,         DateTime
+    attribute :session_id,           String
+    attribute :language,             String
+    attribute :url_variables,        Hash
+    attribute :survey_data,          Hash
+    attribute :comment,              Hash
+    attribute :subquestions,         Hash
+    attribute :options,              Hash
+    attribute :link_id,              String
+    attribute :ip_address,           String
+    attribute :referer,              String
+    attribute :user_agent,           String
+    attribute :response_time,        Integer
+    attribute :data_quality,         Array
+    attribute :longitude,            String
+    attribute :latitude,             String
+    attribute :country,              String
+    attribute :city,                 String
+    attribute :region,               String
+    attribute :postal,               String
+    attribute :dma,                  Boolean
 
     @route = '/survey/:survey_id/surveyresponse'
 
     def survey
       @survey ||= Survey.first(id: survey_id)
+    end
+
+    def submitted_at
+      datesubmitted || date_submitted
     end
 
     def parsed_answers

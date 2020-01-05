@@ -8,9 +8,14 @@ module SurveyGizmo::API
     attribute :id,            Integer
     attribute :description,   String
     attribute :properties,    Hash
-    attribute :after,         Integer
     attribute :survey_id,     Integer
     attribute :questions,     Array[Question]
+
+    # v4 fields
+    attribute :after,       Integer
+
+    # v5 fields
+    attribute :title,       String
 
     @route = '/survey/:survey_id/surveypage'
 

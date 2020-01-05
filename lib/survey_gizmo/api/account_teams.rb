@@ -6,11 +6,16 @@ module SurveyGizmo::API
     include SurveyGizmo::Resource
 
     attribute :id,            Integer
-    attribute :teamid,        Integer
     attribute :teamname,      String
-    attribute :color,         String
     attribute :default_role,  String
     attribute :status,        String
+
+    # v4 fields
+    attribute :teamid,      Integer
+    attribute :color,       Integer
+
+    # v5 fields
+    attribute :description,   String
 
     @route = '/accountteams'
   end

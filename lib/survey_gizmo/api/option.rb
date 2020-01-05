@@ -10,6 +10,9 @@ module SurveyGizmo::API
     attribute :value,         String
     attribute :properties,    Hash
 
+    # v5 fields
+    attribute :title,       String
+
     @route = '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption'
   end
 end
