@@ -21,9 +21,9 @@ module SurveyGizmo::API
     attribute :is_test_data,         Boolean
     attribute :meta,                 Hash       # READ-ONLY
     attribute :url,                  Hash       # READ-ONLY
-    attribute :answers,              Hash       # READ-ONLY
 
     # v4 fields
+    attribute :answers,              Hash       # READ-ONLY
     attribute :data,                 String
     attribute :sResponseComment,     String
     attribute :variable,             Hash       # READ-ONLY
