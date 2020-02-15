@@ -12,7 +12,6 @@ module SurveyGizmo::V5
     attribute :team,                    String
     attribute :group,                   String
     attribute :role,                    String
-
     attribute :status,                  String
     attribute :subscriber_status,       String
     attribute :email_address,           String
@@ -41,6 +40,7 @@ module SurveyGizmo::V5
     attribute :customfield8,            String
     attribute :customfield9,            String
     attribute :customfield10,           String
+
     @route = '/survey/:survey_id/surveycampaign/:campaign_id/contact'
   end
 end

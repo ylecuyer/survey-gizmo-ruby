@@ -11,10 +11,10 @@ module SurveyGizmo::V5
     attribute :language,        String
     attribute :close_message,   String
     attribute :limit_responses, String
-    attribute :tokenvariables,  Array
     attribute :survey_id,       Integer
 
     # v5 fields
+    attribute :token_variables,  Array
     attribute :invite_id,       Integer
     attribute :subtype,         String
     attribute :link_type,       String

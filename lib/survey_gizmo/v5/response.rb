@@ -45,6 +45,8 @@ module SurveyGizmo::V5
     attribute :region,               String
     attribute :postal,               String
     attribute :dma,                  Boolean
+    alias_attribute :submitted_at, :date_submitted
+    alias_attribute :answers, :survey_data
 
     @route = '/survey/:survey_id/surveyresponse'
 
@@ -52,26 +54,8 @@ module SurveyGizmo::V5
       @survey ||= Survey.first(id: survey_id)
     end
 
-    def submitted_at
-      datesubmitted || date_submitted
-    end
-
     def parsed_answers
-      filtered_answers = answers.select do |k, v|
-        next false unless v.is_a?(FalseClass) || v.present?
-
-        # Strip out "Other" answers that don't actually have the "other" text (they come back as two responses - one
-        # for the "Other" option_id, and then a whole separate response for the text given as an "Other" response.
-        if /\[question\((?<question_id>\d+)\),\s*option\((?<option_id>\d+)\)\]/ =~ k
-          !answers.keys.any? { |key| key =~ /\[question\((#{question_id})\),\s*option\("(#{option_id})-other"\)\]/ }
-        elsif /\[question\((?<question_id>\d+)\)\]/ =~ k
-          !answers.keys.any? { |key| key =~ /\[question\((#{question_id})\),\s*option\("\d+-other"\)\]/ }
-        else
-          true
-        end
-      end
-
-      filtered_answers.map do |k, v|
+      answers.map do |k, v|
         Answer.new(children_params.merge(key: k, value: v, answer_text: v, submitted_at: submitted_at))
       end
     end

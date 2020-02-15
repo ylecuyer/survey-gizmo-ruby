@@ -40,7 +40,9 @@ module SurveyGizmo::V5
     end
 
     def actual_questions
-      questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic|media|script|javascript)$/ }
+      questions.select do |q|
+        q.base_type == 'Question' || q.base_type == 'SurveyQuestion'
+      end
     end
 
     def responses(conditions = {})
