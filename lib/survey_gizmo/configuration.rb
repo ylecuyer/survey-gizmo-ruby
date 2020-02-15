@@ -121,5 +121,9 @@ module SurveyGizmo
       @api_url = region_infos[:url]
       @api_time_zone = region_infos[:locale]
     end
+
+    def v5?
+      api_version == 'v5'
+    end
   end
 end
