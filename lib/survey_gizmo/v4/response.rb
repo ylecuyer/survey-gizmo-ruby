@@ -17,27 +17,22 @@ module SurveyGizmo::V4
     attribute :id,                   Integer
     attribute :survey_id,            Integer
     attribute :contact_id,           Integer
+    attribute :data,                 String
     attribute :status,               String
     attribute :is_test_data,         Boolean
-    attribute :meta,                 Hash       # READ-ONLY
-    attribute :url,                  Hash       # READ-ONLY
-
-    # v4 fields
-    attribute :answers,              Hash       # READ-ONLY
-    attribute :data,                 String
     attribute :sResponseComment,     String
     attribute :variable,             Hash       # READ-ONLY
-    attribute :datesubmitted,        DateTime
+    attribute :meta,                 Hash       # READ-ONLY
     attribute :shown,                Hash       # READ-ONLY
+    attribute :url,                  Hash       # READ-ONLY
+    attribute :answers,              Hash       # READ-ONLY
+    attribute :datesubmitted,        DateTime
+    alias_attribute :submitted_at, :datesubmitted
 
     @route = '/survey/:survey_id/surveyresponse'
 
     def survey
       @survey ||= Survey.first(id: survey_id)
-    end
-
-    def submitted_at
-      datesubmitted || date_submitted
     end
 
     def parsed_answers

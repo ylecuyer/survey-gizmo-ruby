@@ -10,15 +10,13 @@ module SurveyGizmo::V4
     attribute :description,        String
     attribute :shortname,          String
     attribute :properties,         Hash
+    attribute :after,              Integer
     attribute :options,            Array[Option]
     attribute :survey_id,          Integer
     attribute :page_id,            Integer, default: 1
+    attribute :sub_questions_skus, Array
     attribute :parent_question_id, Integer
 
-    # v4 fields
-    attribute :after,              Integer
-    attribute :sub_questions_skus, Array
-    
     alias_attribute :_subtype, :type
 
     @route = {

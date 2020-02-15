@@ -6,13 +6,11 @@ module SurveyGizmo::V4
     include SurveyGizmo::Resource
 
     attribute :id,            Integer
-    attribute :default_role,  String
-    attribute :status,        String
-
-    # v4 fields
     attribute :teamid,      Integer
     attribute :teamname,      String
     attribute :color,       Integer
+    attribute :default_role,  String
+    attribute :status,        String
 
     @route = '/accountteams'
   end

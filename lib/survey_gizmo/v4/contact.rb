@@ -5,8 +5,6 @@ module SurveyGizmo::V4
     attribute :id,                      Integer
     attribute :survey_id,               Integer
     attribute :campaign_id,             Integer
-
-    # v4 fields
     attribute :estatus,                 String
     attribute :esubscriberstatus,       String
     attribute :semailaddress,           String

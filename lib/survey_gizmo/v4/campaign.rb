@@ -5,21 +5,19 @@ module SurveyGizmo::V4
     attribute :id,              Integer
     attribute :name,            String
     attribute :type,            String
+    attribute :_type,           String
+    attribute :subtype,         String
+    attribute :_subtype,        String
+    attribute :__subtype,       String
     attribute :status,          String
     attribute :uri,             String
     attribute :SSL,             Boolean
+    attribute :slug,            String
     attribute :language,        String
     attribute :close_message,   String
     attribute :limit_responses, String
     attribute :tokenvariables,  Array
     attribute :survey_id,       Integer
-
-    # v4 fields
-    attribute :_type,           String
-    attribute :subtype,         String
-    attribute :_subtype,        String
-    attribute :__subtype,       String
-    attribute :slug,            String
     attribute :datecreated,     DateTime
     attribute :datemodified,    DateTime
     attribute :surveycampaign,  Integer
