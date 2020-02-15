@@ -1,4 +1,4 @@
-module SurveyGizmo::API
+module SurveyGizmo::V5
   class Answer
     include Virtus.model
 

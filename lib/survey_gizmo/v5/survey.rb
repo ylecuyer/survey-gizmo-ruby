@@ -1,6 +1,6 @@
-require 'survey_gizmo/api/page'
+require 'survey_gizmo/v5/page'
 
-module SurveyGizmo::API
+module SurveyGizmo::V5
   class Survey
     include SurveyGizmo::Resource
 
@@ -21,10 +21,6 @@ module SurveyGizmo::API
     attribute :modified_on,    DateTime
     # See comment in the #pages method for why this :pages can't be an attribute
     # attribute :pages,          Array[Page]
-
-    # v4 fields
-    attribute :_subtype,       String
-    attribute :copy,           Boolean
 
     @route = '/survey'
 

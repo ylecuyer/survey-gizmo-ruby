@@ -1,4 +1,4 @@
-module SurveyGizmo::API
+module SurveyGizmo::V5
   class Response
     include SurveyGizmo::Resource
 
@@ -21,14 +21,6 @@ module SurveyGizmo::API
     attribute :is_test_data,         Boolean
     attribute :meta,                 Hash       # READ-ONLY
     attribute :url,                  Hash       # READ-ONLY
-
-    # v4 fields
-    attribute :answers,              Hash       # READ-ONLY
-    attribute :data,                 String
-    attribute :sResponseComment,     String
-    attribute :variable,             Hash       # READ-ONLY
-    attribute :datesubmitted,        DateTime
-    attribute :shown,                Hash       # READ-ONLY
 
     # v5 fields
     attribute :date_submitted,       DateTime

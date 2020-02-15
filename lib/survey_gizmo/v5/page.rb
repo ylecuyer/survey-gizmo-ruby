@@ -1,6 +1,6 @@
-require 'survey_gizmo/api/question'
+require 'survey_gizmo/v5/question'
 
-module SurveyGizmo::API
+module SurveyGizmo::V5
   class Page
     include SurveyGizmo::Resource
     include SurveyGizmo::MultilingualTitle
@@ -10,9 +10,6 @@ module SurveyGizmo::API
     attribute :properties,    Hash
     attribute :survey_id,     Integer
     attribute :questions,     Array[Question]
-
-    # v4 fields
-    attribute :after,       Integer
 
     # v5 fields
     attribute :title,       String

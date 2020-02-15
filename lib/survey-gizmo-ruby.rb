@@ -17,4 +17,3 @@ require 'virtus'
 
 path = File.join(File.expand_path(File.dirname(__FILE__)), 'survey_gizmo')
 Dir["#{path}/*.rb"].each { |f| require f }
-Dir["#{path}/**/*.rb"].each { |f| require f }

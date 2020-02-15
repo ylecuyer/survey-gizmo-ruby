@@ -1,6 +1,6 @@
-require 'survey_gizmo/api/option'
+require 'survey_gizmo/v5/option'
 
-module SurveyGizmo::API
+module SurveyGizmo::V5
   class Question
     include SurveyGizmo::Resource
     include SurveyGizmo::MultilingualTitle
@@ -14,12 +14,6 @@ module SurveyGizmo::API
     attribute :survey_id,          Integer
     attribute :page_id,            Integer, default: 1
     attribute :parent_question_id, Integer
-
-    # v4 fields
-    attribute :after,              Integer
-    attribute :sub_questions_skus, Array
-    
-    alias_attribute :_subtype, :type
 
     # v5 fields
     attribute :base_type,          String
