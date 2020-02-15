@@ -8,7 +8,7 @@ module SurveyGizmo::V4
     attribute :id,            Integer
     attribute :description,   String
     attribute :properties,    Hash
-    attribute :after,       Integer
+    attribute :after,         Integer
     attribute :survey_id,     Integer
     attribute :questions,     Array[Question]
 

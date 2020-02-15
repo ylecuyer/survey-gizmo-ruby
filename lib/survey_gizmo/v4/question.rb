@@ -14,7 +14,7 @@ module SurveyGizmo::V4
     attribute :options,            Array[Option]
     attribute :survey_id,          Integer
     attribute :page_id,            Integer, default: 1
-    attribute :sub_questions_skus, Array
+    attribute :sub_question_skus, Array
     attribute :parent_question_id, Integer
 
     alias_attribute :_subtype, :type

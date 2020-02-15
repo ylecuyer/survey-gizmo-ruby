@@ -16,6 +16,8 @@ module SurveyGizmo::V4
     attribute :from,              Hash
     attribute :body,              Hash
     attribute :send,              Boolean
+    attribute :datecreated,       DateTime
+    attribute :datemodified,      DateTime
 
     @route = '/survey/:survey_id/surveycampaign/:campaign_id/emailmessage'
   end
