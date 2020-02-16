@@ -1,3 +1,5 @@
+require 'survey_gizmo/v5/option'
+
 module SurveyGizmo::V5
   class Answer
     include Virtus.model
@@ -7,7 +9,9 @@ module SurveyGizmo::V5
     attribute :survey_id,     Integer
     attribute :response_id,   Integer
     attribute :question_id,   Integer
-    attribute :option_id,     Integer
+    attribute :question_text, String
+    attribute :question_type, String
+    attribute :options,       Array[Option]
     attribute :submitted_at,  DateTime
     attribute :answer_text,   String
     attribute :other_text,    String
@@ -15,35 +19,36 @@ module SurveyGizmo::V5
 
     def initialize(attrs = {})
       self.attributes = attrs
+      self.question_id = value['id']
+      self.question_text = value['question']
+      self.question_type = value['type']
 
-      case key
-      when /\[question\((\d+)\),\s*option\((\d+|"\d+-other")\)\]/
-        self.question_id, self.option_id = $1, $2
-
-        if option_id =~ /-other/
-          option_id.delete!('-other"')
-          self.other_text = value
-        elsif option_id == 0
-          # Option IDs of 0 seem to happen for hidden questions, even when there is answer_text
-          self.option_id = nil
-        end
-      when /\[question\((\d+)\),\s*question_pipe\("?(.*)"?\)\]/
-        self.question_id, self.question_pipe = $1, $2
-
-#        question_pipe.slice!(0) if question_pipe.starts_with?('"')
-        question_pipe.chop! if question_pipe.ends_with?('"')
-
-      when /\[question\((\d+)\)\]/
-        self.question_id = $1
+      if value['options']
+        self.options = selected_options
+      elsif value['answer_id']
+        self.options = single_option
       else
-        fail "Can't recognize pattern for #{attrs[:key]} => #{attrs[:value]} - you may have to parse your answers manually."
+        self.answer_text = value['answer']
       end
+    end
 
-      self.question_id = question_id.to_i
+    def single_option
+      [
+        Option.new(attributes.merge(
+          id: value['answer_id'],
+          value: value['answer'], 
+          title: value['original_answer'] || value['answer']
+        ))
+      ]
+    end
 
-      if option_id && !option_id.is_a?(Integer)
-        fail "Bad option_id #{option_id} (class: #{option_id.class}) for #{attrs}!" if option_id.to_i == 0
-        self.option_id = option_id.to_i
+    def selected_options
+      value['options'].values.reject { |opt| opt['answer'].nil? }.map do |opt|
+        Option.new(attributes.merge(
+          id: opt['id'],
+          value: opt['answer'],
+          title: opt['option']
+        ))
       end
     end
 
@@ -52,12 +57,14 @@ module SurveyGizmo::V5
       {
         response_id: response_id,
         question_id: question_id,
-        option_id: option_id,
+        question_type: question_type,
+        question_text: question_text,
+        options: options,
         question_pipe: question_pipe,
         submitted_at: submitted_at,
         survey_id: survey_id,
         other_text: other_text,
-        answer_text: option_id || other_text ? nil : answer_text
+        answer_text: options || other_text ? nil : answer_text
       }.reject { |k, v| v.nil? }
     end
   end
