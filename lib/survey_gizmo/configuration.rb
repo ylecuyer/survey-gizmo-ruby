@@ -65,7 +65,7 @@ module SurveyGizmo
       tries: 4,
       on: [
         Errno::ETIMEDOUT,
-        Faraday::Error::ClientError,
+        Faraday::ClientError,
         Net::ReadTimeout,
         SurveyGizmo::BadResponseError,
         SurveyGizmo::RateLimitExceededError
