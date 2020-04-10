@@ -6,6 +6,7 @@ module SurveyGizmo::API
     attribute :name,            String
     attribute :type,            String
     attribute :_type,           String
+    attribute :subtype,         String
     attribute :_subtype,        String
     attribute :__subtype,       String
     attribute :status,          String
