@@ -1,5 +1,9 @@
 # Versions
 
+## 7.1.1
+* Add missing `subtype` parameter to `Campain` required at creation
+* Fix use of deprecated Faraday error class (#110)
+
 ## 7.1.0
 * Loosen dependencies on ActiveSupport and other gems to support Rails 6
 * Minor fix to `SurveyGizmo::Configuration#region=` to raise proper error when region is invalid
