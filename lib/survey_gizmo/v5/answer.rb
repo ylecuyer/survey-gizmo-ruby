@@ -36,7 +36,7 @@ module SurveyGizmo::V5
       [
         Option.new(attributes.merge(
           id: value['answer_id'],
-          value: value['answer'], 
+          value: value['answer'],
           title: value['original_answer'] || value['answer']
         ))
       ]

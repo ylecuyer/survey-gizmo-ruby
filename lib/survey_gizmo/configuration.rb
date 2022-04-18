@@ -34,11 +34,7 @@ module SurveyGizmo
       @global_config = configuration
 
       path = File.expand_path(File.dirname(__FILE__))
-      if configuration.api_version == 'v4'
-        Dir["#{File.join(path, 'v4')}/*.rb"].each { |f| require f }
-      else
-        Dir["#{File.join(path, 'v5')}/*.rb"].each { |f| require f }
-      end
+      require File.join(path, 'api/api')
       configuration
     end
 
