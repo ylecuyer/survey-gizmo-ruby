@@ -3,12 +3,12 @@ module SurveyGizmo::V5
     include SurveyGizmo::Resource
 
     # Filters
-    NO_TEST_DATA =   { field: 'istestdata', operator: '<>', value: 1 }
+    NO_TEST_DATA =   { field: 'is_test_data', operator: '<>', value: 1 }
     ONLY_COMPLETED = { field: 'status',     operator: '=',  value: 'Complete' }
 
     def self.submitted_since_filter(time)
       {
-        field: 'datesubmitted',
+        field: 'date_submitted',
         operator: '>=',
         value: time.in_time_zone(SurveyGizmo.configuration.api_time_zone).strftime('%Y-%m-%d %H:%M:%S')
       }
