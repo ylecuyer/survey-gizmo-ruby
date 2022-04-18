@@ -49,7 +49,7 @@ module SurveyGizmo
   end
 
   class Configuration
-    DEFAULT_API_VERSION = 'v4'
+    DEFAULT_API_VERSION = 'v5'
     DEFAULT_RESULTS_PER_PAGE = 50
     DEFAULT_TIMEOUT_SECONDS = 300
     DEFAULT_REGION = :us

@@ -7,6 +7,9 @@ require 'webmock/rspec'
 # in ./support/ and its subdirectories.
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
+Dir["#{File.dirname(__FILE__)}/../lib/survey_gizmo/v4/*.rb"].each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/../lib/survey_gizmo/v5/*.rb"].each { |f| require f }
+
 RSpec.configure do |config|
   config.include SurveyGizmoSpec::Methods
 
@@ -16,6 +19,7 @@ RSpec.configure do |config|
       config.api_token_secret = 'dreamword'
       config.retriable_params = { tries: 1, base_interval: 0 }
       config.logger.level = Logger::FATAL
+      config.api_version = 'v4'
     end
 
     @base = "#{SurveyGizmo.configuration.api_url}/#{SurveyGizmo.configuration.api_version}"
