@@ -17,6 +17,7 @@ module SurveyGizmo::V5
 
     # v5 fields
     attribute :base_type,          String
+    attribute :subtype,            String
     attribute :varname,            Array
     attribute :has_showhide_deps,  Boolean
     attribute :comment,            Boolean
@@ -42,6 +43,7 @@ module SurveyGizmo::V5
 
     def parent_question
       return nil unless parent_question_id
+
       @parent_question ||= Question.first(survey_id: survey_id, id: parent_question_id)
     end
   end

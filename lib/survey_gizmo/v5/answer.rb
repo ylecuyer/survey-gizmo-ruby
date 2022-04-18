@@ -24,9 +24,7 @@ module SurveyGizmo::V5
       self.question_type = value['type']
 
       if value['options']
-        self.options = selected_options
-      elsif value['answer_id']
-        self.options = single_option
+        self.answer_text = selected_options_texts.join(', ')
       else
         self.answer_text = value['answer']
       end
@@ -40,6 +38,12 @@ module SurveyGizmo::V5
           title: value['original_answer'] || value['answer']
         ))
       ]
+    end
+
+    def selected_options_texts
+      selected_options.map do |opt|
+        opt['answer']
+      end
     end
 
     def selected_options
@@ -57,14 +61,11 @@ module SurveyGizmo::V5
       {
         response_id: response_id,
         question_id: question_id,
-        question_type: question_type,
-        question_text: question_text,
-        options: options,
         question_pipe: question_pipe,
         submitted_at: submitted_at,
         survey_id: survey_id,
         other_text: other_text,
-        answer_text: options || other_text ? nil : answer_text
+        answer_text: other_text ? nil : answer_text
       }.reject { |k, v| v.nil? }
     end
   end
