@@ -5,6 +5,7 @@ describe SurveyGizmo::Configuration do
 
   let(:api_token) { "token" }
   let(:api_token_secret) { "doken" }
+  let(:test_api_version) { 'v4' }
 
   before(:each) do
     SurveyGizmo.configure do |config|

@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe 'Survey Gizmo Resource' do
+describe 'Survey Gizmo Resource V5' do
   let(:create_attributes_to_compare) { }
   let(:get_attributes_to_compare) { }
-  let(:test_api_version) { 'v4' }
+  let(:test_api_version) { 'v5' }
 
   describe SurveyGizmo::Resource do
     let(:described_class)   { SurveyGizmoSpec::ResourceTest }
@@ -51,7 +51,7 @@ describe 'Survey Gizmo Resource' do
     end
   end
 
-  describe SurveyGizmo::V4::Survey do
+  describe SurveyGizmo::V5::Survey do
     let(:create_attributes) { { title: 'Spec', type: 'survey', status: 'In Design' } }
     let(:get_attributes)    { create_attributes.merge(first_params) }
     let(:update_attributes) { { title: 'Updated'} }
@@ -79,7 +79,7 @@ describe 'Survey Gizmo Resource' do
     end
   end
 
-  describe SurveyGizmo::V4::Question do
+  describe SurveyGizmo::V5::Question do
     let(:base_params)       { {survey_id: 1234, page_id: 1} }
     let(:create_attributes) { base_params.merge(title: 'Spec Question', type: 'radio', properties: { 'required' => true, 'option_sort' => false }) }
     let(:update_attributes) { base_params.merge(title: 'Updated') }
@@ -98,10 +98,6 @@ describe 'Survey Gizmo Resource' do
 
     it 'should handle the title hash returned from the API' do
       expect(described_class.new('title' => {'English' => 'Some title'}).title).to eq('Some title')
-    end
-
-    it 'should handle the _subtype key' do
-      expect(described_class.new(:_subtype => 'radio').type).to eq('radio')
     end
 
     it 'should find the survey' do
@@ -157,8 +153,13 @@ describe 'Survey Gizmo Resource' do
 
     context 'subquestions' do
       let(:parent_id) { 33 }
-      let(:skus) { [544, 322] }
-      let(:question_with_subquestions) { described_class.new(id: parent_id, survey_id: 1234, sub_question_skus: skus) }
+      let(:subquestions) {
+        [
+          described_class.new(id: 544, survey_id: 1234, parent_question_id: parent_id),
+          described_class.new(id: 322, survey_id: 1234, parent_question_id: parent_id)
+        ]
+      }
+      let(:question_with_subquestions) { described_class.new(id: parent_id, survey_id: 1234, sub_questions: subquestions) }
 
       it 'should have no subquestions' do
         expect(described_class.new.sub_questions).to eq([])
@@ -169,15 +170,19 @@ describe 'Survey Gizmo Resource' do
         expect(question_with_subquestions.sub_questions.size).to eq(2)
 
         question_with_subquestions.sub_questions.first.parent_question
-        expect(a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{parent_id}/)).to have_been_made
-        skus.each do |sku|
-          expect(a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{sku}/)).to have_been_made
-        end
+        question_with_subquestions.sub_questions.last.parent_question
+        expect(a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{parent_id}/)).to have_been_made.twice
       end
 
       context 'and shortname' do
         let(:sku) { 6 }
-        let(:question_with_subquestions) { described_class.new(id: parent_id, survey_id: 1234, sub_question_skus: [["0", sku], ["foo", 8]]) }
+        let(:subquestions) {
+          [
+            described_class.new(id: 6, shortname: '0', survey_id: 1234, parent_question_id: parent_id),
+            described_class.new(id: 8, shortname: 'foo', survey_id: 1234, parent_question_id: parent_id)
+          ]
+        }
+        let(:question_with_subquestions) { described_class.new(id: parent_id, survey_id: 1234, sub_questions: subquestions) }
 
         it 'should have 2 subquestions and they should have the right parent question' do
           stub_request(:get, /#{@base}/).to_return(json_response(true, get_attributes))
@@ -185,13 +190,12 @@ describe 'Survey Gizmo Resource' do
 
           question_with_subquestions.sub_questions.first.parent_question
           expect(a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{parent_id}/)).to have_been_made
-          expect(a_request(:get, /#{@base}\/survey\/1234\/surveyquestion\/#{sku}/)).to have_been_made
         end
       end
     end
   end
 
-  describe SurveyGizmo::V4::Option do
+  describe SurveyGizmo::V5::Option do
     let(:survey_and_page)   { {survey_id: 1234, page_id: 1} }
     let(:create_attributes) { survey_and_page.merge(question_id: 1, title: 'Spec Question', value: 'Spec Answer') }
     let(:update_attributes) { survey_and_page.merge(question_id: 1, title: 'Updated') }
@@ -207,7 +211,7 @@ describe 'Survey Gizmo Resource' do
     it_should_behave_like 'an object with errors'
   end
 
-  describe SurveyGizmo::V4::Page do
+  describe SurveyGizmo::V5::Page do
     let(:create_attributes) { {:survey_id => 1234, :title => 'Spec Page' } }
     let(:get_attributes)    { create_attributes.merge(:id => 1) }
     let(:update_attributes) { {:survey_id => 1234, :title => 'Updated'} }
@@ -222,9 +226,10 @@ describe 'Survey Gizmo Resource' do
     it_should_behave_like 'an object with errors'
   end
 
-  describe SurveyGizmo::V4::Response do
-    let(:create_attributes) { {:survey_id => 1234, :datesubmitted => "2015-04-15 05:46:30" } }
-    let(:create_attributes_to_compare) { create_attributes.merge(:datesubmitted => Time.parse("2015-04-15 05:46:30 -0400")) }
+  describe SurveyGizmo::V5::Response do
+    # date_submitted is specified as DateTime, not Time
+    let(:create_attributes) { {:survey_id => 1234, :date_submitted => "2015-04-15 05:46:30 -0400" } }
+    let(:create_attributes_to_compare) { create_attributes.merge(:date_submitted => DateTime.parse("2015-04-15 05:46:30 -0400")) }
     let(:get_attributes)    { create_attributes.merge(:id => 1) }
     let(:get_attributes_to_compare)    { create_attributes_to_compare.merge(:id => 1) }
     let(:update_attributes) { {:survey_id => 1234, :title => 'Updated'} }
@@ -239,8 +244,8 @@ describe 'Survey Gizmo Resource' do
     it_should_behave_like 'an object with errors'
 
     context 'during EST' do
-      let(:create_attributes) { {:survey_id => 1234, :datesubmitted => "2015-01-15 05:46:30" } }
-      let(:create_attributes_to_compare) { create_attributes.merge(:datesubmitted => Time.parse("2015-01-15 05:46:30 -0500")) }
+      let(:create_attributes) { {:survey_id => 1234, :date_submitted => "2015-01-15 05:46:30 -0500" } }
+      let(:create_attributes_to_compare) { create_attributes.merge(:date_submitted => DateTime.parse("2015-01-15 05:46:30 -0500")) }
 
       it_should_behave_like 'an API object'
       it_should_behave_like 'an object with errors'
@@ -252,60 +257,45 @@ describe 'Survey Gizmo Resource' do
       let(:timestamp) { '2015-01-02'.to_time(:utc) }
       let(:answers) do
         {
-          '[question(3), option("10021-other")]' => 'Some other text field answer',
-          '[question(3), option(10021)]' => 'Other (required)',
-          '[question(5)]' => 'VERY important',
-          '[question(6)]' => nil,
-          '[question(7), option(10001)]' => nil,
-          '[question(8)]' => false,
-          '[question(9), option(10002)]' => '16',
-          '[question(10), question_pipe("Que aplicación")]' => '5 = Extremely important',
-          '[question(11), question_pipe(10527)]' => 'This product was too expensive',
-          # Sometimes surveygizmo only includes the option with the "other" answer.  =(
-          '[question(12)]' => 'Other - Please explain',
-          '[question(12), option("10017-other")]' => 'I understood...',
-          '[question(13), option(0)]' => '12345',
-          '[question(14), question_pipe(""dérivation" du "ronron" du cerveau")]' => '5 = Extremely important'
+          5 => {
+            'id' => 5,
+            'type' => "TEXTBOX",
+            'shown' => true,
+            'answer' => 'VERY important'
+          },
+          6 => {
+            'id' => 6,
+            'type' => "TEXTBOX",
+            'shown' => false
+          }
         }
       end
 
       it 'should propagate time, survey_id, and response_id' do
         response = described_class.new(
-          answers: answers.select { |k, v| k == "[question(5)]"},
+          answers: answers.select { |k, v| k == 5},
           survey_id: survey_id,
           id: response_id,
           submitted_at: timestamp
         )
         expect(response.parsed_answers.map { |a| a.to_hash }).to eq([ { survey_id: survey_id, response_id: response_id, question_id: 5, answer_text: "VERY important", submitted_at: timestamp }])
       end
-
-      it 'should parse the answers and remove extraneous answers' do
-        expect(described_class.new(answers: answers, survey_id: 1).parsed_answers.map { |a| a.to_hash }).to eq([
-          { survey_id: 1, question_id: 3, option_id: 10021, other_text: 'Some other text field answer' },
-          { survey_id: 1, question_id: 5, answer_text: 'VERY important' },
-          { survey_id: 1, question_id: 8, answer_text: 'false' },
-          { survey_id: 1, question_id: 9, option_id: 10002 },
-          { survey_id: 1, question_id: 10, question_pipe: 'Que aplicación', answer_text: '5 = Extremely important' },
-          { survey_id: 1, question_id: 11, question_pipe: '10527', answer_text: 'This product was too expensive' },
-          { survey_id: 1, question_id: 12, option_id: 10017, other_text: 'I understood...' },
-          { survey_id: 1, question_id: 13, answer_text: '12345' },
-          { survey_id: 1, question_id: 14, question_pipe: '"dérivation" du "ronron" du cerveau', answer_text: '5 = Extremely important' }
-
-        ])
-      end
     end
   end
 
-  describe SurveyGizmo::V4::AccountTeams do
+  describe SurveyGizmo::V5::AccountTeams do
     pending('Need an account with admin privileges to test this')
-    let(:create_attributes) { { teamid: 1234, teamname: 'team' } }
+    let(:create_attributes) { { team_name: 'team' } }
     let(:get_attributes)    { create_attributes.merge(id: 1234) }
-    let(:update_attributes) { create_attributes }
-    let(:first_params)      { { teamname: 'team' } }
+    let(:update_attributes) { get_attributes }
+    let(:first_params)      { get_attributes }
     let(:uri_paths) do
-      h = { :create => '/account_teams/1234' }
-      h.default = '/account_teams/1234'
+      h = { :create => '/accountteams' }
+      h.default = '/accountteams/1234'
       h
     end
+
+    it_should_behave_like 'an API object'
+    it_should_behave_like 'an object with errors'
   end
 end

@@ -19,6 +19,9 @@ module SurveyGizmo
       'datecreated',
       'datemodified',
       'datesubmitted',
+      'date_created',
+      'date_modified',
+      'date_submitted',
       'modified_on'
     ]
 

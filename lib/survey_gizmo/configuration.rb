@@ -32,6 +32,10 @@ module SurveyGizmo
       configuration.retriable_params = Configuration::DEFAULT_RETRIABLE_PARAMS.merge(configuration.retriable_params)
 
       @global_config = configuration
+
+      path = File.expand_path(File.dirname(__FILE__))
+      require File.join(path, 'api/api')
+      configuration
     end
 
     def reset!
@@ -41,7 +45,7 @@ module SurveyGizmo
   end
 
   class Configuration
-    DEFAULT_API_VERSION = 'v4'
+    DEFAULT_API_VERSION = 'v5'
     DEFAULT_RESULTS_PER_PAGE = 50
     DEFAULT_TIMEOUT_SECONDS = 300
     DEFAULT_REGION = :us
@@ -112,6 +116,10 @@ module SurveyGizmo
 
       @api_url = region_infos[:url]
       @api_time_zone = region_infos[:locale]
+    end
+
+    def v5?
+      api_version == 'v5'
     end
   end
 end

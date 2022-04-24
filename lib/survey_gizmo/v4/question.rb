@@ -1,6 +1,6 @@
-require 'survey_gizmo/api/option'
+require 'survey_gizmo/v4/option'
 
-module SurveyGizmo::API
+module SurveyGizmo::V4
   class Question
     include SurveyGizmo::Resource
     include SurveyGizmo::MultilingualTitle

@@ -1,4 +1,4 @@
-module SurveyGizmo::API
+module SurveyGizmo::V4
   class EmailMessage
     include SurveyGizmo::Resource
 

@@ -16,6 +16,7 @@ RSpec.configure do |config|
       config.api_token_secret = 'dreamword'
       config.retriable_params = { tries: 1, base_interval: 0 }
       config.logger.level = Logger::FATAL
+      config.api_version = test_api_version
     end
 
     @base = "#{SurveyGizmo.configuration.api_url}/#{SurveyGizmo.configuration.api_version}"

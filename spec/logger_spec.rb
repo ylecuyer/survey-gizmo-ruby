@@ -4,6 +4,7 @@ describe SurveyGizmo::Logger do
   let(:progname)    { 'TEST' }
   let(:severity)    { 'INFO' }
   let(:time_string) { '2015-04-15 05:46:30' }
+  let(:test_api_version) { 'v4' }
 
   before(:each) do
     SurveyGizmo.configure do |config|
