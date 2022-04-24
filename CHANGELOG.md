@@ -1,5 +1,8 @@
 # Versions
 
+## 8.0.0 (unreleased)
+* Switch CI from Travis to Github actions
+
 ## 7.1.1
 * Add missing `subtype` parameter to `Campain` required at creation
 * Fix use of deprecated Faraday error class (#110)
