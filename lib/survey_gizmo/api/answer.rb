@@ -20,7 +20,7 @@ module SurveyGizmo::API
       when /\[question\((\d+)\),\s*option\((\d+|"\d+-other")\)\]/
         self.question_id, self.option_id = $1, $2
 
-        if option_id =~ /-other/
+        if option_id.to_s =~ /-other/
           option_id.delete!('-other"')
           self.other_text = value
         elsif option_id == 0
