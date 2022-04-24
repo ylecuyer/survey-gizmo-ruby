@@ -1,6 +1,7 @@
 # Versions
 
 ## 8.0.0 (unreleased)
+* Fix ruby 2.7 build and compatibility with activesupport >= 7
 * Switch CI from Travis to Github actions
 
 ## 7.1.1
