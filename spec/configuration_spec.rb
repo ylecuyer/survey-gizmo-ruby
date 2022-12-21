@@ -151,4 +151,35 @@ describe SurveyGizmo::Configuration do
       expect(SurveyGizmo.configuration.locale).to eq('Italian')
     end
   end
+
+  describe '#api=' do
+    it 'should set surveygizmo by default' do
+      SurveyGizmo.configure
+      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
+    end
+
+    it 'should set surveygizmo api with :surveygizmo symbol specified' do
+      SurveyGizmo.configure do |config|
+        config.api = :surveygizmo
+      end
+
+      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
+    end
+
+    it 'should set alchemer api with :alchemer symbol specified' do
+      SurveyGizmo.configure do |config|
+        config.api = :alchemer
+      end
+
+      expect(SurveyGizmo.configuration.api_url).to eq('https://api.alchemer.com')
+    end
+
+    it 'should fail with an unavailable api' do
+      expect {
+        SurveyGizmo.configure do |config|
+          config.api = :google
+        end
+      }.to raise_error(ArgumentError, "Unknown api: google")
+    end
+  end
 end
