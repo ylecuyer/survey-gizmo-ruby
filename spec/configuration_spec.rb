@@ -130,8 +130,8 @@ describe SurveyGizmo::Configuration do
 
     it 'can be combined with api change' do
       SurveyGizmo.configure do |config|
-        config.api = :alchemer
         config.region = :eu
+        config.api = :alchemer
       end
 
       expect(SurveyGizmo.configuration.api_url).to eq('https://api.alchemer.eu')
