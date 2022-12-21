@@ -34,7 +34,6 @@ SurveyGizmo.configure do |config|
   # Optional - Set if you need to hit a different region (e.g. the .eu domain)
   config.region = :eu
 
-
   # Optional - Defaults to 50, maximum 500. Setting too high may cause SurveyGizmo to start throwing timeouts.
   config.results_per_page = 100
 
