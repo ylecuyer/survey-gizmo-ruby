@@ -1,6 +1,8 @@
 # Versions
 
-## 8.0.0 (unreleased)
+## 8.1.0 (unreleased)
+
+## 8.0.0
 * BREAKING CHANGE: Switch from the old Survey Gizmo API URLs (`restapi.surveygizmo.com` and `restapi.surveygizmo.eu`) to the new Alchemer API URLs (`api.alchemer.com` and `api.alchemer.eu`)
 * Fix ruby 3.2 build
 * Fix ruby 2.7 build and compatibility with activesupport >= 7
