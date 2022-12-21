@@ -49,11 +49,11 @@ module SurveyGizmo
 
     REGION_INFO = {
       us: {
-        url: 'https://restapi.surveygizmo.com',
+        url: 'https://api.alchemer.com',
         locale: 'Eastern Time (US & Canada)'
       },
       eu: {
-        url: 'https://restapi.surveygizmo.eu',
+        url: 'https://api.alchemer.eu',
         locale: 'UTC'
       }
     }

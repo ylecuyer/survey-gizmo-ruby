@@ -106,7 +106,7 @@ describe SurveyGizmo::Configuration do
   describe '#region=' do
     it 'should set US region by default' do
       SurveyGizmo.configure
-      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
+      expect(SurveyGizmo.configuration.api_url).to eq('https://api.alchemer.com')
       expect(SurveyGizmo.configuration.api_time_zone).to eq('Eastern Time (US & Canada)')
     end
 
@@ -115,7 +115,7 @@ describe SurveyGizmo::Configuration do
         config.region = :us
       end
 
-      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
+      expect(SurveyGizmo.configuration.api_url).to eq('https://api.alchemer.com')
       expect(SurveyGizmo.configuration.api_time_zone).to eq('Eastern Time (US & Canada)')
     end
 
@@ -124,7 +124,7 @@ describe SurveyGizmo::Configuration do
         config.region = :eu
       end
 
-      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.eu')
+      expect(SurveyGizmo.configuration.api_url).to eq('https://api.alchemer.eu')
       expect(SurveyGizmo.configuration.api_time_zone).to eq('UTC')
     end
 
