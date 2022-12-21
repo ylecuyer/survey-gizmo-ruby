@@ -106,7 +106,7 @@ describe SurveyGizmo::Configuration do
   describe '#region=' do
     it 'should set US region by default' do
       SurveyGizmo.configure
-      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
+      expect(SurveyGizmo.configuration.api_url).to eq('https://api.alchemer.com')
       expect(SurveyGizmo.configuration.api_time_zone).to eq('Eastern Time (US & Canada)')
     end
 
@@ -115,7 +115,7 @@ describe SurveyGizmo::Configuration do
         config.region = :us
       end
 
-      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
+      expect(SurveyGizmo.configuration.api_url).to eq('https://api.alchemer.com')
       expect(SurveyGizmo.configuration.api_time_zone).to eq('Eastern Time (US & Canada)')
     end
 
@@ -124,17 +124,8 @@ describe SurveyGizmo::Configuration do
         config.region = :eu
       end
 
-      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.eu')
-      expect(SurveyGizmo.configuration.api_time_zone).to eq('UTC')
-    end
-
-    it 'can be combined with api change' do
-      SurveyGizmo.configure do |config|
-        config.region = :eu
-        config.api = :alchemer
-      end
-
       expect(SurveyGizmo.configuration.api_url).to eq('https://api.alchemer.eu')
+      expect(SurveyGizmo.configuration.api_time_zone).to eq('UTC')
     end
 
     it 'should fail with an unavailable region' do
@@ -158,46 +149,6 @@ describe SurveyGizmo::Configuration do
       end
 
       expect(SurveyGizmo.configuration.locale).to eq('Italian')
-    end
-  end
-
-  describe '#api=' do
-    it 'should set surveygizmo api by default' do
-      SurveyGizmo.configure
-      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
-    end
-
-    it 'should set surveygizmo api with :surveygizmo symbol specified' do
-      SurveyGizmo.configure do |config|
-        config.api = :surveygizmo
-      end
-
-      expect(SurveyGizmo.configuration.api_url).to eq('https://restapi.surveygizmo.com')
-    end
-
-    it 'should set alchemer api with :alchemer symbol specified' do
-      SurveyGizmo.configure do |config|
-        config.api = :alchemer
-      end
-
-      expect(SurveyGizmo.configuration.api_url).to eq('https://api.alchemer.com')
-    end
-
-    it 'can be combined with region change' do
-      SurveyGizmo.configure do |config|
-        config.api = :alchemer
-        config.region = :eu
-      end
-
-      expect(SurveyGizmo.configuration.api_url).to eq('https://api.alchemer.eu')
-    end
-
-    it 'should fail with an unavailable api' do
-      expect {
-        SurveyGizmo.configure do |config|
-          config.api = :google
-        end
-      }.to raise_error(ArgumentError, "Unknown api: google")
     end
   end
 end

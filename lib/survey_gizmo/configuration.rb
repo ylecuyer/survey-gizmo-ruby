@@ -41,28 +41,22 @@ module SurveyGizmo
   end
 
   class Configuration
-    DEFAULT_API = :surveygizmo
-    DEFAULT_API_VERSION = 'v4'.freeze
+    DEFAULT_API_VERSION = 'v4'
     DEFAULT_RESULTS_PER_PAGE = 50
     DEFAULT_TIMEOUT_SECONDS = 300
     DEFAULT_REGION = :us
-    DEFAULT_LOCALE = 'English'.freeze
-
-    APIS_INFO = {
-      surveygizmo: 'restapi.surveygizmo',
-      alchemer: 'api.alchemer'
-    }.freeze
+    DEFAULT_LOCALE = 'English'
 
     REGION_INFO = {
       us: {
-        tld: 'com',
+        url: 'https://api.alchemer.com',
         locale: 'Eastern Time (US & Canada)'
       },
       eu: {
-        tld: 'eu',
+        url: 'https://api.alchemer.eu',
         locale: 'UTC'
       }
-    }.freeze
+    }
 
     DEFAULT_RETRIABLE_PARAMS = {
       base_interval: 60,
@@ -79,7 +73,7 @@ module SurveyGizmo
       on_retry: Proc.new do |exception, tries|
         SurveyGizmo.configuration.logger.warn("Retrying after #{exception.class}: #{tries} attempts.")
       end
-    }.freeze
+    }
 
     attr_accessor :api_token
     attr_accessor :api_token_secret
@@ -106,7 +100,6 @@ module SurveyGizmo
       @timeout_seconds = DEFAULT_TIMEOUT_SECONDS
       @retriable_params = DEFAULT_RETRIABLE_PARAMS
       @locale = DEFAULT_LOCALE
-      self.api = DEFAULT_API
       self.region = DEFAULT_REGION
 
       @logger = SurveyGizmo::Logger.new(STDOUT)
@@ -117,24 +110,8 @@ module SurveyGizmo
       region_infos = REGION_INFO[region]
       raise ArgumentError.new("Unknown region: #{region}") unless region_infos
 
-      @api_tld = region_infos[:tld]
+      @api_url = region_infos[:url]
       @api_time_zone = region_infos[:locale]
-
-      build_api_url
-    end
-
-    def api=(api)
-      raise ArgumentError.new("Unknown api: #{api}") unless APIS_INFO.keys.include?(api)
-
-      @api = APIS_INFO[api]
-
-      build_api_url
-    end
-
-    private
-
-    def build_api_url
-      @api_url = "https://#{@api}.#{@api_tld}"
     end
   end
 end

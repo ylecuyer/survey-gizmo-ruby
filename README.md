@@ -1,10 +1,8 @@
 # Survey Gizmo (ruby)
 
-[![Build Status](https://travis-ci.org/jarthod/survey-gizmo-ruby.svg?branch=master)](https://travis-ci.org/jarthod/survey-gizmo-ruby)
+Integrate with the [Alchemer API](https://apihelp.alchemer.com/help) using an ActiveModel style interface.
 
-Integrate with the [Survey Gizmo API](https://apihelp.surveygizmo.com/help) using an ActiveModel style interface.
-
-Currently supports SurveyGizmo API **v4** (default) and **v3**.
+Currently supports Alchemer API **v4** (default) and **v3**.
 
 ## Version History
 
@@ -36,8 +34,6 @@ SurveyGizmo.configure do |config|
   # Optional - Set if you need to hit a different region (e.g. the .eu domain)
   config.region = :eu
 
-  # Optional - Set if you need to hit a different api (e.g. the api.alchemer.{com,eu} api)
-  config.api = :alchemer
 
   # Optional - Defaults to 50, maximum 500. Setting too high may cause SurveyGizmo to start throwing timeouts.
   config.results_per_page = 100
