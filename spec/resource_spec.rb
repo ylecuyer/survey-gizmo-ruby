@@ -94,6 +94,7 @@ describe 'Survey Gizmo Resource' do
 
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
+    it_should_behave_like 'a MultilingualTitle object'
 
     it 'should handle the title hash returned from the API' do
       expect(described_class.new('title' => {'English' => 'Some title'}).title).to eq('Some title')
@@ -204,6 +205,7 @@ describe 'Survey Gizmo Resource' do
 
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
+    it_should_behave_like 'a MultilingualTitle object'
   end
 
   describe SurveyGizmo::API::Page do
@@ -219,6 +221,7 @@ describe 'Survey Gizmo Resource' do
 
     it_should_behave_like 'an API object'
     it_should_behave_like 'an object with errors'
+    it_should_behave_like 'a MultilingualTitle object'
   end
 
   describe SurveyGizmo::API::Response do
