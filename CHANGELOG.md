@@ -1,6 +1,7 @@
 # Versions
 
 ## 8.1.0 (unreleased)
+* Add access to title localization on `SurveyGizmo::API::Question`, `SurveyGizmo::API::Option` and `SurveyGizmo::API::Page` via `title_ml` accessor
 
 ## 8.0.0
 * BREAKING CHANGE: Switch from the old Survey Gizmo API URLs (`restapi.surveygizmo.com` and `restapi.surveygizmo.eu`) to the new Alchemer API URLs (`api.alchemer.com` and `api.alchemer.eu`)
