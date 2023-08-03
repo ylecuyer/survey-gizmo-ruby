@@ -24,7 +24,7 @@ module SurveyGizmo
 
     def on_complete(env)
       fail RateLimitExceededError if env.status == 429
-      fail BadResponseError, "Bad response code #{env.status} in #{environment.inspect}" unless env.status == 200
+      fail BadResponseError, "Bad response code #{env.status} in #{env.inspect}" unless env.status == 200
       fail BadResponseError, env.body['message'] unless env.body['result_ok'] && env.body['result_ok'].to_s =~ /^true$/i
 
       process_response(env)
