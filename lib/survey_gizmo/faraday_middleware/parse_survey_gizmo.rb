@@ -1,10 +1,10 @@
-require 'faraday_middleware/response_middleware'
+require 'faraday'
 
 module SurveyGizmo
   class RateLimitExceededError < RuntimeError; end
   class BadResponseError < RuntimeError; end
 
-  class ParseSurveyGizmo < FaradayMiddleware::ResponseMiddleware
+  class ParseSurveyGizmo < Faraday::Middleware
     Faraday::Response.register_middleware(parse_survey_gizmo_data: self)
 
     PAGINATION_FIELDS = [
@@ -22,20 +22,26 @@ module SurveyGizmo
       'modified_on'
     ]
 
-    def call(environment)
-      @app.call(environment).on_complete do |response|
-        fail RateLimitExceededError if response.status == 429
-        fail BadResponseError, "Bad response code #{response.status} in #{response.inspect}" unless response.status == 200
-        fail BadResponseError, response.body['message'] unless response.body['result_ok'] && response.body['result_ok'].to_s =~ /^true$/i
+    def on_complete(env)
+      fail RateLimitExceededError if env.status == 429
+      fail BadResponseError, "Bad response code #{env.status} in #{env.inspect}" unless env.status == 200
+      fail BadResponseError, env.body['message'] unless env.body['result_ok'] && env.body['result_ok'].to_s =~ /^true$/i
 
-        process_response(response)
-      end
+      process_response(env)
     end
 
-    define_parser do |body|
+    private
+
+    def process_response(env)
+      env[:body] = parse(env[:body])
+    rescue Faraday::ParsingError => e
+      raise Faraday::ParsingError.new(e.wrapped_exception, env[:response])
+    end
+
+    def parse(body)
       PAGINATION_FIELDS.each { |n| body[n] = body[n].to_i if body[n] }
 
-      next body unless body['data']
+      return body unless body['data']
 
       # Handle really crappy [] notation in SG API, so far just in SurveyResponse
       Array.wrap(body['data']).compact.each do |datum|
@@ -70,8 +76,6 @@ module SurveyGizmo
 
       body
     end
-
-    private
 
     def self.cleanup_attribute_name(attr)
       attr.downcase.gsub(/[^[:alnum:]]+/, '_')
