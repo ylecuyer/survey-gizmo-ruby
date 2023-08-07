@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
   gem.summary = 'Gem to use the SurveyGizmo.com REST API, v3+'
   gem.homepage = 'http://github.com/jarthod/survey-gizmo-ruby'
   gem.licenses = ['MIT']
-  gem.required_ruby_version = '>= 2.1'
+  gem.required_ruby_version = '>= 2.6'
 
   gem.add_dependency 'activesupport', '>= 3.0'
   gem.add_dependency 'addressable', '>= 2'
